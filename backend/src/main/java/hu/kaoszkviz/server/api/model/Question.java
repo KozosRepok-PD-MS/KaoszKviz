@@ -10,22 +10,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = Quiz.TABLE_NAME)
-public class Quiz {
+@EqualsAndHashCode
+@Table(name = Question.TABLE_NAME)
+public class Question {
     @Id
     @Getter
     @Setter
@@ -34,19 +33,26 @@ public class Quiz {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
-
-    @Getter
-    @Setter
-    @Column(columnDefinition = "nvarchar(30)", length = 30, nullable = false)
-    private String title;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
     
     @Getter
     @Setter
-    @Column(columnDefinition = "nvarchar(500)", length = 500)
-    private String description;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(updatable = false, name = "created_at")
+    private LocalDateTime createdAt;
+    
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_type")
+    private QuestionType questionType;
+    
+    @Getter
+    @Setter
+    @Column(name = "question", columnDefinition = "nvarchar(100)", length = 100)
+    private String question;
     
     @Getter
     @Setter
@@ -59,20 +65,9 @@ public class Quiz {
     
     @Getter
     @Setter
-    @Column(name = "is_public", columnDefinition = "bit default 0")
-    private boolean isPublic;
-    
-    @Getter
-    @Setter
-    @Column(name = "short_accessible_name")
-    private String shortAccessibleName;
+    @Column(name = "time_to_answer")
+    private byte timeToAnswer; 
     
     
-    @Getter
-    @Setter
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
-    private List<Question> medias = new ArrayList<Question>();
-    
-    
-    public static final String TABLE_NAME = "quiz";
+    public static final String TABLE_NAME = "question";
 }
