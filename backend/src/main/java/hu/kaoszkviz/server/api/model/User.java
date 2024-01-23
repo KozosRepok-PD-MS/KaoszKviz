@@ -51,17 +51,23 @@ public class User {
     @Column(columnDefinition = "bit default 0")
     private boolean admin;
 
-    
     @Getter
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
     
+    
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
+    
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    private List<Media> medias = new ArrayList<Media>();
+    
     
     public static final String TABLE_NAME = "usr";
 }
