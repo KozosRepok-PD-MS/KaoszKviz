@@ -63,5 +63,10 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
     
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    private List<Quiz> quizs = new ArrayList<Quiz>();
+    
     public static final String TABLE_NAME = "usr";
 }
