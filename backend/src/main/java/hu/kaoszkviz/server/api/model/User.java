@@ -73,5 +73,10 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Media> medias = new ArrayList<Media>();
     
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "starter")
+    private List<QuizHistory> historys = new ArrayList<QuizHistory>();
+    
     public static final String TABLE_NAME = "usr";
 }
