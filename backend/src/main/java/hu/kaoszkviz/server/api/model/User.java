@@ -33,7 +33,7 @@ public class User {
     
     @Setter
     @Getter
-    @Column(nullable = false, columnDefinition = "nvarchar(20)", unique = true)
+    @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20, unique = true)
     private String username;
     
     @Getter
@@ -51,12 +51,12 @@ public class User {
     @Column(columnDefinition = "bit default 0")
     private boolean admin;
 
-    
     @Getter
     @Setter
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
+    
     
     @Getter
     @Setter
@@ -67,6 +67,11 @@ public class User {
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Quiz> quizs = new ArrayList<Quiz>();
+    
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    private List<Media> medias = new ArrayList<Media>();
     
     public static final String TABLE_NAME = "usr";
 }

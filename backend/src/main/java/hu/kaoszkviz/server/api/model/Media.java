@@ -4,10 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,23 +18,26 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@IdClass(MediaId.class)
 @Table(name = Media.TABLE_NAME)
 public class Media {
     
     @Id
     @Setter
     @Getter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
     
     @Id
     @Setter
     @Getter
-    @Column(nullable = false, columnDefinition = "nvarchar(30)", name = "file_name")
+    @Column(nullable = false, columnDefinition = "nvarchar(30)", length = 30, name = "file_name")
     private String fileName;
     
     @Setter
     @Getter
-    @Column(nullable = false, columnDefinition = "varbinary("+Media.MAX_FIE_SIZE+")")
+    @Column(nullable = false, columnDefinition = "varbinary(MAX)")
     private byte[] data;
     
     

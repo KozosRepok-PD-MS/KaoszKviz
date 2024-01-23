@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class MediaId implements Serializable{
     @Getter
-    private Media media;
+    private User owner;
     
     @Getter
     private String fileName;
