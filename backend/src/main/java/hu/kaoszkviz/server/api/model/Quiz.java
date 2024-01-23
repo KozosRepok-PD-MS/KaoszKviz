@@ -50,8 +50,8 @@ public class Quiz {
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-        @JoinColumn(name="media_owner_id"),
-        @JoinColumn(name="media_file_name")
+        @JoinColumn(name="media_file_name"),
+        @JoinColumn(name="media_owner_id")
     })
     private Media mediaContent;
     
