@@ -3,11 +3,15 @@ package hu.kaoszkviz.server.api.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -53,6 +57,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
+    
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
     
     public static final String TABLE_NAME = "usr";
 }
