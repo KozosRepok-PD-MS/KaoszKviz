@@ -7,7 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,10 +44,10 @@ public class Media {
     private byte[] data;
     
     
-//    @Getter
-//    @Setter
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
-//    private List<Quiz> quizs = new ArrayList<Quiz>();
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
+    private List<Quiz> quizs = new ArrayList<Quiz>();
     
     
     public static final String TABLE_NAME = "media";

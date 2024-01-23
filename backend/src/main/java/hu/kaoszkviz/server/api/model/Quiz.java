@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,12 +46,14 @@ public class Quiz {
     @Column(columnDefinition = "nvarchar(500)", length = 500)
     private String description;
     
-//    @Getter
-//    @Setter
-//    @JoinColumns({
-//        @JoinColumn()
-//    })
-//    private Media mediaContent;
+    @Getter
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name="media_owner_id"),
+        @JoinColumn(name="media_file_name")
+    })
+    private Media mediaContent;
     
     @Getter
     @Setter
