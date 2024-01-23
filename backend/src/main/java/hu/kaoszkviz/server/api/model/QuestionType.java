@@ -1,8 +1,6 @@
 package hu.kaoszkviz.server.api.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,7 +19,6 @@ public class QuestionType {
     @Id
     @Setter
     @Getter
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String type; 
     
     public static final String TABLE_NAME = "question_type";

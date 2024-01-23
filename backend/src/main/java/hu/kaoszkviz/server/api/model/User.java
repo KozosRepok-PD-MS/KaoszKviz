@@ -29,7 +29,7 @@ public class User {
     
     @Setter
     @Getter
-    @Column(nullable = false, columnDefinition = "nvarchar(20)", unique = true)
+    @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20, unique = true)
     private String username;
     
     @Getter

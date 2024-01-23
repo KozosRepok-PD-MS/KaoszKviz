@@ -25,7 +25,7 @@ public class Media {
     @Id
     @Setter
     @Getter
-    @Column(nullable = false, columnDefinition = "nvarchar(30)", name = "file_name")
+    @Column(nullable = false, columnDefinition = "nvarchar(30)", length = 30, name = "file_name")
     private String fileName;
     
     @Setter
