@@ -27,7 +27,7 @@ public class Topic {
     
     @Setter
     @Getter
-    @Column(nullable = false, columnDefinition = "nvarchar(20)")
+    @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20)
     private String title;
     
     public static final String TABLE_NAME = "topic";
