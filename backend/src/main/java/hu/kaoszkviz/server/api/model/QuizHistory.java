@@ -7,10 +7,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -49,6 +52,11 @@ public class QuizHistory {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "starting_time", nullable = false)
     private LocalDateTime startingTime;
+    
+    @Getter
+    @Setter
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "quizHistory")
+    private List<QuizPlayer> players = new ArrayList<>();
     
     public static final String TABLE_NAME = "quiz_history";
 }
