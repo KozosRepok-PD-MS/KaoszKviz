@@ -54,6 +54,11 @@ public class Media {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profilePicture")
     private List<QuizPlayer> players = new ArrayList<QuizPlayer>();
     
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profilePicture")
+    private List<User> users = new ArrayList<>();
+    
     public static final String TABLE_NAME = "media";
     public static final long MAX_FIE_SIZE = 5_000_000;
 }
