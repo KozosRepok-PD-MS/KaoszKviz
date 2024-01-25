@@ -16,13 +16,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @Table(name = Topic.TABLE_NAME)
 public class Topic {
-    
     @Id
     @Setter
     @Getter
@@ -38,6 +38,7 @@ public class Topic {
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "topic")
     private List<QuizTopic> quizTopics = new ArrayList<>();
+    
     
     public static final String TABLE_NAME = "topic";
 }

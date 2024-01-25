@@ -11,7 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Entity
 @AllArgsConstructor
@@ -49,12 +49,12 @@ public class Question {
     @Getter
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_type")
+    @JoinColumn(name = "question_type", nullable = false)
     private QuestionType questionType;
     
     @Getter
     @Setter
-    @Column(name = "question", columnDefinition = "nvarchar(100)", length = 100)
+    @Column(name = "question", columnDefinition = "nvarchar(100)", length = 100, nullable = false)
     private String question;
     
     @Getter
@@ -68,7 +68,7 @@ public class Question {
     
     @Getter
     @Setter
-    @Column(name = "time_to_answer")
+    @Column(name = "time_to_answer", nullable = false)
     private byte timeToAnswer; 
     
     

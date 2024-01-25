@@ -6,10 +6,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class MediaId implements Serializable{
+public class MediaId implements Serializable {
     @Getter
     private User owner;
     

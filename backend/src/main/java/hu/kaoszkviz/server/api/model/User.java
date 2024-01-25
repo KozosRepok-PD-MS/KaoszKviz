@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = User.TABLE_NAME)
 public class User {
-    
     @Id
     @Setter
     @Getter
@@ -78,22 +78,23 @@ public class User {
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-    private List<Quiz> quizs = new ArrayList<Quiz>();
+    private List<Quiz> quizs = new ArrayList<>();
     
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-    private List<Media> medias = new ArrayList<Media>();
+    private List<Media> medias = new ArrayList<>();
     
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "starter")
-    private List<QuizHistory> historys = new ArrayList<QuizHistory>();
+    private List<QuizHistory> histories = new ArrayList<>();
     
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
-    private List<QuizPlayer> players = new ArrayList<QuizPlayer>();
+    private List<QuizPlayer> players = new ArrayList<>();
+    
     
     public static final String TABLE_NAME = "usr";
 }

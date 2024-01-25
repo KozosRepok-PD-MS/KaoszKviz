@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,12 +33,12 @@ public class Answer {
     @Id
     @Getter
     @Setter
-    @Column(name = "ordinal_number")
+    @Column(name = "ordinal_number", nullable = false)
     private byte ordinalNumber;
     
     @Getter
     @Setter
-    @Column(columnDefinition = "nvarchar(50)", length = 50)
+    @Column(columnDefinition = "nvarchar(50)", length = 50, nullable = false)
     private String answer;
     
     @Getter
@@ -47,7 +48,7 @@ public class Answer {
     
     @Getter
     @Setter
-    @Column(columnDefinition = "nvarchar(50)", length = 50, name = "correct_answer")
+    @Column(columnDefinition = "nvarchar(50)", length = 50, name = "correct_answer", table = "correct_answer")
     private String correctAnswer;
 
     

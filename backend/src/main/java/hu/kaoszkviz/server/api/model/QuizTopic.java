@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +21,6 @@ import lombok.Setter;
 @IdClass(QuizTopicId.class)
 @Table(name = QuizTopic.TABLE_NAME)
 public class QuizTopic {
-    
     @Id
     @Getter
     @Setter
@@ -34,6 +34,7 @@ public class QuizTopic {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
+    
     
     public static final String TABLE_NAME = "quiz_topic";
 }

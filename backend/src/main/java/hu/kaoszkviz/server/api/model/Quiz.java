@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import lombok.Setter;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 @Table(name = Quiz.TABLE_NAME)
 public class Quiz {
     @Id
@@ -67,6 +69,7 @@ public class Quiz {
     @Column(name = "short_accessible_name")
     private String shortAccessibleName;
     
+    
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
@@ -80,7 +83,7 @@ public class Quiz {
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
-    private List<Question> medias = new ArrayList<Question>();
+    private List<Question> questions = new ArrayList<>();
     
     
     public static final String TABLE_NAME = "quiz";

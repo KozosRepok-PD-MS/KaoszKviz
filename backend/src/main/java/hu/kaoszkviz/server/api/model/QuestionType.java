@@ -13,13 +13,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = QuestionType.TABLE_NAME)
 public class QuestionType {
-    
     @Id
     @Setter
     @Getter
@@ -28,7 +28,7 @@ public class QuestionType {
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "questionType")
-    private List<Question> medias = new ArrayList<Question>();
+    private List<Question> questions = new ArrayList<>();
     
     public static final String TABLE_NAME = "question_type";
 }

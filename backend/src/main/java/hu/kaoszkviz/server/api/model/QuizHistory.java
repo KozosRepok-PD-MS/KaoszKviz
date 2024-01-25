@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +29,6 @@ import lombok.Setter;
     @UniqueConstraint(columnNames = {"quiz_id", "starter_user_id", "starting_time"})
 })
 public class QuizHistory {
-    
     @Id
     @Getter
     @Setter
@@ -53,10 +53,12 @@ public class QuizHistory {
     @Column(name = "starting_time", nullable = false)
     private LocalDateTime startingTime;
     
+    
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quizHistory")
     private List<QuizPlayer> players = new ArrayList<>();
+    
     
     public static final String TABLE_NAME = "quiz_history";
 }

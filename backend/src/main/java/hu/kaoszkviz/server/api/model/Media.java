@@ -17,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +25,6 @@ import lombok.Setter;
 @IdClass(MediaId.class)
 @Table(name = Media.TABLE_NAME)
 public class Media {
-    
     @Id
     @Setter
     @Getter
@@ -52,7 +52,7 @@ public class Media {
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profilePicture")
-    private List<QuizPlayer> players = new ArrayList<QuizPlayer>();
+    private List<QuizPlayer> players = new ArrayList<>();
     
     @Getter
     @Setter
@@ -62,7 +62,7 @@ public class Media {
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
-    private List<Question> questions = new ArrayList<Question>();
+    private List<Question> questions = new ArrayList<>();
 
     
     public static final String TABLE_NAME = "media";

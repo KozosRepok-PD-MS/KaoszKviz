@@ -16,13 +16,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @Table(name = QuizPlayer.TABLE_NAME)
 public class QuizPlayer {
-    
     @Id
     @Setter
     @Getter
