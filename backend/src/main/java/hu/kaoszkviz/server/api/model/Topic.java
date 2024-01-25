@@ -2,10 +2,14 @@ package hu.kaoszkviz.server.api.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,6 +33,11 @@ public class Topic {
     @Getter
     @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20)
     private String title;
+    
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "topic")
+    private List<QuizTopic> quizTopics = new ArrayList<>();
     
     public static final String TABLE_NAME = "topic";
 }
