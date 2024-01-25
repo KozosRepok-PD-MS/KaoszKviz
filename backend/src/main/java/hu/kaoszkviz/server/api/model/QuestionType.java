@@ -1,8 +1,12 @@
 package hu.kaoszkviz.server.api.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,6 +24,11 @@ public class QuestionType {
     @Setter
     @Getter
     private String type;
+    
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "questionType")
+    private List<Question> medias = new ArrayList<Question>();
     
     public static final String TABLE_NAME = "question_type";
 }

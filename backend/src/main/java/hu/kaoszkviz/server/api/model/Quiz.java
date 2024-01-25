@@ -77,5 +77,11 @@ public class Quiz {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizTopic> topics = new ArrayList<>();
     
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
+    private List<Question> medias = new ArrayList<Question>();
+    
+    
     public static final String TABLE_NAME = "quiz";
 }
