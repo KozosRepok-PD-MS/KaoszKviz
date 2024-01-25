@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,7 +80,7 @@ public class User {
     
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "player")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
     private List<QuizPlayer> players = new ArrayList<QuizPlayer>();
     
     public static final String TABLE_NAME = "usr";

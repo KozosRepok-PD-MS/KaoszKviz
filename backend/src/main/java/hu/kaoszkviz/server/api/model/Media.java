@@ -8,7 +8,6 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class Media {
     
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "pfp")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profilePicture")
     private List<QuizPlayer> players = new ArrayList<QuizPlayer>();
     
     public static final String TABLE_NAME = "media";

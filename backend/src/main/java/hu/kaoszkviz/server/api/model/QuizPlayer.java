@@ -3,9 +3,12 @@ package hu.kaoszkviz.server.api.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -20,28 +23,37 @@ import lombok.Setter;
 @Table(name = QuizPlayer.TABLE_NAME)
 public class QuizPlayer {
     
+    @Id
+    @Setter
+    @Getter
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    
     @Getter
     @Setter
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_history_id", nullable = false)
     private QuizHistory quizHistory;
     
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_id")
     private User player;
     
     @Getter
     @Setter
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, columnDefinition = "nvarchar(20)", length = 20)
     private String name;
     
     @Getter
     @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pfp_id", nullable = false)
-    private Media pfp;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+        @JoinColumn(name="media_file_name"),
+        @JoinColumn(name="media_owner_id")
+    })
+    private Media profilePicture;
     
     @Getter
     @Setter

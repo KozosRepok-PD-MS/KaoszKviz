@@ -7,8 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
@@ -55,7 +55,7 @@ public class QuizHistory {
     
     @Getter
     @Setter
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "quizHistory")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quizHistory")
     private List<QuizPlayer> players = new ArrayList<>();
     
     public static final String TABLE_NAME = "quiz_history";
