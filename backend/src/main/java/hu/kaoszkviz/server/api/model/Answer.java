@@ -48,7 +48,7 @@ public class Answer {
     
     @Getter
     @Setter
-    @Column(columnDefinition = "nvarchar(50)", length = 50, name = "correct_answer", table = "correct_answer")
+    @Column(columnDefinition = "nvarchar(50)", length = 50, name = "correct_answer")
     private String correctAnswer;
 
     
