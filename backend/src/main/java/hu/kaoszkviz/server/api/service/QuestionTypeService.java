@@ -8,5 +8,5 @@ import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 public class QuestionTypeService {
     
     @Autowired
-    private QuesionTypeRepository quesionTypeRepository;
+    private QuestionTypeRepository questionTypeRepository;
 }

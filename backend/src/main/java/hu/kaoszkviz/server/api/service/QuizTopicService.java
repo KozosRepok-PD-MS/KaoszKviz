@@ -8,5 +8,5 @@ import hu.kaoszkviz.server.api.repository.QuizTopicRepository;
 public class QuizTopicService {
     
     @Autowired
-    private QuizTopicReposiroty quizTopicReposiroty;
+    private QuizTopicRepository quizTopicRepository;
 }
