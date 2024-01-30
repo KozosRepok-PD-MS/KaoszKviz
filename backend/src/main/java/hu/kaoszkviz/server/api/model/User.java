@@ -1,6 +1,9 @@
 
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
+import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,31 +34,37 @@ public class User {
     @Id
     @Setter
     @Getter
+    @JsonView(PublicJsonView.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
     @Setter
     @Getter
+    @JsonView(PublicJsonView.class)
     @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20, unique = true)
     private String username;
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @Column(nullable = false, unique = true)
     private String email;
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @Column(nullable = false)
     private String password;
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @Column(columnDefinition = "bit default 0")
     private boolean admin;
 
     @Getter
     @Setter
+    @JsonView(PublicJsonView.class)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name="profile_picture_file_name"),
@@ -65,6 +74,7 @@ public class User {
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
@@ -72,29 +82,33 @@ public class User {
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Quiz> quizs = new ArrayList<>();
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Media> medias = new ArrayList<>();
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "starter")
     private List<QuizHistory> histories = new ArrayList<>();
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
     private List<QuizPlayer> players = new ArrayList<>();
-    
     
     public static final String TABLE_NAME = "usr";
 }
