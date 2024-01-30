@@ -1,6 +1,9 @@
 
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
+import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,27 +34,32 @@ public class Quiz {
     @Id
     @Getter
     @Setter
+    @JsonView(PublicJsonView.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonView(PublicJsonView.class)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @Getter
     @Setter
+    @JsonView(PublicJsonView.class)
     @Column(columnDefinition = "nvarchar(30)", length = 30, nullable = false)
     private String title;
     
     @Getter
     @Setter
+    @JsonView(PublicJsonView.class)
     @Column(columnDefinition = "nvarchar(500)", length = 500)
     private String description;
     
     @Getter
     @Setter
+    @JsonView(PublicJsonView.class)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name="media_file_name"),
@@ -61,27 +69,32 @@ public class Quiz {
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @Column(name = "is_public", columnDefinition = "bit default 0")
     private boolean isPublic;
     
     @Getter
     @Setter
-    @Column(name = "short_accessible_name")
+    @JsonView(PublicJsonView.class)
+    @Column(name = "short_accessible_name", unique = true)
     private String shortAccessibleName;
     
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizHistory> quizs = new ArrayList<>();
     
     @Getter
     @Setter
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
+    @JsonView(PublicJsonView.class)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "quiz")
     private List<QuizTopic> topics = new ArrayList<>();
     
     @Getter
     @Setter
+    @JsonView(PrivateJsonView.class)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<Question> questions = new ArrayList<>();
     
