@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,5 +34,10 @@ public class UserController {
     @JsonView(PublicJsonView.class)
     public ResponseEntity<String> getUsers(@RequestBody(required = false) HashMap<String, String> requestBody) {
         return this.userService.getUsers(requestBody);
+    }
+    
+    @DeleteMapping()
+    public ResponseEntity<String> deleteUser(@RequestBody HashMap<String, String> requestBody) {
+        return this.userService.deleteById(requestBody);
     }
 }

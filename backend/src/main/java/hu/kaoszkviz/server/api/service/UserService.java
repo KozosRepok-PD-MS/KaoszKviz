@@ -9,8 +9,7 @@ import hu.kaoszkviz.server.api.tools.Converter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,24 +27,67 @@ public class UserService {
     }
     
     public ResponseEntity<String> getUsers(HashMap<String, String> requestBody) {
+        List<User> users = new ArrayList<>();
         
-        List<User> users = this.userRepository.findAll();
+        if (requestBody == null) {
+            users = this.userRepository.findAll();
+        } else {
+            String searchName = requestBody.get("searchName");
+            String idString = requestBody.get("userId");
+
+            if (null != idString && !idString.isBlank()) {
+                long id;
+
+                try {
+                    id = Long.parseLong(idString);
+                } catch(NumberFormatException ex) {
+                    return new ResponseEntity<>("NAN", HttpStatus.BAD_REQUEST);
+                }
+
+                Optional<User> user = this.userRepository.findById(id);
+
+                if (user.isPresent()) {
+                    users.add(user.get());
+                }
+
+            } else if (searchName != null && !searchName.isBlank()) {
+                users = getUsersByName(searchName);
+            }
+        }
+        
+        if (users.isEmpty()) {
+            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+        }
         
         try {
             return new ResponseEntity<>(Converter.ModelTableToJsonString(users), HttpStatus.OK);
         } catch (JsonProcessingException ex) {
-            Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("failed to get data", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
     public List<User> getUsersByName(String searchName) {
-        if (searchName == null || searchName.isBlank()) {
-            List<User> users = this.userRepository.searchByName(searchName);
-            
-            if (!users.isEmpty()) {
-                return users;
-            }
+        if (searchName != null && !searchName.isBlank()) {
+            return this.userRepository.searchByName(searchName);
         }
         return new ArrayList<>();
+    }
+    
+    public ResponseEntity<String> deleteById(HashMap<String, String> requestBody) {
+        try {
+            long id = Long.parseLong(requestBody.get("userId"));
+            return this.deleteById(id);
+        } catch(Exception ex) {
+            return new ResponseEntity<>("failed to delete", HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    public ResponseEntity<String> deleteById(long id) {
+        if (this.userRepository.findById(id).isPresent()) {
+            this.userRepository.deleteById(id);
+            return new ResponseEntity<>("ok", HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+        }
     }
 }
