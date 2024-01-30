@@ -21,7 +21,7 @@ public class TopicController {
     private TopicService topicService;
     
     @GetMapping(name = "")
-    public List<Topic> getTopics(@RequestBody HashMap<String, String> requestBody){
+    public List<Topic> getTopics(@RequestBody(required = false) HashMap<String, String> requestBody){
         return this.topicService.getTopics(requestBody.get("searchString"));
     }
     
@@ -31,7 +31,7 @@ public class TopicController {
     }
     
     @DeleteMapping("")
-    public void deleteById(@RequestBody HashMap<String, String> requestBody){
-        this.topicService.deleteById(Long.parseLong(requestBody.get("id")));
+    public ResponseEntity<String> deleteById(@RequestBody HashMap<String, String> requestBody){
+        return this.topicService.deleteById(requestBody.get("id"));
     }
 }

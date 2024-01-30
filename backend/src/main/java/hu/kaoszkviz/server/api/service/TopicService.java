@@ -22,12 +22,20 @@ public class TopicService {
         }
     }
     
+    public ResponseEntity<String> deleteById(String idString){
+        try {
+           return this.deleteById(Long.valueOf(idString));
+        } catch(NumberFormatException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     public ResponseEntity<String> deleteById(Long id){
-        this.topicRepository.deleteById(id);
-        if (this.topicRepository.findById(id).isEmpty()) {
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
-        } else{
+        if (this.topicRepository.findById(id).isPresent()) {
+            this.topicRepository.deleteById(id);
             return new ResponseEntity<>("ok", HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
         }
     }
     
