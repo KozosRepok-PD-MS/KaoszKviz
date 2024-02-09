@@ -1,5 +1,7 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -24,14 +26,16 @@ public class QuizTopic {
     @Id
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonView(PublicJsonView.class)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
     
     @Id
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonView(PublicJsonView.class)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
     
