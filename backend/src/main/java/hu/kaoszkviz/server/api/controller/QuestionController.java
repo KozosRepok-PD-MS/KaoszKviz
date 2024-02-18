@@ -4,7 +4,9 @@ import hu.kaoszkviz.server.api.service.QuestionService;
 import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,5 +21,15 @@ public class QuestionController {
     @PostMapping(name = "")
     public ResponseEntity<String> addQuestion(@RequestBody HashMap<String, String> requeqtBody){
         return this.questionService.addQuestion(requeqtBody);
+    }
+    
+    @DeleteMapping(name = "")
+    public ResponseEntity<String> deleteQuestion(@RequestBody HashMap<String, String> requestBody){
+        return this.questionService.deleteQuestion(Long.valueOf(requestBody.get("id")));
+    }
+    
+    @PutMapping(name = "")
+    public ResponseEntity<String> updateQuestion(@RequestBody HashMap<String, String> requestBody){
+        return this.questionService.updateQuestion(requestBody);
     }
 }
