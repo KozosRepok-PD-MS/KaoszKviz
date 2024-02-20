@@ -3,12 +3,15 @@ package hu.kaoszkviz.server.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
+import hu.kaoszkviz.server.api.model.PasswordResetToken;
 import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
+import hu.kaoszkviz.server.api.repository.PasswordResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.UserRepository;
 import hu.kaoszkviz.server.api.tools.Converter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +22,16 @@ import org.springframework.http.ResponseEntity;
 @Service
 public class UserService {
     
+    private static final int PASSWORD_RESET_TOKEN_EXPIRES_MINUTES = 15;
+    
     @Autowired
     private UserRepository userRepository;
     
     @Autowired
     private MediaRepository mediaRepository;
+    
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
     
     public ResponseEntity<String> addUser(User user) {
         if (this.userRepository.save(user) != null) {
@@ -117,6 +125,19 @@ public class UserService {
                 return new ResponseEntity<>("profilePicturOwner user not found", HttpStatus.NOT_FOUND);
             }
         } else{
+            return new ResponseEntity<>("user not found", HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    public ResponseEntity<String> generatePasswordResetToken(Long userId){
+        Optional<User> user = this.userRepository.findById(userId);
+        if (user.isPresent()) {
+            PasswordResetToken passwordResetToken = new PasswordResetToken();
+            passwordResetToken.setUser(user.get());
+            passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES));
+            this.passwordResetTokenRepository.save(passwordResetToken);
+            return new ResponseEntity<>("ok, minutes: " + UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>("user not found", HttpStatus.BAD_REQUEST);
         }
     }
