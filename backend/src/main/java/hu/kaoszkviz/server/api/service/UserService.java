@@ -1,7 +1,10 @@
 package hu.kaoszkviz.server.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import hu.kaoszkviz.server.api.model.Media;
+import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.User;
+import hu.kaoszkviz.server.api.repository.MediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.UserRepository;
@@ -18,6 +21,9 @@ public class UserService {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private MediaRepository mediaRepository;
     
     public ResponseEntity<String> addUser(User user) {
         if (this.userRepository.save(user) != null) {
@@ -88,6 +94,30 @@ public class UserService {
             return new ResponseEntity<>("ok", HttpStatus.OK);
         }else {
             return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    public ResponseEntity<String> updateUser(HashMap<String, String> datas){
+        if (this.userRepository.findById(Long.valueOf(datas.get("id"))).isPresent()) {
+            User updatedUser = this.userRepository.findById(Long.valueOf(datas.get("id"))).get();
+            updatedUser.setUsername(datas.get("username"));
+            updatedUser.setEmail(datas.get("email"));
+            updatedUser.setPassword(datas.get("password"));
+            Optional<User> profilePictureOwner = this.userRepository.findById(Long.valueOf(datas.get("profilePictureOwnerId")));
+            if (profilePictureOwner.isPresent()) {
+                MediaId  mediaId = new MediaId((User) profilePictureOwner.get(), datas.get("profilePictureName"));
+                Optional<Media> media = this.mediaRepository.findById(mediaId);
+                if (!media.isPresent()) {
+                    return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+                }
+                updatedUser.setProfilePicture(media.get());
+                this.userRepository.save(updatedUser);
+                return new ResponseEntity<>("ok", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("profilePicturOwner user not found", HttpStatus.NOT_FOUND);
+            }
+        } else{
+            return new ResponseEntity<>("user not found", HttpStatus.BAD_REQUEST);
         }
     }
 }
