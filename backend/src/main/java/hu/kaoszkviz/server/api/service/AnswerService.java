@@ -1,14 +1,19 @@
 package hu.kaoszkviz.server.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.model.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.AnswerRepository;
 import hu.kaoszkviz.server.api.repository.QuestionRepository;
+import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -71,6 +76,18 @@ public class AnswerService {
             return new ResponseEntity<>("ok", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    public ResponseEntity<String> getAnswers(long questionId) {
+        List<Answer> answers = this.answerRepository.serachByQuestionId(questionId);
+        
+        if (answers.isEmpty()) {return ErrorManager.notFound();}
+        
+        try {
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(answers), HttpStatus.OK);
+        } catch (JsonProcessingException ex) {
+            return ErrorManager.def(ex.getMessage());
         }
     }
 }

@@ -25,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
@@ -78,7 +79,7 @@ public class User {
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @CreationTimestamp
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
     

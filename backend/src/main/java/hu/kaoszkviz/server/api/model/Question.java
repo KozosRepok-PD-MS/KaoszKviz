@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
@@ -48,7 +49,7 @@ public class Question {
     
     @Getter
     @Setter
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
     

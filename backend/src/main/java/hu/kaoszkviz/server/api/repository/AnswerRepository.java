@@ -21,5 +21,6 @@ public interface AnswerRepository extends CrudRepository<Answer, AnswerId> {
     public Answer serachByQuestionIdAndOrdinalNumber(@Param("search_id") long searchId, @Param("ordinal_number") byte ordinalNumber);
     
     @Procedure("deleteAnswerByQuestionIdAndOrdinalNumber")
-    public void deleteByQuestionIdAndOrdinalNumber(@Param("question_id") long questionId, @Param("ordinal_number") byte ordinalNumber);
+    public void deleteByQuestionIdAndOrdinalNumber(@Param("question_id") long questionId, @Param("ordinal_number") byte ordinalNumber);  
+    
  }

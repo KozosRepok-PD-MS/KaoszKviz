@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
@@ -53,7 +54,7 @@ public class QuizHistory {
     
     @Getter
     @Setter
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @CreationTimestamp
     @Column(name = "starting_time", nullable = false)
     private LocalDateTime startingTime;
     
