@@ -1,13 +1,17 @@
 use kaoszkviz
 
-create function findAnswerByQuestionId
+GO
+
+create or alter function findAnswerByQuestionId
 (
 	@questionId bigint
 )
 returns table as
 	return select * from answer where question_id = @questionId
 
-create function findAnswerByQuestionIdAndOrdinalNumber
+GO
+
+create or alter function findAnswerByQuestionIdAndOrdinalNumber
 (
 	@questionId bigint,
     @ordinalNumber smallint
@@ -15,7 +19,9 @@ create function findAnswerByQuestionIdAndOrdinalNumber
 returns table as
 	return select * from answer where question_id = @questionId AND ordinal_number = @ordinalNumber;
 
-CREATE PROCEDURE deleteAnswerByQuestionIdAndOrdinalNumber
+GO
+
+create or alter PROCEDURE deleteAnswerByQuestionIdAndOrdinalNumber
     @questionId bigint,
     @ordinalNumber smallint
 AS

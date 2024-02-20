@@ -1,6 +1,8 @@
 use kaoszkviz
 
-create function findQuizTopicByQuizId
+GO
+
+create or alter function findQuizTopicByQuizId
 (
 	@quizId bigint
 )

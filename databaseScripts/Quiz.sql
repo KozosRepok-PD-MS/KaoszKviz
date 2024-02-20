@@ -1,6 +1,8 @@
 use kaoszkviz
 
-create function findQuizByOwnerId
+GO
+
+create or alter function findQuizByOwnerId
 (
 	@ownerId bigint
 )

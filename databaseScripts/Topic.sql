@@ -1,6 +1,8 @@
 use kaoszkviz
 
-create function findTopicByString
+GO
+
+create or alter function findTopicByString
 (
 	@searchString nvarchar(20)
 )
