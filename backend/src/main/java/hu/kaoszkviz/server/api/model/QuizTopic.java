@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Entity;
@@ -27,6 +28,7 @@ public class QuizTopic {
     @Getter
     @Setter
     @JsonView(PublicJsonView.class)
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
@@ -35,6 +37,7 @@ public class QuizTopic {
     @Getter
     @Setter
     @JsonView(PublicJsonView.class)
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
