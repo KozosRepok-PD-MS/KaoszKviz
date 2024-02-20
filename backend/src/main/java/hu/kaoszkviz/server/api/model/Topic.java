@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,6 +37,7 @@ public class Topic {
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "topic")
     private List<QuizTopic> quizTopics = new ArrayList<>();
     

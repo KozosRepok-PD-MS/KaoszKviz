@@ -1,6 +1,7 @@
 
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
@@ -83,18 +84,21 @@ public class Quiz {
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizHistory> quizs = new ArrayList<>();
     
     @Getter
     @Setter
     @JsonView(PublicJsonView.class)
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "quiz")
+    @JsonBackReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizTopic> topics = new ArrayList<>();
     
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<Question> questions = new ArrayList<>();
     
