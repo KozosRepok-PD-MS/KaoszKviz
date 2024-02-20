@@ -27,21 +27,21 @@ public class AnswerController {
     }
     
     @GetMapping
-    public ResponseEntity<String> getAnswersForQuiz(@RequestBody(required = false) HashMap<String, String> requeqtBody) {
-        String key = "quizId";
-        String quizIdStr = requeqtBody.get(key);
+    public ResponseEntity<String> getAnswersForQuestion(@RequestBody(required = false) HashMap<String, String> requeqtBody) {
+        String key = "questionId";
+        String questionIdStr = requeqtBody.get(key);
         
-        if (quizIdStr == null || quizIdStr.isBlank()) { return ErrorManager.notFound(key);}
+        if (questionIdStr == null || questionIdStr.isBlank()) { return ErrorManager.notFound(key);}
         
-        long quizId;
+        long questionId;
         
         try {
-            quizId = Long.parseLong(quizIdStr);
+            questionId = Long.parseLong(questionIdStr);
         } catch (NumberFormatException ex) {
             return ErrorManager.nan();
         }
         
-        return this.answerService.getAnswers(quizId);
+        return this.answerService.getAnswers(questionId);
         
     }
     

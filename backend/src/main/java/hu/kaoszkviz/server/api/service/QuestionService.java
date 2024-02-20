@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
@@ -14,6 +15,8 @@ import hu.kaoszkviz.server.api.repository.QuestionRepository;
 import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
+import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +43,19 @@ public class QuestionService {
     
     @Autowired
     private UserRepository userRepository;
+    
+    public ResponseEntity<String> getQuestionsByQuizId(Long quizId){
+        List<Question> questions = this.questionRepository.searchQuestionByQuizId(quizId);
+        
+        System.out.println(questions.isEmpty() ? "ja" : "nem");
+        if(questions.isEmpty()) {return ErrorManager.notFound();}
+
+        try {
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK);
+        } catch (JsonProcessingException ex) {
+            return ErrorManager.def(ex.getMessage());
+        }
+    }
     
     public ResponseEntity<String> addQuestion(HashMap<String, String> datas){
         Optional<Quiz> quiz = this.quizRepository.findById(Long.valueOf(datas.get("quizId")));
