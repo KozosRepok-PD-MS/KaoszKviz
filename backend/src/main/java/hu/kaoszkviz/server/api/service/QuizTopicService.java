@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.model.Quiz;
 import hu.kaoszkviz.server.api.model.QuizTopic;
+import hu.kaoszkviz.server.api.model.QuizTopicId;
 import hu.kaoszkviz.server.api.model.Topic;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,24 @@ public class QuizTopicService {
             return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
         } else{
             return new ResponseEntity<>("ok", HttpStatus.CREATED);
+        }
+    }
+    
+    public ResponseEntity<String> deleteQuizTopic(Long quizId, Long topicId){
+        Optional<Quiz> quiz = this.quizRepository.findById(quizId);
+        Optional<Topic> topic = this.topicRepository.findById(topicId);
+        if (!quiz.isPresent() ) {
+            return new ResponseEntity<>("quiz not found", HttpStatus.BAD_REQUEST);
+        } else if(!topic.isPresent()){
+            return new ResponseEntity<>("topic not found", HttpStatus.BAD_REQUEST);
+        } else{
+            QuizTopicId quizTopicId = new QuizTopicId(quiz.get(), topic.get());
+            if (this.quizTopicRepository.findById(quizTopicId).isPresent()) {
+                this.quizTopicRepository.deleteById(quizTopicId);
+                return new ResponseEntity<>("ok", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("quizTopic not found", HttpStatus.BAD_REQUEST);
+            }
         }
     }
 }
