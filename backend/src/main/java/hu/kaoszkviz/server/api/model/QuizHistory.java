@@ -1,5 +1,7 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,13 +39,15 @@ public class QuizHistory {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "starter_user_id", nullable = false)
     private User starter;
     
@@ -56,6 +60,7 @@ public class QuizHistory {
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quizHistory")
     private List<QuizPlayer> players = new ArrayList<>();
     

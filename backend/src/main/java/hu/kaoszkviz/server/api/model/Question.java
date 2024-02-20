@@ -1,6 +1,8 @@
 
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +14,7 @@ import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@Table(name = Question.TABLE_NAME)
+@Table(name = Question.TABLE_NAME, uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"quiz_id", "question"})
+})
 public class Question {
     @Id
     @Getter
@@ -36,7 +41,8 @@ public class Question {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
     
@@ -48,7 +54,8 @@ public class Question {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_type", nullable = false)
     private QuestionType questionType;
     
@@ -59,7 +66,8 @@ public class Question {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
         @JoinColumn(name="media_file_name"),
         @JoinColumn(name="media_owner_id")
@@ -74,6 +82,7 @@ public class Question {
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
     private List<Answer> answers = new ArrayList<>();
     

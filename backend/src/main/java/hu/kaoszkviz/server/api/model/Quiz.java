@@ -2,6 +2,7 @@
 package hu.kaoszkviz.server.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
@@ -42,6 +43,7 @@ public class Quiz {
     @Getter
     @Setter
     @JsonView(PublicJsonView.class)
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
@@ -61,7 +63,8 @@ public class Quiz {
     @Getter
     @Setter
     @JsonView(PublicJsonView.class)
-    @OneToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumns({
         @JoinColumn(name="media_file_name"),
         @JoinColumn(name="media_owner_id")

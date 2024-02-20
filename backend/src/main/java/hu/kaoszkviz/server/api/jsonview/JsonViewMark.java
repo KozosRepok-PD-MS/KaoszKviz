@@ -2,6 +2,6 @@
 package hu.kaoszkviz.server.api.jsonview;
 
 
-public interface JsonView {
+public interface JsonViewMark {
     
 }

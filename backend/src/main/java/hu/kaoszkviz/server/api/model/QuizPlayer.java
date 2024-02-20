@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,13 +32,15 @@ public class QuizPlayer {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_history_id", nullable = false)
     private QuizHistory quizHistory;
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id")
     private User player;
     
@@ -48,7 +51,8 @@ public class QuizPlayer {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
         @JoinColumn(name="media_file_name"),
         @JoinColumn(name="media_owner_id")

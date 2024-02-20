@@ -2,8 +2,10 @@ package hu.kaoszkviz.server.api.service;
 
 import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.model.Media;
+import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.Question;
 import hu.kaoszkviz.server.api.model.Quiz;
+import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.AnswerRepository;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.QuestionRepository;
 import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
+import hu.kaoszkviz.server.api.repository.UserRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +38,9 @@ public class QuestionService {
     @Autowired
     private AnswerRepository answerRepository;
     
+    @Autowired
+    private UserRepository userRepository;
+    
     public ResponseEntity<String> addQuestion(HashMap<String, String> datas){
         Optional<Quiz> quiz = this.quizRepository.findById(Long.valueOf(datas.get("quizId")));
         if (!quiz.isPresent()) {
@@ -44,14 +50,24 @@ public class QuestionService {
             Question question = new Question();
             question.setQuiz(quiz.get());
             question.setQuestion(datas.get("question"));
-            Media media = this.mediaRepository.searchMediaByOwnerIdAndFileName(Long.parseLong(datas.get("mediaContentOwner")), datas.get("mediaContentName"));
-            if (media == null) {
-                return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+            Optional user = this.userRepository.findById(Long.valueOf(datas.get("mediaContentOwner")));
+            
+            if (user.isPresent()) {
+                MediaId  mediaId = new MediaId((User) user.get(), datas.get("mediaContentName"));
+                Optional<Media> media = this.mediaRepository.findById(mediaId);
+                
+                if (!media.isPresent()) {
+                    return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+                }
+                question.setMediaContent(media.get());
+                question.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
+                question.setQuestionType(this.questionTypeRepository.findById(datas.get("questionType")).get());
+                return this.addQuestion(question);
+            } else {
+                return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
             }
-            question.setMediaContent(media);
-            question.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
-            question.setQuestionType(this.questionTypeRepository.findById(datas.get("questionType")).get());
-            return this.addQuestion(question);
+            
+            
         } catch(Exception ex){
             return new ResponseEntity<>("%s".formatted(ex), HttpStatus.BAD_REQUEST);
         }
@@ -88,14 +104,21 @@ public class QuestionService {
         if (this.questionRepository.findById(Long.valueOf(datas.get("id"))).isPresent()) {
             Question updatedQuestion = this.questionRepository.findById(Long.valueOf(datas.get("id"))).get();
             updatedQuestion.setQuestion(datas.get("question"));
-            Media media = this.mediaRepository.searchMediaByOwnerIdAndFileName(Long.parseLong(datas.get("mediaContentOwner")), datas.get("mediaContentName"));
-            if (media == null) {
-                return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+            Optional user = this.userRepository.findById(Long.valueOf(datas.get("mediaContentOwner")));
+            
+            if (user.isPresent()) {
+                MediaId  mediaId = new MediaId((User) user.get(), datas.get("mediaContentName"));
+                Optional<Media> media = this.mediaRepository.findById(mediaId);
+                if (!media.isPresent()) {
+                    return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+                }
+                updatedQuestion.setMediaContent(media.get());
+                updatedQuestion.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
+                this.questionRepository.save(updatedQuestion);
+                return new ResponseEntity<>("ok", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
             }
-            updatedQuestion.setMediaContent(media);
-            updatedQuestion.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
-            this.questionRepository.save(updatedQuestion);
-            return new ResponseEntity<>("ok", HttpStatus.OK);
         } else{
             return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
         }

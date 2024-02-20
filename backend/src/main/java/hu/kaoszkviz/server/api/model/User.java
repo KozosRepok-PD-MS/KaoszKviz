@@ -1,6 +1,8 @@
 
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
@@ -65,7 +67,8 @@ public class User {
     @Getter
     @Setter
     @JsonView(PublicJsonView.class)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
         @JoinColumn(name="profile_picture_file_name"),
         @JoinColumn(name="profile_picture_owner_id")
@@ -83,30 +86,35 @@ public class User {
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
     
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Quiz> quizs = new ArrayList<>();
     
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Media> medias = new ArrayList<>();
     
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "starter")
     private List<QuizHistory> histories = new ArrayList<>();
     
     @Getter
     @Setter
     @JsonView(PrivateJsonView.class)
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
     private List<QuizPlayer> players = new ArrayList<>();
     

@@ -8,9 +8,9 @@ public enum JsonViewEnum {
     PUBLIC_VIEW(new PublicJsonView() {
     });
     
-    public final JsonView viewClass;
+    public final JsonViewMark viewClass;
     
-    private JsonViewEnum(JsonView view) {
+    private JsonViewEnum(JsonViewMark view) {
         this.viewClass = view;
     }
 }
