@@ -45,10 +45,13 @@ public class QuestionService {
     private UserRepository userRepository;
     
     public ResponseEntity<String> getQuestionsByQuizId(Long quizId){
+        if(!this.quizRepository.findById(quizId).isPresent()){
+            return ErrorManager.notFound("quiz");
+        }
+        
         List<Question> questions = this.questionRepository.searchQuestionByQuizId(quizId);
         
-        System.out.println(questions.isEmpty() ? "ja" : "nem");
-        if(questions.isEmpty()) {return ErrorManager.notFound();}
+        if(questions.isEmpty()) {return ErrorManager.notFound("questions");}
 
         try {
             return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK);
