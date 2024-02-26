@@ -1,0 +1,34 @@
+version: '3.8'
+
+name: kaoszkviz
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=vEU5cmyD4C2HPbG8FjNzTR
+    ports:
+      - "1433:1433"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+#    restart: unless-stopped
+    ports:
+      - "5556:5556"
+    volumes:
+      - ./backend:/var/backend
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=development
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./frontend:/var/frontend
+
