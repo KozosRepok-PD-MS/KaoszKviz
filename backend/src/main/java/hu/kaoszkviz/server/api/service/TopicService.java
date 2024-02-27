@@ -4,6 +4,7 @@ import hu.kaoszkviz.server.api.model.Topic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.TopicRepository;
+import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,24 +27,24 @@ public class TopicService {
         try {
            return this.deleteById(Long.valueOf(idString));
         } catch(NumberFormatException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return ErrorManager.def(ex.getLocalizedMessage());
         }
     }
     
     public ResponseEntity<String> deleteById(Long id){
         if (this.topicRepository.findById(id).isPresent()) {
             this.topicRepository.deleteById(id);
-            return new ResponseEntity<>("ok", HttpStatus.OK);
+            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
         }else {
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("topic");
         }
     }
     
     public ResponseEntity<String> addTopic(Topic topic) {
         if (this.topicRepository.save(topic) == null) {
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST); //ErrorManager
         } else{
-            return new ResponseEntity<>("ok", HttpStatus.CREATED);
+            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
         }
     }
 }

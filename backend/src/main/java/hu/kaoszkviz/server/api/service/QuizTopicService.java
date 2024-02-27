@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.QuizTopicRepository;
 import hu.kaoszkviz.server.api.repository.TopicRepository;
 import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,12 +38,12 @@ public class QuizTopicService {
             Long longId = stringId == null ? null : Long.valueOf(stringId);
             quizTopics = this.getQuizTopics(longId);
         } catch(NumberFormatException ex){
-            return new ResponseEntity<>("NAN", HttpStatus.BAD_REQUEST);
+            return ErrorManager.nan();
         }
         try{
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
         } catch (JsonProcessingException ex){
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+            return ErrorManager.def(ex.getLocalizedMessage());
         }
     }
     
@@ -54,7 +55,7 @@ public class QuizTopicService {
         Optional<Quiz> quiz = this.quizRepository.findById(Long.valueOf(datas.get("quizId")));
         Optional<Topic> topic = this.topicRepository.findById(Long.valueOf(datas.get("topicId")));
         if (!quiz.isPresent() || !topic.isPresent()) {
-            return new ResponseEntity<>("failed to find quiz or topic", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("quiz or topic");
         }
         try{
             QuizTopic quizTopic = new QuizTopic();
@@ -63,15 +64,15 @@ public class QuizTopicService {
             quizTopic.setTopic(topic.get());
             return this.addQuizTopic(quizTopic);
         } catch (Exception ex){
-            return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
         }
     }
     
     public ResponseEntity<String> addQuizTopic(QuizTopic quizTopic){
         if (this.quizTopicRepository.save(quizTopic) == null) {
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST); //ErrorManager
         } else{
-            return new ResponseEntity<>("ok", HttpStatus.CREATED);
+            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
         }
     }
     
@@ -79,16 +80,16 @@ public class QuizTopicService {
         Optional<Quiz> quiz = this.quizRepository.findById(quizId);
         Optional<Topic> topic = this.topicRepository.findById(topicId);
         if (!quiz.isPresent() ) {
-            return new ResponseEntity<>("quiz not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("quiz");
         } else if(!topic.isPresent()){
-            return new ResponseEntity<>("topic not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("topic");
         } else{
             QuizTopicId quizTopicId = new QuizTopicId(quiz.get(), topic.get());
             if (this.quizTopicRepository.findById(quizTopicId).isPresent()) {
                 this.quizTopicRepository.deleteById(quizTopicId);
-                return new ResponseEntity<>("ok", HttpStatus.OK);
+                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
             }else{
-                return new ResponseEntity<>("quizTopic not found", HttpStatus.BAD_REQUEST);
+                return ErrorManager.notFound("quizTopic");
             }
         }
     }

@@ -54,16 +54,16 @@ public class QuestionService {
         if(questions.isEmpty()) {return ErrorManager.notFound("questions");}
 
         try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK); //ErrorManager
         } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getMessage());
+            return ErrorManager.def(ex.getLocalizedMessage());
         }
     }
     
     public ResponseEntity<String> addQuestion(HashMap<String, String> datas){
         Optional<Quiz> quiz = this.quizRepository.findById(Long.valueOf(datas.get("quizId")));
         if (!quiz.isPresent()) {
-            return new ResponseEntity<>("failed to find quiz", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("quiz");
         }
         try{
             Question question = new Question();
@@ -76,28 +76,28 @@ public class QuestionService {
                 Optional<Media> media = this.mediaRepository.findById(mediaId);
                 
                 if (!media.isPresent()) {
-                    return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+                    return ErrorManager.notFound("media");
                 }
                 question.setMediaContent(media.get());
                 question.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
                 question.setQuestionType(this.questionTypeRepository.findById(datas.get("questionType")).get());
                 return this.addQuestion(question);
             } else {
-                return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+                return ErrorManager.notFound("user");
             }
             
             
         } catch(Exception ex){
-            return new ResponseEntity<>("%s".formatted(ex), HttpStatus.BAD_REQUEST);
+            return ErrorManager.def(ex.getLocalizedMessage());
         }
     }
     
     private ResponseEntity<String> addQuestion(Question question){
         if (this.questionRepository.save(question) == null) {
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST); //ErrorManager
         } else{
             this.questionRepository.save(question);
-            return new ResponseEntity<>("ok", HttpStatus.CREATED);
+            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
         }
     }
     
@@ -105,17 +105,17 @@ public class QuestionService {
         if (this.questionRepository.findById(id).isPresent()) {
             if (this.questionRepository.findById(id).get().getAnswers().isEmpty()) {
                 this.questionRepository.deleteById(id);
-                return new ResponseEntity<>("ok", HttpStatus.OK);
+                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
             }else{
                 List<Answer> answers = this.questionRepository.findById(id).get().getAnswers();
                 for (Answer answer : answers) {
                     this.answerRepository.deleteByQuestionIdAndOrdinalNumber(answer.getQuestion().getId(), answer.getOrdinalNumber());
                 }
                 this.questionRepository.deleteById(id);
-                return new ResponseEntity<>("ok, deleted answers", HttpStatus.OK);
+                return new ResponseEntity<>("ok, deleted answers", HttpStatus.OK); //ErrorManager
             }
         } else {
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("question");
         }
     }
     
@@ -129,17 +129,17 @@ public class QuestionService {
                 MediaId  mediaId = new MediaId((User) user.get(), datas.get("mediaContentName"));
                 Optional<Media> media = this.mediaRepository.findById(mediaId);
                 if (!media.isPresent()) {
-                    return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+                    return ErrorManager.notFound("media");
                 }
                 updatedQuestion.setMediaContent(media.get());
                 updatedQuestion.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
                 this.questionRepository.save(updatedQuestion);
-                return new ResponseEntity<>("ok", HttpStatus.OK);
+                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
             } else {
-                return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+                return ErrorManager.notFound("user");
             }
         } else{
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("question");
         }
     }
 }

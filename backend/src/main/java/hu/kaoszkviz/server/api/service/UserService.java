@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.UserRepository;
 import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,9 +36,9 @@ public class UserService {
     
     public ResponseEntity<String> addUser(User user) {
         if (this.userRepository.save(user) != null) {
-            return new ResponseEntity<>("ok", HttpStatus.CREATED);
+            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
         }
-        return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
     }
     
     public ResponseEntity<String> getUsers(HashMap<String, String> requestBody) {
@@ -55,7 +56,7 @@ public class UserService {
                 try {
                     id = Long.parseLong(idString);
                 } catch(NumberFormatException ex) {
-                    return new ResponseEntity<>("NAN", HttpStatus.BAD_REQUEST);
+                    return ErrorManager.nan();
                 }
 
                 Optional<User> user = this.userRepository.findById(id);
@@ -70,13 +71,13 @@ public class UserService {
         }
         
         if (users.isEmpty()) {
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("users");
         }
         
         try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(users), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(users), HttpStatus.OK); //ErrorManager
         } catch (JsonProcessingException ex) {
-            return new ResponseEntity<>("failed to get data", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("failed to get data", HttpStatus.INTERNAL_SERVER_ERROR); //ErrorManager
         }
     }
     
@@ -92,16 +93,16 @@ public class UserService {
             long id = Long.parseLong(requestBody.get("userId"));
             return this.deleteById(id);
         } catch(Exception ex) {
-            return new ResponseEntity<>("failed to delete", HttpStatus.BAD_REQUEST);
+            return ErrorManager.def(ex.getLocalizedMessage());
         }
     }
     
     public ResponseEntity<String> deleteById(long id) {
         if (this.userRepository.findById(id).isPresent()) {
             this.userRepository.deleteById(id);
-            return new ResponseEntity<>("ok", HttpStatus.OK);
+            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
         }else {
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("user");
         }
     }
     
@@ -116,16 +117,16 @@ public class UserService {
                 MediaId  mediaId = new MediaId((User) profilePictureOwner.get(), datas.get("profilePictureName"));
                 Optional<Media> media = this.mediaRepository.findById(mediaId);
                 if (!media.isPresent()) {
-                    return new ResponseEntity<>("failed to find media", HttpStatus.BAD_REQUEST);
+                    return ErrorManager.notFound("media");
                 }
                 updatedUser.setProfilePicture(media.get());
                 this.userRepository.save(updatedUser);
-                return new ResponseEntity<>("ok", HttpStatus.OK);
+                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
             } else {
-                return new ResponseEntity<>("profilePicturOwner user not found", HttpStatus.NOT_FOUND);
+                return ErrorManager.notFound("profilePicturOwner user");
             }
         } else{
-            return new ResponseEntity<>("user not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("user");
         }
     }
     
@@ -136,9 +137,9 @@ public class UserService {
             passwordResetToken.setUser(user.get());
             passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES));
             this.passwordResetTokenRepository.save(passwordResetToken);
-            return new ResponseEntity<>("ok, minutes: " + UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES, HttpStatus.OK);
+            return new ResponseEntity<>("ok, minutes: " + UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES, HttpStatus.OK); //ErrorManager
         } else {
-            return new ResponseEntity<>("user not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("user");
         }
     }
 }

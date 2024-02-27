@@ -12,8 +12,6 @@ import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -29,7 +27,7 @@ public class AnswerService {
     public ResponseEntity<String> addAnswer(HashMap<String, String> datas){
         Optional<Question> question = this.questionRepository.findById(Long.valueOf(datas.get("questionId")));
         if(!question.isPresent()){
-            return new ResponseEntity<>("failed to find question", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("question");
         }
         try{
             List<Answer> answers = this.answerRepository.serachByQuestionId(question.get().getId());
@@ -44,25 +42,25 @@ public class AnswerService {
             return this.addAnswer(answer);
             
         } catch(Exception ex){
-            return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
         }
     }
 
     private ResponseEntity<String> addAnswer(Answer answer) {
         if(this.answerRepository.save(answer) == null){
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST); //ErrorManager
         } else{
             this.answerRepository.save(answer);
-            return new ResponseEntity<>("ok", HttpStatus.CREATED);
+            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
         }
     }
     
     public ResponseEntity<String> deleteByQuestionIdAndOrdinalNumber(Long questionId, byte ordinalNumber){
         if (this.answerRepository.serachByQuestionIdAndOrdinalNumber(questionId, ordinalNumber) != null) {
             this.answerRepository.deleteByQuestionIdAndOrdinalNumber(questionId, ordinalNumber);
-            return new ResponseEntity<>("ok", HttpStatus.OK);
+            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
         } else{
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("question");
         }
     }
     
@@ -73,9 +71,9 @@ public class AnswerService {
             updatedAnswer.setCorrect(Boolean.parseBoolean(datas.get("correct")));
             updatedAnswer.setCorrectAnswer(datas.get("correctAnswer"));
             this.answerRepository.save(updatedAnswer);
-            return new ResponseEntity<>("ok", HttpStatus.OK);
+            return new ResponseEntity<>("ok", HttpStatus.OK); // ErrorManager
         } else {
-            return new ResponseEntity<>("not found", HttpStatus.BAD_REQUEST);
+            return ErrorManager.notFound("question");
         }
     }
     
@@ -87,7 +85,7 @@ public class AnswerService {
         try {
             return new ResponseEntity<>(Converter.ModelTableToJsonString(answers), HttpStatus.OK);
         } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getMessage());
+            return ErrorManager.def(ex.getLocalizedMessage());
         }
     }
 }
