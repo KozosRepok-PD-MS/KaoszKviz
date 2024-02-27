@@ -1,12 +1,8 @@
-use kaoszkviz
-
-GO
 
 create or alter function findTopicByString
 (
-	@searchString nvarchar(20)
+    @searchString nvarchar(20)
 )
 returns table
 as 
-	return select * from topic where title like '%' + @searchString + '%'
-
+    return select * from topic where title like '%' + @searchString + '%'

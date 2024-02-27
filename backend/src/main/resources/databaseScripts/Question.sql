@@ -1,10 +1,7 @@
-use kaoszkviz
-
-GO
 
 create or alter function findQuestionByQuizId
 (
-	@quizId bigint
+    @quizId bigint
 )
 returns table as
-	return select * from question where quiz_id = @quizId
+    return select * from question where quiz_id = @quizId

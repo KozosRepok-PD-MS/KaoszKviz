@@ -1,10 +1,7 @@
-use kaoszkviz
-
-GO
 
 create or alter function findQuizByOwnerId
 (
-	@ownerId bigint
+    @ownerId bigint
 )
 returns table as
-	return select * from quiz where owner_id = @ownerId
+    return select * from quiz where owner_id = @ownerId

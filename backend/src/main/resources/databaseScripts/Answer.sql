@@ -1,6 +1,3 @@
-use kaoszkviz
-
-GO
 
 create or alter function findAnswerByQuestionId
 (
