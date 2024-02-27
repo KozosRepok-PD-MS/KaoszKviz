@@ -11,24 +11,27 @@ services:
       - "1433:1433"
 
   backend:
+    depends_on:
+      - database
     build:
       context: ./backend
       dockerfile: Dockerfile
-#    restart: unless-stopped
+      args:
+        - "-no-cache"
+    restart: unless-stopped
     ports:
       - "5556:5556"
     volumes:
       - ./backend:/var/backend
 #    environment:
 #      - SPRING_PROFILES_ACTIVE=development
-
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "5555:5555"
+      - "3000:3000"
     volumes:
       - ./frontend:/var/frontend
 

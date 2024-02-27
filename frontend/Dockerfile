@@ -13,6 +13,12 @@ RUN apt install nodejs -y && \
 
 WORKDIR /var/frontend
 
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
 CMD apachectl -D FOREGROUND
 
 CMD ["npm", "run", "start"]
