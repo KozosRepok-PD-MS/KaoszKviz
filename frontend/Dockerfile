@@ -1,5 +1,7 @@
 FROM debian:bookworm-slim
 
+WORKDIR /var/frontend
+
 RUN apt update && \
     apt install curl -y && \
     apt install sudo && \
@@ -8,10 +10,7 @@ RUN apt update && \
 RUN curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
     apt update
 
-RUN apt install nodejs -y && \
-    mkdir /var/frontend
-
-WORKDIR /var/frontend
+RUN apt install nodejs -y
 
 COPY package*.json ./
 
