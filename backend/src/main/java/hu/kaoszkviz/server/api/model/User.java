@@ -119,5 +119,12 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
     private List<QuizPlayer> players = new ArrayList<>();
     
+    @Getter
+    @Setter
+    @JsonView(PrivateJsonView.class)
+    @JsonBackReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<APIKey> apiKeys = new ArrayList<>();
+    
     public static final String TABLE_NAME = "usr";
 }

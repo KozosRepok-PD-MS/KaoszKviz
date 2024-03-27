@@ -2,12 +2,15 @@
 package hu.kaoszkviz.server.api.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
+import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -22,38 +25,40 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @RequiredArgsConstructor
 @EqualsAndHashCode
-@IdClass(PasswordResetTokenId.class)
-@Table(name = PasswordResetToken.TABLE_NAME)
-public class PasswordResetToken {
+@Table(name = APIKey.TABLE_NAME)
+public class APIKey {
+    
     @Id
     @Getter
     @Setter
-    @NonNull
+    @Column(name = "client_secret", unique = true, nullable = false)
+    private UUID key;
+    
+    @Getter
+    @Setter
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
+    @NonNull
     private User user;
     
-    @Id
+    
     @Getter
-    @Column(nullable = false, updatable = false, name = "expires_at")
+    @Setter
+    @Column(name = "expires_at", nullable = false, updatable = false)
     private LocalDateTime expiresAt;
     
-    @Getter
-    @Column(name="reset_key") //, columnDefinition = "BINARY(16)"
-    private UUID key;
-    
     @PrePersist
-    public void setGeneratedDatas() {
+    public void expireTimeSave() {
+        this.expiresAt = LocalDateTime.now().plus(ConfigDatas.API_KEY_VALIDITY_DURATION, ConfigDatas.API_KEY_VALIDITY_TYPE);
         this.key = UUID.randomUUID();
-        this.expiresAt = LocalDateTime.now().plus(ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_DURATION, ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_TYPE);
     }
     
-    public static final String TABLE_NAME = "password_reset_token";
+    
+    public static final String TABLE_NAME = "api_key";
 }

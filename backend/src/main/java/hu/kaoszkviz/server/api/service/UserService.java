@@ -1,10 +1,13 @@
 package hu.kaoszkviz.server.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import hu.kaoszkviz.server.api.config.ConfigDatas;
+import hu.kaoszkviz.server.api.model.APIKey;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.PasswordResetToken;
 import hu.kaoszkviz.server.api.model.User;
+import hu.kaoszkviz.server.api.repository.APIKeyRepository;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
 import hu.kaoszkviz.server.api.repository.PasswordResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +15,18 @@ import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.UserRepository;
 import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService {
-    
-    private static final int PASSWORD_RESET_TOKEN_EXPIRES_MINUTES = 15;
     
     @Autowired
     private UserRepository userRepository;
@@ -34,7 +37,14 @@ public class UserService {
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
     
+    @Autowired
+    private APIKeyRepository apiKeyRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
     public ResponseEntity<String> addUser(User user) {
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         if (this.userRepository.save(user) != null) {
             return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
         }
@@ -133,13 +143,36 @@ public class UserService {
     public ResponseEntity<String> generatePasswordResetToken(Long userId){
         Optional<User> user = this.userRepository.findById(userId);
         if (user.isPresent()) {
-            PasswordResetToken passwordResetToken = new PasswordResetToken();
-            passwordResetToken.setUser(user.get());
-            passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES));
+            PasswordResetToken passwordResetToken = new PasswordResetToken(user.get());
             this.passwordResetTokenRepository.save(passwordResetToken);
-            return new ResponseEntity<>("ok, minutes: " + UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES, HttpStatus.OK); //ErrorManager
+            return new ResponseEntity<>("ok, " + ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_TYPE + ": " + ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_DURATION, HttpStatus.OK); //ErrorManager
         } else {
             return ErrorManager.notFound("user");
         }
+    }
+    
+    public ResponseEntity<String> loginUser(String loginBase, String password) {
+        Optional<User> loggingUser = this.userRepository.searchByLoginBase(loginBase);
+        
+        if (loggingUser.isEmpty()) { return ErrorManager.notFound("user not found"); }
+        User user = loggingUser.get();
+        
+        if (!this.passwordEncoder.matches(password, user.getPassword())) { return ErrorManager.def("incorrect password"); }
+        
+        APIKey apiKey = new APIKey(user);
+        this.apiKeyRepository.save(apiKey);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString());
+        return new ResponseEntity<>("", headers, HttpStatus.OK);
+    }
+    
+    public ResponseEntity<String> logoutUser(String apiKey) {
+        Optional<APIKey> apiAuth = this.apiKeyRepository.findById(UUID.fromString(apiKey));
+        
+        if (apiAuth.isEmpty()) { return ErrorManager.notFound("apiKey"); }
+        
+        this.apiKeyRepository.delete(apiAuth.get());
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 }
