@@ -2,16 +2,18 @@
 package hu.kaoszkviz.server.api.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
+import hu.kaoszkviz.server.api.dto.UserDTO;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
-import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.service.UserService;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,44 +32,54 @@ public class UserController {
     @Autowired
     UserService userService;
     
-    @PostMapping(value = "")
-    public ResponseEntity<String> addUser(@RequestBody HashMap<String, String> requestBody) {
-        User user = new User();
-        if (requestBody.get("username") == null) {
-            return ErrorManager.notFound("username");
-        }
-        if(requestBody.get("email") == null){
-            return ErrorManager.notFound("email");
-        }
-        if(requestBody.get("password") == null){
-            return ErrorManager.notFound("password");
-        } 
-        user.setUsername(requestBody.get("username"));
-        user.setEmail(requestBody.get("email"));
-        user.setPassword(requestBody.get("password"));
-        
+    @PostMapping
+    public ResponseEntity<String> addUser(@RequestBody(required = false) UserDTO user) throws JsonProcessingException {
+        if (user == null) { return ErrorManager.notFound("User"); }
         return this.userService.addUser(user);
     }
     
     @PostMapping(value = "/resetpassword")
-    public ResponseEntity<String> generatePasswordResetToken(@RequestBody HashMap<String, String> requestBody){
-        return this.userService.generatePasswordResetToken(Long.valueOf(requestBody.get("userId")));
+    public ResponseEntity<String> resetPassword(@RequestHeader HttpHeaders headers, @RequestBody(required = false) HashMap<String, String> requestBody) {
+        if (headers.containsKey(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER)) {
+            UUID resetKey= UUID.fromString(headers.get(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER).get(0));
+            
+            String newPassword = requestBody.get("newPassword");
+            if (newPassword == null) { return ErrorManager.notFound("newPassword"); }
+            return this.userService.resetPassword(resetKey, newPassword);
+        }
+        
+        String userEmail = requestBody.get("email"); 
+        if (userEmail == null) { return ErrorManager.notFound("email"); }
+        return this.userService.generatePasswordResetToken(userEmail);
     }
     
-    @GetMapping(name = "", produces = "application/json")
+    @GetMapping(produces = "application/json")
     @JsonView(PublicJsonView.class)
     public ResponseEntity<String> getUsers(@RequestBody(required = false) HashMap<String, String> requestBody) {
-        return this.userService.getUsers(requestBody);
+        
+        if (requestBody == null || requestBody.isEmpty()) {
+            return this.userService.getUsers();
+        }
+        
+        if (requestBody.containsKey("userId")) {
+            long userId = Long.parseLong(requestBody.get("userId"));
+            
+            return this.userService.getUserById(userId);
+        } else if (requestBody.containsKey("searchName")) {
+            return this.userService.getUsersByName(requestBody.get("searchName"));
+        }
+        
+        return this.userService.getUsers();
     }
     
     @DeleteMapping
-    public ResponseEntity<String> deleteUser(@RequestBody HashMap<String, String> requestBody) {
-        return this.userService.deleteById(requestBody);
+    public ResponseEntity<String> deleteUser(@RequestBody long userId) {
+        return this.userService.deleteById(userId);
     }
     
-    @PutMapping(name = "")
-    public ResponseEntity<String> updateUser(@RequestBody HashMap<String, String> requestBody){
-        return this.userService.updateUser(requestBody);
+    @PutMapping
+    public ResponseEntity<String> updateUser(@RequestBody UserDTO userDto){
+        return this.userService.updateUser(userDto);
     }
     
     @PostMapping(value = "/login")
@@ -75,9 +87,10 @@ public class UserController {
         if (requestBody == null || requestBody.isEmpty()) { return ErrorManager.def(); }
         
         String loginBase = requestBody.get("loginBase");
-        String password = requestBody.get("password");
+        if (loginBase == null) { return ErrorManager.notFound("login"); }
         
-        if (loginBase == null || password == null) { return ErrorManager.def("login or password not found"); }
+        String password = requestBody.get("password");
+        if (password == null) { return ErrorManager.notFound("password"); }
         
         return this.userService.loginUser(loginBase, password);
     }

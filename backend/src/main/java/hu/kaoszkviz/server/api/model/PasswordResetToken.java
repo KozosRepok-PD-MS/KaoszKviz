@@ -24,9 +24,9 @@ import lombok.Setter;
 
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@RequiredArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
+//@RequiredArgsConstructor
 @EqualsAndHashCode
 @IdClass(PasswordResetTokenId.class)
 @Table(name = PasswordResetToken.TABLE_NAME)
@@ -34,7 +34,7 @@ public class PasswordResetToken {
     @Id
     @Getter
     @Setter
-    @NonNull
+    //@NonNull
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
@@ -49,10 +49,26 @@ public class PasswordResetToken {
     @Column(name="reset_key") //, columnDefinition = "BINARY(16)"
     private UUID key;
     
+    public PasswordResetToken() {
+        this(null, null, null);
+    }
+    
+    public PasswordResetToken(User user) {
+        this(user, LocalDateTime.now().plus(ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_DURATION, ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_TYPE), null);
+    
+    }
+
+    public PasswordResetToken(User user, LocalDateTime expiresAt, UUID key) {
+        this.user = user;
+        this.expiresAt = expiresAt;
+        this.key = key;
+    }
+    
+    
+    
     @PrePersist
     public void setGeneratedDatas() {
         this.key = UUID.randomUUID();
-        this.expiresAt = LocalDateTime.now().plus(ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_DURATION, ConfigDatas.PASSWORD_RESET_TOKEN_VALIDITY_TYPE);
     }
     
     public static final String TABLE_NAME = "password_reset_token";

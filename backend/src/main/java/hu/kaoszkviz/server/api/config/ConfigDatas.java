@@ -12,10 +12,12 @@ public class ConfigDatas {
     public static final HashMap<HttpMethod, String[]> NON_AUTHENTICATED_ENDPOINTS = new HashMap<>() {{
         put(HttpMethod.GET, new String[] {
             "/",
+            "/media",
         });
         put(HttpMethod.POST, new String[] {
             "/user",
             "/user/login",
+            "/user/resetpassword"
         });
     }};
     
@@ -28,7 +30,10 @@ public class ConfigDatas {
 
     public static final long PASSWORD_RESET_TOKEN_VALIDITY_DURATION = 15;
     
+    public static final String PASSWORD_RESET_TOKEN_HEADER = "RESET-TOKEN";
+    
     
     public static final String API_KEY_HEADER = "API-KEY";
+    
     
 }

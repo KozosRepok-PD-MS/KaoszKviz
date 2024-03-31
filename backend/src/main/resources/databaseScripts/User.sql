@@ -19,4 +19,12 @@ CREATE OR ALTER FUNCTION getUserByAPIKey(
     @apiKey uniqueidentifier
 )
 RETURNS TABLE AS
-    RETURN SELECT TOP 1 * FROM usr WHERE id = (SELECT user_id FROM api_key WHERE client_secret = @apiKey)
+    RETURN SELECT * FROM usr WHERE id = (SELECT user_id FROM api_key WHERE client_secret = @apiKey AND status = 'ACTIVE')
+
+GO
+
+CREATE OR ALTER FUNCTION findUserByEmail(
+    @email nvarchar(50)
+)
+RETURNS TABLE AS
+    RETURN SELECT * FROM usr WHERE email = @email

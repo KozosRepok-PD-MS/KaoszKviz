@@ -65,4 +65,41 @@ public class ErrorManager {
         return new ResponseEntity<>(str, HttpStatus.BAD_REQUEST);
     }
     
+    /**
+     * A {@code ResponseEntity} that presents the {@code Conflict} exception.
+     * 
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> conflict() {
+        return ErrorManager.conflict("");
+    }
+    /**
+     * A {@code ResponseEntity} that presents the {@code Conflict} exception with the given {@code String}.
+     * 
+     * @param str Message for the error code.
+     * 
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> conflict(String str) {
+        return new ResponseEntity<>("", HttpStatus.CONFLICT);
+    }
+    
+    /**
+     * A {@code ResponseEntity} that presents the {@code Unauthorized} exception.
+     * 
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> unauth() {
+        return ErrorManager.unauth("");
+    }
+    
+    /**
+     * A {@code ResponseEntity} that presents the {@code Unauthorized} exception with the given {@code String}.
+     * 
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> unauth(String msg) {
+        return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
+    }
+    
 }

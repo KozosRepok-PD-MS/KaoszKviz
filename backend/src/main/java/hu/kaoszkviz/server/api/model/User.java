@@ -8,6 +8,8 @@ import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,44 +31,37 @@ import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = User.TABLE_NAME)
 public class User {
+    public static enum Status {ACTIVE, DELETED};
+    
     @Id
-    @Setter
-    @Getter
     @JsonView(PublicJsonView.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @Setter
-    @Getter
     @JsonView(PublicJsonView.class)
     @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20, unique = true)
     private String username;
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @Column(nullable = false, unique = true)
     private String email;
     
     @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @Column(nullable = false)
     private String password;
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @Column(columnDefinition = "bit default 0")
     private boolean admin;
 
-    @Getter
-    @Setter
     @JsonView(PublicJsonView.class)
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER)
@@ -76,55 +71,47 @@ public class User {
     })
     private Media profilePicture;
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @CreationTimestamp
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
     
+    @JsonView(PrivateJsonView.class)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
     
-    @Getter
-    @Setter
+    
     @JsonView(PrivateJsonView.class)
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Quiz> quizs = new ArrayList<>();
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Media> medias = new ArrayList<>();
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "starter")
     private List<QuizHistory> histories = new ArrayList<>();
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
     private List<QuizPlayer> players = new ArrayList<>();
     
-    @Getter
-    @Setter
     @JsonView(PrivateJsonView.class)
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<APIKey> apiKeys = new ArrayList<>();
+    
     
     public static final String TABLE_NAME = "usr";
 }

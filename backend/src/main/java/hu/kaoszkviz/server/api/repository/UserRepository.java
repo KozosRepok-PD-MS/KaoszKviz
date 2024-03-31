@@ -15,6 +15,9 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     @Override
     public List<User> findAll();
+    
+    @Query(value = "SELECT * FROM usr WHERE status = :status", nativeQuery = true)
+    public List<User> findAllByStatus(User.Status status);
 
     @Query(value = "SELECT * FROM dbo.findUserByName(:search_name)", nativeQuery = true)
     public List<User> searchByName(@Param("search_name") String searchName);
@@ -24,5 +27,8 @@ public interface UserRepository extends CrudRepository<User, Long> {
     
     @Query(value = "SELECT * FROM getUserByAPIKey(:api_key)", nativeQuery = true)
     public Optional<User> getUserByAPIKey(@Param("api_key") String apiKey);
+    
+    @Query(value = "SELECT * FROM findUserByEmail(:email)", nativeQuery = true)
+    public Optional<User> getUserByEmail(@Param("email") String email);
     
 }

@@ -70,6 +70,10 @@ public class Media {
     @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
     private List<Question> questions = new ArrayList<>();
+    
+    public static Media mediaFromKeys(long id, String name) {
+        return null;
+    }
 
     
     public static final String TABLE_NAME = "media";
