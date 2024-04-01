@@ -1,11 +1,12 @@
 
-import React from "react";
+import React, { ChangeEventHandler } from "react";
 
 type Props = {
     name: string;
     label: string;
     type: "number" | "text" | "email" | "password";
     placeholder: string;
+    onChangeFn: ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function Input(props: Props){
@@ -15,7 +16,8 @@ export default function Input(props: Props){
             <input type={props.type}
                    id={props.name}
                    name={props.name}
-                   placeholder={props.placeholder}></input>
+                   placeholder={props.placeholder}
+                   onChange={props.onChangeFn}></input>
         </div>
     )
 }

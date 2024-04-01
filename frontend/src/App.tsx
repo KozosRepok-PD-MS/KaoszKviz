@@ -2,10 +2,10 @@
 import React from 'react';
 import './App.css';
 import Layout from "./Layout";
-import NoPage from "./Pages/NoPage";
-import Login from "./Pages/Login";
-import Register from "./Pages/Register";
-import Game from "./Pages/Game";
+import NoPage from "./pages/NoPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Game from "./pages/Game";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
