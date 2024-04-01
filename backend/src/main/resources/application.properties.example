@@ -5,10 +5,13 @@ spring.datasource.username=
 spring.datasource.password=
 
 #validate élesben | create-drop | create
-spring.jpa.hibernate.ddl-auto = create-drop
+spring.jpa.hibernate.ddl-auto = validate
 spring.jpa.properties.hibernate.show_sql=true
 # nem szükséges spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.use_sql_comments=true
 
 debug=false
+
+# Sql scriptek futtatása -> true | false
+application.generate.sqlscript = true

@@ -1,29 +1,34 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import hu.kaoszkviz.server.api.config.ConfigDatas;
+import hu.kaoszkviz.server.api.dto.UserDTO;
+import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
+import hu.kaoszkviz.server.api.model.APIKey;
 import hu.kaoszkviz.server.api.model.Media;
-import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.PasswordResetToken;
+import hu.kaoszkviz.server.api.model.PasswordResetTokenId;
 import hu.kaoszkviz.server.api.model.User;
+import hu.kaoszkviz.server.api.repository.APIKeyRepository;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
 import hu.kaoszkviz.server.api.repository.PasswordResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.UserRepository;
+import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService {
-    
-    private static final int PASSWORD_RESET_TOKEN_EXPIRES_MINUTES = 15;
     
     @Autowired
     private UserRepository userRepository;
@@ -34,112 +39,180 @@ public class UserService {
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
     
-    public ResponseEntity<String> addUser(User user) {
-        if (this.userRepository.save(user) != null) {
-            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
+    @Autowired
+    private APIKeyRepository apiKeyRepository;
+    
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    CustomModelMapper customModelMapper;
+    
+    public ResponseEntity<String> addUser(UserDTO user) {
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        
+        Optional<User> userToSave = (Optional<User>) this.customModelMapper.map(user);
+        
+        if (userToSave.isPresent()) {
+            User userSave = userToSave.get();
+
+            userSave.setStatus(User.Status.ACTIVE);
+            if (this.userRepository.save(userToSave.get()) != null) {
+                return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
+            }
         }
         return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
     }
     
-    public ResponseEntity<String> getUsers(HashMap<String, String> requestBody) {
-        List<User> users = new ArrayList<>();
+    public ResponseEntity<String> getUserById(long id) {
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth().get();
+        Optional<User> user = this.userRepository.findById(id);
         
-        if (requestBody == null) {
-            users = this.userRepository.findAll();
-        } else {
-            String searchName = requestBody.get("searchName");
-            String idString = requestBody.get("userId");
-
-            if (null != idString && !idString.isBlank()) {
-                long id;
-
-                try {
-                    id = Long.parseLong(idString);
-                } catch(NumberFormatException ex) {
-                    return ErrorManager.nan();
-                }
-
-                Optional<User> user = this.userRepository.findById(id);
-
-                if (user.isPresent()) {
-                    users.add(user.get());
-                }
-
-            } else if (searchName != null && !searchName.isBlank()) {
-                users = getUsersByName(searchName);
-            }
+        if (user.isEmpty() || (!auth.getPrincipal().isAdmin() && user.get().getStatus() == User.Status.DELETED)) {
+            return ErrorManager.notFound("user not found id: " + id);
         }
         
+        try {
+            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.map(user.get()).get(), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
+        } catch (Exception ex) {
+            return ErrorManager.def("failed to get data");
+        }
+    }
+    
+    public ResponseEntity<String> getUsersByName(String searchName) {
+        return this.processUserList(this.userRepository.searchByName(searchName));
+    }
+   
+    public ResponseEntity<String> getUsers() {
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth().get();
+        
+        List<User> users = auth.getPrincipal().isAdmin() ? this.userRepository.findAll() : this.userRepository.findAllByStatus(User.Status.ACTIVE);
+        
+        return this.processUserList(users);
+    }
+    
+    private ResponseEntity<String> processUserList(List<User> users) {
         if (users.isEmpty()) {
-            return ErrorManager.notFound("users");
+            return ErrorManager.notFound();
         }
-        
+
         try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(users), HttpStatus.OK); //ErrorManager
-        } catch (JsonProcessingException ex) {
-            return new ResponseEntity<>("failed to get data", HttpStatus.INTERNAL_SERVER_ERROR); //ErrorManager
-        }
-    }
-    
-    public List<User> getUsersByName(String searchName) {
-        if (searchName != null && !searchName.isBlank()) {
-            return this.userRepository.searchByName(searchName);
-        }
-        return new ArrayList<>();
-    }
-    
-    public ResponseEntity<String> deleteById(HashMap<String, String> requestBody) {
-        try {
-            long id = Long.parseLong(requestBody.get("userId"));
-            return this.deleteById(id);
-        } catch(Exception ex) {
-            return ErrorManager.def(ex.getLocalizedMessage());
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.map(users, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
+        } catch (Exception ex) {
+            return ErrorManager.def("failed to get data");
         }
     }
     
     public ResponseEntity<String> deleteById(long id) {
-        if (this.userRepository.findById(id).isPresent()) {
-            this.userRepository.deleteById(id);
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth().get();
+        
+        if (!auth.getPrincipal().isAdmin() && auth.getPrincipal().getId() != id) { return ErrorManager.unauth(); }
+        
+        Optional<User> userToDelete = this.userRepository.findById(id);
+        
+        if (userToDelete.isPresent()) {
+            User user = userToDelete.get();
+            
+            user.setStatus(User.Status.DELETED);
+            
+            this.userRepository.save(user);
             return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
         }else {
             return ErrorManager.notFound("user");
         }
     }
+
     
-    public ResponseEntity<String> updateUser(HashMap<String, String> datas){
-        if (this.userRepository.findById(Long.valueOf(datas.get("id"))).isPresent()) {
-            User updatedUser = this.userRepository.findById(Long.valueOf(datas.get("id"))).get();
-            updatedUser.setUsername(datas.get("username"));
-            updatedUser.setEmail(datas.get("email"));
-            updatedUser.setPassword(datas.get("password"));
-            Optional<User> profilePictureOwner = this.userRepository.findById(Long.valueOf(datas.get("profilePictureOwnerId")));
-            if (profilePictureOwner.isPresent()) {
-                MediaId  mediaId = new MediaId((User) profilePictureOwner.get(), datas.get("profilePictureName"));
-                Optional<Media> media = this.mediaRepository.findById(mediaId);
-                if (!media.isPresent()) {
-                    return ErrorManager.notFound("media");
-                }
-                updatedUser.setProfilePicture(media.get());
-                this.userRepository.save(updatedUser);
-                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
-            } else {
-                return ErrorManager.notFound("profilePicturOwner user");
+    public ResponseEntity<String> updateUser(UserDTO userDto) {
+        User authUser = ApiKeyAuthentication.getAuth().get().getPrincipal();
+        
+        if (userDto.getId() <= 0) {
+            userDto.setId(authUser.getId());
+        }
+        
+        if (!authUser.isAdmin() && authUser.getId() != userDto.getId()) { return ErrorManager.unauth(); }
+        
+        Optional<User> updatedUser = this.userRepository.findById(userDto.getId());
+        
+        if (updatedUser.isPresent()) {
+            User user = (User) updatedUser.get();
+            
+            if (authUser.isAdmin()) {
+                user.setAdmin(userDto.getAdmin() != null ? userDto.getAdmin().booleanValue() : user.isAdmin());
             }
-        } else{
+            
+            String updatedEmail = userDto.getEmail();
+            user.setEmail((updatedEmail == null || updatedEmail.isBlank()) ? user.getEmail() : userDto.getEmail());
+            
+            String updatedUsername = userDto.getUsername();
+            user.setUsername((updatedUsername == null || updatedUsername.isBlank()) ? user.getUsername() : userDto.getUsername());
+            
+            if ((userDto.getProfilePictureName() != null && !userDto.getProfilePictureName().isBlank()) && userDto.getProfilePictureOwner() > 0) {
+                user.setProfilePicture(Media.mediaFromKeys(userDto.getProfilePictureOwner(), userDto.getProfilePictureName()));
+            }
+            
+            this.userRepository.save(user);
+            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
+        }
+
+        return ErrorManager.notFound("user");
+    }
+    
+    public ResponseEntity<String> generatePasswordResetToken(String userEmail) {
+        Optional<User> user = this.userRepository.getUserByEmail(userEmail);
+        
+        if (user.isPresent()) {
+            PasswordResetToken passwordResetToken = new PasswordResetToken(user.get());
+            passwordResetToken = this.passwordResetTokenRepository.save(passwordResetToken);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("RESET-TOKEN", passwordResetToken.getKey().toString());
+            return new ResponseEntity<>("", headers, HttpStatus.OK); //ErrorManager
+        } else {
             return ErrorManager.notFound("user");
         }
     }
     
-    public ResponseEntity<String> generatePasswordResetToken(Long userId){
-        Optional<User> user = this.userRepository.findById(userId);
-        if (user.isPresent()) {
-            PasswordResetToken passwordResetToken = new PasswordResetToken();
-            passwordResetToken.setUser(user.get());
-            passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES));
-            this.passwordResetTokenRepository.save(passwordResetToken);
-            return new ResponseEntity<>("ok, minutes: " + UserService.PASSWORD_RESET_TOKEN_EXPIRES_MINUTES, HttpStatus.OK); //ErrorManager
-        } else {
-            return ErrorManager.notFound("user");
+    public ResponseEntity<String> resetPassword(UUID resetKey,String newPassword) {
+        Optional<PasswordResetToken> tokenOpt = this.passwordResetTokenRepository.getByKey(resetKey);
+        
+        if (tokenOpt.isEmpty()) { return ErrorManager.notFound(); }
+        
+        PasswordResetToken token = tokenOpt.get();
+        User userToModify = token.getUser();
+        
+        try {
+            this.passwordResetTokenRepository.deleteById(new PasswordResetTokenId(userToModify, token.getExpiresAt()));
+            userToModify.setPassword(this.passwordEncoder.encode(newPassword));
+            this.userRepository.save(userToModify);
+
+            return new ResponseEntity<>("", HttpStatus.OK);
+        } catch (Exception ex) {
+            return ErrorManager.def();
         }
+    }
+    
+    public ResponseEntity<String> loginUser(String loginBase, String password) {
+        Optional<User> loggingUser = this.userRepository.searchByLoginBase(loginBase);
+        
+        if (loggingUser.isEmpty()) { return ErrorManager.notFound("user"); }
+        User user = loggingUser.get();
+        
+        if (!this.passwordEncoder.matches(password, user.getPassword())) { return ErrorManager.def("incorrect password"); }
+        
+        APIKey apiKey = new APIKey(user);
+        this.apiKeyRepository.save(apiKey);
+        
+        return new ResponseEntity<>("", HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
+    }
+    
+    public ResponseEntity<String> logoutUser(String apiKey) {
+        Optional<APIKey> apiAuth = this.apiKeyRepository.findById(UUID.fromString(apiKey));
+        
+        if (apiAuth.isEmpty()) { return ErrorManager.notFound("apiKey"); }
+        
+        this.apiKeyRepository.delete(apiAuth.get());
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 }

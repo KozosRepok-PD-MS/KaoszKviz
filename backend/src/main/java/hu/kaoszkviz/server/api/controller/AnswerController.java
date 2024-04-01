@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.controller;
 
-import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.service.AnswerService;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
