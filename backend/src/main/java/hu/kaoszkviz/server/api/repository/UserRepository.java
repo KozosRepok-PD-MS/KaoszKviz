@@ -16,7 +16,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Override
     public List<User> findAll();
     
-    @Query(value = "SELECT * FROM usr WHERE status = :status", nativeQuery = true)
     public List<User> findAllByStatus(User.Status status);
 
     @Query(value = "SELECT * FROM dbo.findUserByName(:search_name)", nativeQuery = true)

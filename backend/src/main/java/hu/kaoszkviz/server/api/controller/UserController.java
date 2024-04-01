@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -39,7 +40,15 @@ public class UserController {
     }
     
     @PostMapping(value = "/resetpassword")
-    public ResponseEntity<String> resetPassword(@RequestHeader HttpHeaders headers, @RequestBody(required = false) HashMap<String, String> requestBody) {
+    public ResponseEntity<String> resetPassword(@RequestBody(required = false) HashMap<String, String> requestBody) {
+       
+        String userEmail = requestBody.get("email"); 
+        if (userEmail == null) { return ErrorManager.notFound("email"); }
+        return this.userService.generatePasswordResetToken(userEmail);
+    }
+    
+    @PostMapping(value = "/changepassword")
+    public ResponseEntity<String> changePassword(@RequestHeader HttpHeaders headers, @RequestBody(required = false) HashMap<String, String> requestBody) {
         if (headers.containsKey(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER)) {
             UUID resetKey= UUID.fromString(headers.get(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER).get(0));
             
@@ -48,32 +57,28 @@ public class UserController {
             return this.userService.resetPassword(resetKey, newPassword);
         }
         
-        String userEmail = requestBody.get("email"); 
-        if (userEmail == null) { return ErrorManager.notFound("email"); }
-        return this.userService.generatePasswordResetToken(userEmail);
+        return ErrorManager.notFound("password reset token");
     }
     
     @GetMapping(produces = "application/json")
     @JsonView(PublicJsonView.class)
-    public ResponseEntity<String> getUsers(@RequestBody(required = false) HashMap<String, String> requestBody) {
+    public ResponseEntity<String> getUsers(
+            @RequestParam(defaultValue = "-1", required = false) long userId,
+            @RequestParam(defaultValue = "", required = false) String searchName) {
         
-        if (requestBody == null || requestBody.isEmpty()) {
+        if (userId == -1 && searchName.isEmpty()) {
             return this.userService.getUsers();
         }
         
-        if (requestBody.containsKey("userId")) {
-            long userId = Long.parseLong(requestBody.get("userId"));
-            
+        if (userId != -1) {
             return this.userService.getUserById(userId);
-        } else if (requestBody.containsKey("searchName")) {
-            return this.userService.getUsersByName(requestBody.get("searchName"));
+        } else {
+            return this.userService.getUsersByName(searchName);
         }
-        
-        return this.userService.getUsers();
     }
     
     @DeleteMapping
-    public ResponseEntity<String> deleteUser(@RequestBody long userId) {
+    public ResponseEntity<String> deleteUser(@RequestParam long userId) {
         return this.userService.deleteById(userId);
     }
     

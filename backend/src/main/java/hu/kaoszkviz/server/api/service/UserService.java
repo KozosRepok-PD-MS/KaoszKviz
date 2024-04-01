@@ -18,6 +18,7 @@ import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
+import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -93,7 +94,7 @@ public class UserService {
     
     private ResponseEntity<String> processUserList(List<User> users) {
         if (users.isEmpty()) {
-            return ErrorManager.notFound("not found");
+            return ErrorManager.notFound();
         }
 
         try {
@@ -203,9 +204,7 @@ public class UserService {
         APIKey apiKey = new APIKey(user);
         this.apiKeyRepository.save(apiKey);
         
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString());
-        return new ResponseEntity<>("", headers, HttpStatus.OK);
+        return new ResponseEntity<>("", HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
     }
     
     public ResponseEntity<String> logoutUser(String apiKey) {
