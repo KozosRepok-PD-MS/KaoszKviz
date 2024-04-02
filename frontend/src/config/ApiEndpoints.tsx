@@ -247,7 +247,7 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                 "logout",
                 {
                     method: HTTP_METOD.POST,
-                    url: "/logout",
+                    url: "logout",
                     headers: new Map([
                         [
                             API_KEY_STRING,
@@ -264,7 +264,7 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                 "changePassword",
                 {
                     method: HTTP_METOD.POST,
-                    url: "/changepassword",
+                    url: "changepassword",
                     requestBody: new Map([
                         [
                             "newPassword",
@@ -291,7 +291,7 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                 "resetPassword",
                 {
                     method: HTTP_METOD.POST,
-                    url: "/resetpassword",
+                    url: "resetpassword",
                     requestBody: new Map([
                         [
                             "email",

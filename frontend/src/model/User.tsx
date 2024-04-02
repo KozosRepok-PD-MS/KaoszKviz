@@ -16,3 +16,10 @@ export interface UserLoginFormType {
     loginBase: string;
     password: string;
 }
+
+export interface UserRegisterFormType {
+    username: string;
+    email: string;
+    password: string;
+    repassword: string;
+}

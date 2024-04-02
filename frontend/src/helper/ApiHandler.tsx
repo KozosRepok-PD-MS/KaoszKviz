@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from "axios";
 import { API_CONTROLLER, ApiEndpoint, DEFAULT_TYPES, HTTP_METOD, RequestVariableProperty, apiEndpoints } from "../config/ApiEndpoints";
-import { UserLoginFormType } from "../model/User";
+import { API_KEY_STRING } from "../config/GlobalDatas";
 
 export default class ApiHandler {
-    static #baseUrl: string ="http://localhost:5556";
+    static #baseUrl: string ="http://localhost:8000";
     
     static executeApiCall(controller: API_CONTROLLER, method: string, callback: Function, requestBody?: Object, requestParam?: Map<string, string>, headers?: Map<string, string>): void {
         if (!apiEndpoints.has(controller)) {
@@ -30,13 +30,13 @@ export default class ApiHandler {
                     ApiHandler.postRequest(url, callback, requestBody, requestParam, headers)
                     break;
                 case HTTP_METOD.PUT:
-                    
+                    console.log("PUT üres");
                     break;
                 case HTTP_METOD.DELETE:
-                    
+                    console.log("DELETE üres");
                     break;
                 case HTTP_METOD.PATCH:
-                    
+                    console.log("PATCH üres");
                     break;
             
                 default:
@@ -54,7 +54,7 @@ export default class ApiHandler {
         let url = parameters ? ApiHandler.buildUrl(endpoint, parameters) : ApiHandler.buildUrl(endpoint);
         console.log("POST: => " + url);
         axios.post(url, requestBody, ApiHandler.#createRequestConfig(headers))
-             .then(result => {
+             .then((result: AxiosResponse<any, any>) => {
                 console.log(result);
                 
                 callback(result);
@@ -73,7 +73,7 @@ export default class ApiHandler {
         let url = parameters ? ApiHandler.buildUrl(endpoint, parameters) : ApiHandler.buildUrl(endpoint);
         console.log("GET: => " + url);
         axios.get(url, ApiHandler.#createRequestConfig(headers))
-             .then(result => {
+             .then((result: AxiosResponse<any, any>) => {
                 callback(result);
              })
              .catch((error) => {
@@ -161,6 +161,12 @@ export default class ApiHandler {
     }
 
     static #createRequestConfig(headers: Map<string, string>): AxiosRequestConfig {
+        let apiKey = localStorage.getItem(API_KEY_STRING);
+        if (apiKey) {
+            headers.set(API_KEY_STRING, apiKey);
+        }
+        headers.set("Access-Control-Expose-Headers", "Content-Encoding");
+
         let config: AxiosRequestConfig = {
             headers: Object.fromEntries(headers) as RawAxiosRequestHeaders,
         };
