@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
 import hu.kaoszkviz.server.api.dto.UserDTO;
 import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
@@ -22,6 +23,8 @@ import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -204,7 +207,12 @@ public class UserService {
         APIKey apiKey = new APIKey(user);
         this.apiKeyRepository.save(apiKey);
         
-        return new ResponseEntity<>("", HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.map(user, UserDTO.class)), HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
+        } catch (JsonProcessingException ex) {
+            this.apiKeyRepository.delete(apiKey);
+            return ErrorManager.def();
+        }
     }
     
     public ResponseEntity<String> logoutUser(String apiKey) {
