@@ -3,7 +3,7 @@ import { API_CONTROLLER, ApiEndpoint, DEFAULT_TYPES, HTTP_METOD, RequestVariable
 import { API_KEY_STRING } from "../config/GlobalDatas";
 
 export default class ApiHandler {
-    static #baseUrl: string ="http://localhost:8000";
+    static #baseUrl: string ="http://localhost:5556";
     
     static executeApiCall(controller: API_CONTROLLER, method: string, callback: Function, requestBody?: Object, requestParam?: Map<string, string>, headers?: Map<string, string>): void {
         if (!apiEndpoints.has(controller)) {
