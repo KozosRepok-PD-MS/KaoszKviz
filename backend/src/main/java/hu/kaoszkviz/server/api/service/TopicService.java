@@ -16,7 +16,7 @@ public class TopicService {
     private TopicRepository topicRepository;
     
     public List<Topic> getTopics(String txt){
-        if (txt == null) {
+        if (txt == null || txt.isBlank()) {
             return this.topicRepository.findAll();
         } else {
             return this.topicRepository.searchBy(txt);

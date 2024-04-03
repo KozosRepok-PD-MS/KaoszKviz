@@ -21,7 +21,7 @@ public class QuizPlayerService {
     @Autowired
     private QuizHistoryRepository quizHistoryRepository;
     
-    public ResponseEntity<String> getQuizPlayersByQuizHistoryId(Long quizHistoryId){
+    public ResponseEntity<String> getQuizPlayersByQuizHistoryId(Long quizHistoryId) {
         if (!this.quizHistoryRepository.findById(quizHistoryId).isPresent()) {
             return ErrorManager.notFound("quizHistory");
         }

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -26,28 +28,35 @@ public class QuizService {
     @Autowired
     private UserRepository userRepository;
     
-    public ResponseEntity<String> getQuizs(String stringId) {
-        List<Quiz> quizs = new ArrayList<>();
-        try {
-            Long longId = stringId == null ? null : Long.valueOf(stringId);
-            quizs = this.getQuizs(longId);
-            
-        } catch(NumberFormatException ex) {
-            return ErrorManager.nan();
-        }
+     
+    public ResponseEntity<String> getAllQuiz() {
+        List<Quiz> quizs = this.quizRepository.findAll();
         
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(quizs, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+        return this.processQuizList(quizs);
     }
     
-    public List<Quiz> getQuizs(Long id){
-        if (id == null) {
-            return this.quizRepository.findAll();
-        } else {
-            return this.quizRepository.searchByOwnerId(id);
+    public ResponseEntity<String> getAllQuiz(long ownerId) {
+        List<Quiz> quizs = this.quizRepository.findAllByOwnerId(ownerId);
+        return this.processQuizList(quizs);
+    }
+    
+    public ResponseEntity<String> getAllPublicQuiz() {
+        List<Quiz> quizs = this.quizRepository.findAllPublic();
+        
+        return this.processQuizList(quizs);
+    }
+    
+    public ResponseEntity<String> getAllPublicQuiz(long ownerId) {
+        List<Quiz> quizs = this.quizRepository.findAllPublicByOwnerId(ownerId);
+        
+        return this.processQuizList(quizs);
+    }
+    
+    private ResponseEntity<String> processQuizList(List<Quiz> quizs) {
+        try {
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(quizs), HttpStatus.OK);
+        } catch (JsonProcessingException ex) {
+            return ErrorManager.def();
         }
     }
     

@@ -13,7 +13,6 @@ import hu.kaoszkviz.server.api.repository.QuizTopicRepository;
 import hu.kaoszkviz.server.api.repository.TopicRepository;
 import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -32,23 +31,14 @@ public class QuizTopicService {
     @Autowired
     private TopicRepository topicRepository;
     
-    public ResponseEntity<String> getQuizTopics(String stringId){
-        List<QuizTopic> quizTopics = new ArrayList<>();
-        try{
-            Long longId = stringId == null ? null : Long.valueOf(stringId);
-            quizTopics = this.getQuizTopics(longId);
-        } catch(NumberFormatException ex){
-            return ErrorManager.nan();
-        }
+    public ResponseEntity<String> getQuizTopics(Long id){
+        List<QuizTopic> quizTopics = this.quizTopicRepository.searchByQuizId(id);
+        
         try{
             return new ResponseEntity<>(Converter.ModelTableToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
         } catch (JsonProcessingException ex){
             return ErrorManager.def(ex.getLocalizedMessage());
         }
-    }
-    
-    public List<QuizTopic> getQuizTopics(Long id){
-        return this.quizTopicRepository.searchByQuizId(id);
     }
     
     public ResponseEntity<String> addQuizTopic(HashMap<String, String> datas){

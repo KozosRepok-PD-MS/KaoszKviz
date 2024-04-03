@@ -1,7 +1,6 @@
 package hu.kaoszkviz.server.api.controller;
 
 import hu.kaoszkviz.server.api.service.AnswerService;
-import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,22 +26,8 @@ public class AnswerController {
     }
     
     @GetMapping
-    public ResponseEntity<String> getAnswersForQuestion(@RequestBody(required = false) HashMap<String, String> requeqtBody) {
-        String key = "questionId";
-        String questionIdStr = requeqtBody.get(key);
-        
-        if (questionIdStr == null || questionIdStr.isBlank()) { return ErrorManager.notFound(key);}
-        
-        long questionId;
-        
-        try {
-            questionId = Long.parseLong(questionIdStr);
-        } catch (NumberFormatException ex) {
-            return ErrorManager.nan();
-        }
-        
+    public ResponseEntity<String> getAnswersForQuestion(@RequestParam long questionId) {
         return this.answerService.getAnswers(questionId);
-        
     }
     
     @DeleteMapping(name = "")

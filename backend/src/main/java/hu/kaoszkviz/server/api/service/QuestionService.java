@@ -15,6 +15,7 @@ import hu.kaoszkviz.server.api.repository.QuestionRepository;
 import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
+import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
@@ -45,9 +46,17 @@ public class QuestionService {
     private UserRepository userRepository;
     
     public ResponseEntity<String> getQuestionsByQuizId(Long quizId){
-        if(!this.quizRepository.findById(quizId).isPresent()){
+        Optional<Quiz> quizOptional = this.quizRepository.findById(quizId);
+        if(!quizOptional.isPresent()){
             return ErrorManager.notFound("quiz");
         }
+        Optional<ApiKeyAuthentication> authOptional = ApiKeyAuthentication.getAuth();
+        if (authOptional.isEmpty()) { return ErrorManager.unauth(); }
+        
+        ApiKeyAuthentication auth = authOptional.get();
+        Quiz quiz = quizOptional.get();
+        
+        if (!auth.getPrincipal().isAdmin() && quiz.getOwner().getId() != auth.getPrincipal().getId()) { return ErrorManager.unauth(); }
         
         List<Question> questions = this.questionRepository.searchQuestionByQuizId(quizId);
         
