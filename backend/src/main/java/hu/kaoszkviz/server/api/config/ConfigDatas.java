@@ -12,7 +12,7 @@ public class ConfigDatas {
     public static final HashMap<HttpMethod, String[]> NON_AUTHENTICATED_ENDPOINTS = new HashMap<>() {{
         put(HttpMethod.GET, new String[] {
             "/",
-            "/media",
+            "/media/**",
         });
         put(HttpMethod.POST, new String[] {
             "/user",
