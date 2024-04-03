@@ -317,7 +317,7 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     method: HTTP_METOD.GET,
                     requestParam: new Map([
                         [
-                            "userId",
+                            "ownerId",
                             {
                                 type: DEFAULT_TYPES.BIGINT,
                                 required: true,

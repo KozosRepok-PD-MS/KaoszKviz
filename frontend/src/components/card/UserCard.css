@@ -1,0 +1,13 @@
+.userCard{
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.userCardPicture img{
+    width: 100%;
+    max-width: 300px;
+}

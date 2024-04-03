@@ -1,7 +1,7 @@
 import React from "react"
 import { User } from "../../model/User";
 import { Link } from "react-router-dom";
-
+import "./UserCard.css";
 
 export type UserCardProps = {
     user: User

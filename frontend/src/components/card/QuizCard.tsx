@@ -1,6 +1,7 @@
 import React from "react"
 import { Quiz } from "../../model/Quiz";
-import { Link } from "react-router-dom";
+import "./QuizCard.css";
+import Button from "../buttons/Button";
 
 
 export type QuizCardProps = {
@@ -11,7 +12,10 @@ const QuizCard: React.FC<QuizCardProps> = (props: QuizCardProps) => {
     
     return(
         <div className="quizCard">
-            <p>asdfghjkljhnbvcxyy</p>
+            <div className="quizCardName">{props.quiz.title}</div>
+            <div className="quizCardDescription">{props.quiz.description}</div>
+            <div className="quizCardImg"><img src="/logo512.png"/></div>
+            <div className="quizCardStart"><Button name="loginButton" title="START" type="button"/></div>
         </div>
     )
 }
