@@ -11,6 +11,7 @@ export enum HTTP_METOD {
 
 export enum API_CONTROLLER {
     USER = "user",
+    MEDIA = "media",
 }
 
 export const DEFAULT_REQUIRED_HTTP_CODE: number = HttpStatusCode.Ok;
@@ -304,6 +305,18 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     ]),
                 }
             ],
+        ])
+    ],
+    [
+        API_CONTROLLER.MEDIA,
+        new Map<string, ApiEndpoint>([
+            [
+                "upload",
+                {
+                    method: HTTP_METOD.POST,
+                    
+                }
+            ]
         ])
     ],
 ]);
