@@ -64,6 +64,13 @@ const Layout = () => {
                                 <Button name="logout" title="Kijelentkezés" type="submit" />
                             </form>
                     }
+                    {
+                        auth?.isAuthenticated ?
+                            <li className="">
+                                <Link className="" to="/users" style={{ textDecoration: 'none' }}>Felhasználók</Link>
+                            </li>
+                        :   ""
+                    }
                 </ul>
             </nav>
             <article>

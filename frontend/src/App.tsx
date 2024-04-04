@@ -8,6 +8,8 @@ import Register from "./pages/Register";
 import Game from "./pages/Game";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import UsersList from './pages/UsersList';
+import UserPage from './pages/UserPage';
 
 function App() {
     return (
@@ -19,6 +21,8 @@ function App() {
                             <Route path="" element={<Game />} />
                             <Route path="login" element={<Login />} />
                             <Route path="register" element={<Register />} />
+                            <Route path="users" element={<UsersList />} />
+                            <Route path="user/:id" element={<UserPage />} />
                             <Route path="*" element={<NoPage />} />
                         </Route>
                     </Routes>
