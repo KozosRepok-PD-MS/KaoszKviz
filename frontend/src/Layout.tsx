@@ -71,6 +71,13 @@ const Layout = () => {
                             </li>
                         :   ""
                     }
+                    {
+                        auth?.isAuthenticated ?
+                            <li className="">
+                                <Link className="" to="/myquizes" style={{ textDecoration: 'none' }}>Kvízeim</Link>
+                            </li>
+                        :   ""
+                    }
                 </ul>
             </nav>
             <article>

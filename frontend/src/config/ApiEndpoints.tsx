@@ -13,6 +13,7 @@ export enum API_CONTROLLER {
     USER = "user",
     MEDIA = "media",
     QUIZ = "quiz",
+    QUESTION = "question",
 }
 
 export const DEFAULT_REQUIRED_HTTP_CODE: number = HttpStatusCode.Ok;
@@ -327,7 +328,48 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     ]),
                     headers: new Map(),
                 }
-            ]
+            ],
+            [
+                "addQuiz",
+                {
+                    method: HTTP_METOD.POST,
+                    requestBody: new Map([
+                        
+                        [
+                            "title",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "description",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "isPublic",
+                            {
+                                type: DEFAULT_TYPES.BOOLEAN,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "shortAccessibleName",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                    ]),
+                }
+            ],
         ]),
     ],
     [
@@ -340,6 +382,28 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     
                 }
             ]
+        ])
+    ],
+    [
+        API_CONTROLLER.QUESTION,
+        new Map<string, ApiEndpoint>([
+            [
+                "getQuestionsByQuizId",
+                {
+                    method: HTTP_METOD.GET,
+                    requestParam: new Map([
+                        [
+                            "quizId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                    ]),
+                    headers: new Map(),
+                }
+            ],
         ])
     ],
 ]);

@@ -13,7 +13,11 @@ export interface Quiz {
 export type TQuizList = Quiz[];
 
 export interface QuizCreateFormType {
-
+    ownerId?: bigint;
+    title: string;
+    description: string;
+    isPublic: boolean;
+    shortAccessibleNAme: string;
 }
 
 export interface QuizModifyFormType {

@@ -6,10 +6,13 @@ import NoPage from "./pages/NoPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Game from "./pages/Game";
+import CreateQuiz from "./pages/CreateQuiz";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import UsersList from './pages/UsersList';
+import QuestionList from './pages/QuestionList';
 import UserPage from './pages/UserPage';
+import AuthUserQuizes from './pages/AuthUserQuizes';
 
 function App() {
     return (
@@ -23,6 +26,9 @@ function App() {
                             <Route path="register" element={<Register />} />
                             <Route path="users" element={<UsersList />} />
                             <Route path="user/:id" element={<UserPage />} />
+                            <Route path="myquizes" element={<AuthUserQuizes />} />
+                            <Route path="newquiz" element={<CreateQuiz />} />
+                            <Route path="questions/:id" element={<QuestionList />} />
                             <Route path="*" element={<NoPage />} />
                         </Route>
                     </Routes>

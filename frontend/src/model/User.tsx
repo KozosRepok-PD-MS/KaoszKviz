@@ -1,7 +1,7 @@
 import LocalDateTime from "ts-time/LocalDateTime";
 
 export interface User {
-    id?: number;
+    id?: bigint;
     username?: string;
     email?: string;
     password?: string;

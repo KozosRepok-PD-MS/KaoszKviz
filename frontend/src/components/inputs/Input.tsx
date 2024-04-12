@@ -4,7 +4,7 @@ import "./Input.css";
 
 export type InputProps = {
     name: string;
-    type: "number" | "text" | "email" | "password" | "file";
+    type: "number" | "text" | "email" | "password" | "file" | "checkbox";
     placeholder?: string;
     onChangeFn?: ChangeEventHandler<HTMLInputElement>;
     autocomplete?: boolean;
