@@ -14,7 +14,7 @@ const QuizCard: React.FC<QuizCardProps> = (props: QuizCardProps) => {
     const{auth} = useContext(AuthContext);
     const authUserId = auth?.user?.id;
 
-    let questionsLink: string = "/questions/" + props.quiz.id;
+    let questionsLink: string = "/quiz/" + props.quiz.id;
     
     return(
         <div className="quizCard">
@@ -35,7 +35,7 @@ const QuizCard: React.FC<QuizCardProps> = (props: QuizCardProps) => {
                     : 
                     ""
             }
-            <div><Link className="" to={questionsLink} style={{ textDecoration: 'none' }}>Kvíz kérdési</Link></div>
+            <div><Link className="" to={questionsLink} style={{ textDecoration: 'none' }}>Kvíz részletei</Link></div>
             
         </div>
     )

@@ -14,6 +14,7 @@ export enum API_CONTROLLER {
     MEDIA = "media",
     QUIZ = "quiz",
     QUESTION = "question",
+    ANSWER = "answer",
 }
 
 export const DEFAULT_REQUIRED_HTTP_CODE: number = HttpStatusCode.Ok;
@@ -394,6 +395,28 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     requestParam: new Map([
                         [
                             "quizId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                    ]),
+                    headers: new Map(),
+                }
+            ],
+        ])
+    ],
+    [
+        API_CONTROLLER.ANSWER,
+        new Map<string, ApiEndpoint>([
+            [
+                "getAnswersByQuestionId",
+                {
+                    method: HTTP_METOD.GET,
+                    requestParam: new Map([
+                        [
+                            "questionId",
                             {
                                 type: DEFAULT_TYPES.BIGINT,
                                 required: true,

@@ -54,7 +54,6 @@ const QuizForm: React.FC = (props) => {
         
         try {
             ApiHandler.executeApiCall(API_CONTROLLER.QUIZ, "addQuiz", callbackFn, quizDatas);
-            console.log("asd");
         } catch (error) {
             const ERR: ApiError = error as ApiError;
             

@@ -28,7 +28,7 @@ function App() {
                             <Route path="user/:id" element={<UserPage />} />
                             <Route path="myquizes" element={<AuthUserQuizes />} />
                             <Route path="newquiz" element={<CreateQuiz />} />
-                            <Route path="questions/:id" element={<QuestionList />} />
+                            <Route path="quiz/:id" element={<QuestionList />} />
                             <Route path="*" element={<NoPage />} />
                         </Route>
                     </Routes>

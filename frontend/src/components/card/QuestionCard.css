@@ -1,0 +1,8 @@
+.questionCardImg img{
+    width: 100%;
+    max-width: 300px;
+}
+
+.questionCardAnswers{
+    border: 1px solid black;
+}

@@ -1,0 +1,12 @@
+.answerCard{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.answerCardItem{
+    flex: 1 0 calc(30% - 20px); /* 20px margó mindkét oldalon */
+    margin: 10px;
+    text-align: center;
+}
