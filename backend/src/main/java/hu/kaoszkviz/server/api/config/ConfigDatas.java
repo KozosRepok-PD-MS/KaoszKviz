@@ -17,7 +17,8 @@ public class ConfigDatas {
         put(HttpMethod.POST, new String[] {
             "/user",
             "/user/login",
-            "/user/resetpassword"
+            "/user/resetpassword",
+            "/user/changepassword",
         });
     }};
     

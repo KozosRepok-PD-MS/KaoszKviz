@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
@@ -14,8 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString
-public class MediaPayload {
+public class MediaPayload implements DTO {
     private String filename;
     private MultipartFile file;
 }

@@ -8,9 +8,8 @@ returns table as
 
 GO
 
-CREATE OR ALTER VIEW findQuizPublic
-RETURNS table as
-    select * from quiz where is_public=1
+CREATE OR ALTER VIEW findQuizPublic AS
+    SELECT * FROM quiz WHERE is_public=1
 
 GO
 

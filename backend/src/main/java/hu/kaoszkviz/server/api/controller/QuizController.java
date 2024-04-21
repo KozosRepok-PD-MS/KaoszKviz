@@ -1,10 +1,9 @@
 package hu.kaoszkviz.server.api.controller;
 
-import hu.kaoszkviz.server.api.model.Quiz;
+import hu.kaoszkviz.server.api.dto.QuizDTO;
 import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.service.QuizService;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.util.HashMap;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,17 +46,17 @@ public class QuizController {
     }
     
     @PostMapping(name = "")
-    public ResponseEntity<String> addQuiz(@RequestBody HashMap<String, String> requestBody){
-        return this.quizService.addQuiz(requestBody);
+    public ResponseEntity<String> addQuiz(@RequestBody QuizDTO quiz){
+        return this.quizService.addQuiz(quiz);
     }
     
     @DeleteMapping("")
-    public ResponseEntity<String> deleteById(@RequestBody HashMap<String, String> requestBody){
-        return this.quizService.deleteById(requestBody.get("id"));
+    public ResponseEntity<String> deleteById(@RequestParam long id){
+        return this.quizService.deleteById(id);
     }
     
     @PutMapping("")
-    public ResponseEntity<String> updateQuiz(@RequestBody Quiz quiz){
+    public ResponseEntity<String> updateQuiz(@RequestBody QuizDTO quiz){
         return this.quizService.updateQuiz(quiz);
     }
 }

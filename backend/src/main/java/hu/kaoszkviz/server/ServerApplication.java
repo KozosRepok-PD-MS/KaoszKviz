@@ -14,7 +14,7 @@ public class ServerApplication {
     
     @Bean
     public CustomModelMapper customModelMapper() {
-      return new CustomModelMapper();
+        return new CustomModelMapper();
     }
 
 }
