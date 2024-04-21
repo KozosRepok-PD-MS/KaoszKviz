@@ -34,7 +34,7 @@ public class QuizDTO implements DTO {
     private String mediaContentName = null;
     
     @JsonView(PrivateJsonView.class)
-    private boolean isPublic;
+    private boolean isPublic = true;
     
     @JsonView(PublicJsonView.class)
     private String shortAccessibleName;

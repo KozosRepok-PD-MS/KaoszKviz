@@ -50,10 +50,7 @@ public class QuestionService {
         if(!quizOptional.isPresent()){
             return ErrorManager.notFound("quiz");
         }
-        Optional<ApiKeyAuthentication> authOptional = ApiKeyAuthentication.getAuth();
-        if (authOptional.isEmpty()) { return ErrorManager.unauth(); }
-        
-        ApiKeyAuthentication auth = authOptional.get();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         Quiz quiz = quizOptional.get();
         
         if (!auth.getPrincipal().isAdmin() && quiz.getOwner().getId() != auth.getPrincipal().getId()) { return ErrorManager.unauth(); }

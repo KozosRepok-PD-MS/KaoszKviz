@@ -101,11 +101,7 @@ public class UserController {
     }
     
     @PostMapping(value = "/logout")
-    public ResponseEntity<String> logoutUser() { //@RequestHeader(required = false, name = ConfigDatas.API_KEY_HEADER) String apiKey
-        Optional<ApiKeyAuthentication> auth = ApiKeyAuthentication.getAuth();
-        
-        if (auth.isEmpty()) { return ErrorManager.def(); }
-        
-        return this.userService.logoutUser(auth.get().getCredentials());
+    public ResponseEntity<String> logoutUser() { //@RequestHeader(required = false, name = ConfigDatas.API_KEY_HEADER) String apiKey 
+        return this.userService.logoutUser(ApiKeyAuthentication.getAuth().getCredentials());
     }
 }

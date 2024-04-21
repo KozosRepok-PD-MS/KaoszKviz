@@ -2,6 +2,8 @@ package hu.kaoszkviz.server.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.dto.QuizDTO;
+import hu.kaoszkviz.server.api.exception.UnauthorizedException;
+import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.model.Quiz;
 import hu.kaoszkviz.server.api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class QuizService {
     }
     
     public ResponseEntity<String> addQuiz(QuizDTO quizDTO) {
-        if (quizDTO.getOwnerId() == -1) { quizDTO.setOwnerId(ApiKeyAuthentication.getAuth().get().getPrincipal().getId()); }
+        if (quizDTO.getOwnerId() == -1) { quizDTO.setOwnerId(ApiKeyAuthentication.getAuth().getPrincipal().getId()); }
         
         Optional<User> user = this.userRepository.findById(quizDTO.getOwnerId());
         if (user.isEmpty()) { return ErrorManager.notFound("user"); }
@@ -78,12 +80,8 @@ public class QuizService {
         return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
     }
     
-    public ResponseEntity<String> deleteById(long id){
-        Optional<ApiKeyAuthentication> authOptional = ApiKeyAuthentication.getAuth();
-        
-        if (authOptional.isEmpty()) { return ErrorManager.unauth(); }
-        
-        ApiKeyAuthentication auth = authOptional.get();
+    public ResponseEntity<String> deleteById(long id) {
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         
         Optional<Quiz> quizOptional = this.quizRepository.findById(id);
         
@@ -103,6 +101,8 @@ public class QuizService {
         Optional<Quiz> OptionalQuiz = this.quizRepository.findById(quiz.getId());
         if(OptionalQuiz.isPresent()){
             Quiz quizToUpdate = OptionalQuiz.get();
+            if (quizToUpdate.getOwner().getId() != quiz.getOwnerId()) { throw new UnauthorizedException(); }
+            
             this.customModelMapper.updateFromDTO(quiz, quizToUpdate);
             this.quizRepository.save(quizToUpdate);
             return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager

@@ -3,13 +3,13 @@ package hu.kaoszkviz.server.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
 import hu.kaoszkviz.server.api.dto.UserDTO;
+import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.model.APIKey;
 import hu.kaoszkviz.server.api.model.PasswordResetToken;
 import hu.kaoszkviz.server.api.model.PasswordResetTokenId;
 import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.APIKeyRepository;
-import hu.kaoszkviz.server.api.repository.MediaRepository;
 import hu.kaoszkviz.server.api.repository.PasswordResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,15 +63,15 @@ public class UserService {
     }
     
     public ResponseEntity<String> getUserById(long id) {
-        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth().get();
-        Optional<User> user = this.userRepository.findById(id);
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
+        User user = this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(User.class, id));
         
-        if (user.isEmpty() || (!auth.getPrincipal().isAdmin() && user.get().getStatus() == User.Status.DELETED)) {
-            return ErrorManager.notFound("user not found id: " + id);
+        if ((!auth.getPrincipal().isAdmin() && user.getStatus() == User.Status.DELETED)) {
+            throw new NotFoundException(User.class, id);
         }
         
         try {
-            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user.get(), UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
         } catch (JsonProcessingException ex) {
             return ErrorManager.def("failed to get data");
         }
@@ -82,7 +82,7 @@ public class UserService {
     }
    
     public ResponseEntity<String> getUsers() {
-        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth().get();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         
         List<User> users = auth.getPrincipal().isAdmin() ? this.userRepository.findAll() : this.userRepository.findAllByStatus(User.Status.ACTIVE);
         
@@ -91,38 +91,35 @@ public class UserService {
     
     private ResponseEntity<String> processUserList(List<User> users) {
         if (users.isEmpty()) {
-            return ErrorManager.notFound();
+            throw new NotFoundException(User.class, "");
         }
 
         try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.map(users, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.fromModelList(users, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
         } catch (Exception ex) {
             return ErrorManager.def("failed to get data");
         }
     }
     
     public ResponseEntity<String> deleteById(long id) {
-        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth().get();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         
         if (!auth.getPrincipal().isAdmin() && auth.getPrincipal().getId() != id) { return ErrorManager.unauth(); }
         
-        Optional<User> userToDelete = this.userRepository.findById(id);
+        User user = this.userRepository.findById(id).orElseThrow(() -> new NotFoundException(User.class, id));
         
-        if (userToDelete.isPresent()) {
-            User user = userToDelete.get();
-            
-            user.setStatus(User.Status.DELETED);
-            
-            this.userRepository.save(user);
+        user.setStatus(User.Status.DELETED);
+
+        if (this.userRepository.save(user) != null) {
             return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
-        }else {
-            return ErrorManager.notFound("user");
         }
+        
+        return ErrorManager.def("failed to save");
     }
 
     
     public ResponseEntity<String> updateUser(UserDTO userDto) {
-        User authUser = ApiKeyAuthentication.getAuth().get().getPrincipal();
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
         
         if (userDto.getId() < 0) {
             return ErrorManager.notFound("id");
@@ -130,40 +127,30 @@ public class UserService {
         
         if (!authUser.isAdmin() && authUser.getId() != userDto.getId()) { return ErrorManager.unauth(); }
         
-        Optional<User> updatedUser = this.userRepository.findById(userDto.getId());
-        if (updatedUser.isPresent()) {
-            User user = (User) updatedUser.get();
+        User user = this.userRepository.findById(userDto.getId()).orElseThrow(() -> new NotFoundException(User.class, userDto.getId()));
             
-            this.customModelMapper.updateFromDTO(userDto, user);
-            
-            this.userRepository.save(user);
+        this.customModelMapper.updateFromDTO(userDto, user);
+
+        if (this.userRepository.save(user) != null) {
             return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
         }
-
-        return ErrorManager.notFound("user");
+        
+        return ErrorManager.def("failed to save");
     }
     
     public ResponseEntity<String> generatePasswordResetToken(String userEmail) {
-        Optional<User> user = this.userRepository.getUserByEmail(userEmail);
-        
-        if (user.isPresent()) {
-            PasswordResetToken passwordResetToken = new PasswordResetToken(user.get());
-            passwordResetToken = this.passwordResetTokenRepository.save(passwordResetToken);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER, passwordResetToken.getKey().toString());
-            return new ResponseEntity<>("", headers, HttpStatus.OK); //ErrorManager
-        } else {
-            return ErrorManager.notFound("user");
-        }
+        User user = this.userRepository.getUserByEmail(userEmail).orElseThrow(() -> new NotFoundException(User.class, ""));
+
+        PasswordResetToken passwordResetToken = new PasswordResetToken(user);
+        passwordResetToken = this.passwordResetTokenRepository.save(passwordResetToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER, passwordResetToken.getKey().toString());
+        return new ResponseEntity<>("", headers, HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> resetPassword(UUID resetKey,String newPassword) {
-        Optional<PasswordResetToken> tokenOpt = this.passwordResetTokenRepository.getByKey(resetKey);
-        
-        if (tokenOpt.isEmpty()) { return ErrorManager.notFound(); }
-        
-        PasswordResetToken token = tokenOpt.get();
+        PasswordResetToken token = this.passwordResetTokenRepository.getByKey(resetKey).orElseThrow(()-> new NotFoundException(PasswordResetToken.class, ""));
         User userToModify = token.getUser();
         
         try {
@@ -178,10 +165,7 @@ public class UserService {
     }
     
     public ResponseEntity<String> loginUser(String loginBase, String password) {
-        Optional<User> loggingUser = this.userRepository.searchByLoginBase(loginBase);
-        
-        if (loggingUser.isEmpty()) { return ErrorManager.notFound("user"); }
-        User user = loggingUser.get();
+        User user = this.userRepository.searchByLoginBase(loginBase).orElseThrow(() -> new NotFoundException(User.class, ""));
         
         if (!this.passwordEncoder.matches(password, user.getPassword())) { return ErrorManager.def("incorrect password"); }
         
@@ -189,7 +173,7 @@ public class UserService {
         this.apiKeyRepository.save(apiKey);
         
         try {
-            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.map(user, UserDTO.class)), HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class)), HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
         } catch (JsonProcessingException ex) {
             this.apiKeyRepository.delete(apiKey);
             return ErrorManager.def();
@@ -197,11 +181,9 @@ public class UserService {
     }
     
     public ResponseEntity<String> logoutUser(String apiKey) {
-        Optional<APIKey> apiAuth = this.apiKeyRepository.findById(UUID.fromString(apiKey));
+        APIKey apiAuth = this.apiKeyRepository.findById(UUID.fromString(apiKey)).orElseThrow(() -> new NotFoundException(APIKey.class, ""));
         
-        if (apiAuth.isEmpty()) { return ErrorManager.notFound("apiKey"); }
-        
-        this.apiKeyRepository.delete(apiAuth.get());
+        this.apiKeyRepository.delete(apiAuth);
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 }

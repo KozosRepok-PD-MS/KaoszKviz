@@ -29,28 +29,25 @@ public class MediaService {
     private UserRepository userRepository;
     
     public ResponseEntity<String> addMedia(MultipartFile file, String fileName) {
-        Optional<ApiKeyAuthentication> auth = ApiKeyAuthentication.getAuth();
-        
-        if (auth.isPresent()) {
-            Media media = new Media();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
+        Media media = new Media();
 
-            try {
-                media.setData(file.getBytes());
-            } catch (IOException ex) {
-                return ErrorManager.def("failed to get file details");
-            }
-            User owner = auth.get().getPrincipal();
-            
-            Optional<User> optUser = this.userRepository.findById(owner.getId());
-            if (optUser.isPresent()) {
-                media.setOwner(optUser.get());
-                media.setFileName(fileName);
+        try {
+            media.setData(file.getBytes());
+        } catch (IOException ex) {
+            return ErrorManager.def("failed to get file details");
+        }
+        User owner = auth.getPrincipal();
 
-                if (this.mediaRepository.save(media) != null) {
-                    return new ResponseEntity<>("ok", HttpStatus.CREATED);
-                }
-                
+        Optional<User> optUser = this.userRepository.findById(owner.getId());
+        if (optUser.isPresent()) {
+            media.setOwner(optUser.get());
+            media.setFileName(fileName);
+
+            if (this.mediaRepository.save(media) != null) {
+                return new ResponseEntity<>("ok", HttpStatus.CREATED);
             }
+
         }
         
         return ErrorManager.def("failed to save image");

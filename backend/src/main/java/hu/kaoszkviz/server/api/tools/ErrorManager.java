@@ -42,8 +42,7 @@ public class ErrorManager {
      * @return {@code ResponseEntity}
      */
     public static ResponseEntity<String> notFound(String str) {
-        String msg = "Not found";
-        return new ResponseEntity<>(str.isBlank() ? msg : "%s %s".formatted(str, msg), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(str, HttpStatus.NOT_FOUND);
     }
     
     /**

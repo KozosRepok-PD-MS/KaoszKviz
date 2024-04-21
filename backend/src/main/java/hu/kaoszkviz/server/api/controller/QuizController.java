@@ -25,10 +25,7 @@ public class QuizController {
     
     @GetMapping(name = "")
     public ResponseEntity<String> getQuizs(@RequestParam(required = false, defaultValue = "-1") long ownerId) {
-        Optional<ApiKeyAuthentication> authOptional = ApiKeyAuthentication.getAuth();
-        
-        if (authOptional.isEmpty()) { return ErrorManager.unauth(); }
-        ApiKeyAuthentication auth = authOptional.get();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         
         if (ownerId == -1) {
             if (auth.getPrincipal().isAdmin()) {
