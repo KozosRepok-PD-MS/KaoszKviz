@@ -3,20 +3,27 @@ package hu.kaoszkviz.server.api.tools;
 
 import hu.kaoszkviz.server.api.dto.DTO;
 import hu.kaoszkviz.server.api.dto.QuizDTO;
+import hu.kaoszkviz.server.api.dto.QuizPlayerDTO;
 import hu.kaoszkviz.server.api.dto.QuizTopicDTO;
 import hu.kaoszkviz.server.api.dto.UserDTO;
+import hu.kaoszkviz.server.api.exception.InternalServerErrorException;
 import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.Model;
 import hu.kaoszkviz.server.api.model.Quiz;
+import hu.kaoszkviz.server.api.model.QuizHistory;
+import hu.kaoszkviz.server.api.model.QuizPlayer;
 import hu.kaoszkviz.server.api.model.QuizTopic;
 import hu.kaoszkviz.server.api.model.Topic;
 import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
+import hu.kaoszkviz.server.api.repository.QuizHistoryRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
 import hu.kaoszkviz.server.api.repository.TopicRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
@@ -36,6 +43,9 @@ public class CustomModelMapper extends ModelMapper {
     @Autowired
     private TopicRepository topicRepository;
     
+    @Autowired
+    private QuizHistoryRepository quizHistoryRepository;
+    
 //    @Autowired
 //    private 
     
@@ -50,10 +60,9 @@ public class CustomModelMapper extends ModelMapper {
     public <S extends Model, D extends DTO> D fromModel(S source, Class<D> destination) {
         
         // <editor-fold defaultstate="collapsed" desc="User custom map">
-        if (source instanceof User && UserDTO.class.equals(destination)) {
-            User src = (User) source;
-            UserDTO userDTO = super.map(src, UserDTO.class);
-            Media profilePicture = src.getProfilePicture();
+        if (source instanceof User user && UserDTO.class.equals(destination)) {
+            UserDTO userDTO = super.map(user, UserDTO.class);
+            Media profilePicture = user.getProfilePicture();
             
             if (profilePicture != null) {
                 userDTO.setProfilePictureOwnerId(profilePicture.getOwner().getId());
@@ -68,10 +77,9 @@ public class CustomModelMapper extends ModelMapper {
         // </editor-fold>
                 
         // <editor-fold defaultstate="collapsed" desc="Quiz custom map">
-        if (source instanceof Quiz && QuizDTO.class.equals(destination)) {
-            Quiz src = (Quiz) source;
-            QuizDTO quizDTO = super.map(src, QuizDTO.class);
-            Media mediaContent = src.getMediaContent();
+        if (source instanceof Quiz quiz && QuizDTO.class.equals(destination)) {
+            QuizDTO quizDTO = super.map(quiz, QuizDTO.class);
+            Media mediaContent = quiz.getMediaContent();
             
             if (mediaContent != null) {
                 quizDTO.setMediaContentOwner(mediaContent.getOwner().getId());
@@ -92,7 +100,52 @@ public class CustomModelMapper extends ModelMapper {
         }
         // </editor-fold>
         
+        // <editor-fold defaultstate="collapsed" desc="QuizPlayer custom map">
+        if (source instanceof QuizPlayer quizPlayer && QuizPlayerDTO.class.equals(destination)) {
+            QuizPlayerDTO quizPlayerDTO = super.map(quizPlayer, QuizPlayerDTO.class);
+            User player = quizPlayer.getPlayer();
+            
+            if (player != null) {
+                quizPlayerDTO.setPlayerId(player.getId());
+            } else {
+                quizPlayerDTO.setPlayerId(-1);
+            }
+            
+            quizPlayerDTO.setQuizHistoryId(quizPlayer.getQuizHistory().getId());
+            Media profilePicture = quizPlayer.getProfilePicture();
+            
+            if (profilePicture != null) {
+                quizPlayerDTO.setProfilePictureOwnerId(profilePicture.getOwner().getId());
+                quizPlayerDTO.setProfilePictureName(profilePicture.getFileName());
+            } else {
+                quizPlayerDTO.setProfilePictureOwnerId(-1);
+                quizPlayerDTO.setProfilePictureName(null);
+            }
+            
+            return (D) quizPlayerDTO;
+        }
+        // </editor-fold>
+        
         return super.map(source, destination);
+    }
+    
+    public <S extends DTO, D extends Model> D fromDTO(S source, Class<D> destinationClass) {
+        Constructor<?> constructor;
+        try {
+            constructor = destinationClass.getDeclaredConstructor();
+        } catch (NoSuchMethodException | SecurityException ex) {
+            throw new InternalServerErrorException();
+        }
+        
+        D d;
+        try {
+            d = (D) constructor.newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new InternalServerErrorException();
+        }
+        
+        this.fromDTO(source, d);
+        return d;
     }
     
     /**
@@ -105,16 +158,15 @@ public class CustomModelMapper extends ModelMapper {
      */
     public <S extends DTO, D extends Model> void fromDTO(S source, D destination) {
         // <editor-fold defaultstate="collapsed" desc="UserDTO custom map">
-        if (source instanceof UserDTO && destination instanceof User) {
-            UserDTO src = (UserDTO) source;
-            super.map(source, destination);
+        if (source instanceof UserDTO userDTO && destination instanceof User user) {
+            super.map(userDTO, user);
             
-            if ((src.getProfilePictureName() == null || src.getProfilePictureName().isBlank()) || src.getProfilePictureOwnerId() == -1) {                
-                ((User) destination).setProfilePicture(null);
+            if ((userDTO.getProfilePictureName() == null || userDTO.getProfilePictureName().isBlank()) || userDTO.getProfilePictureOwnerId() == -1) {                
+                user.setProfilePicture(null);
             } else {
                 //ha jók a kép adatai
-                User owner = this.userRepository.findById(src.getProfilePictureOwnerId()).orElseThrow(() -> new NotFoundException(User.class, src.getProfilePictureOwnerId()));
-                ((User) destination).setProfilePicture(this.findMediaById(owner, src.getProfilePictureName()));
+                User owner = this.userRepository.findById(userDTO.getProfilePictureOwnerId()).orElseThrow(() -> new NotFoundException(User.class, userDTO.getProfilePictureOwnerId()));
+                user.setProfilePicture(this.findMediaById(owner, userDTO.getProfilePictureName()));
             }
             
             return;
@@ -122,22 +174,21 @@ public class CustomModelMapper extends ModelMapper {
         // </editor-fold>
         
         // <editor-fold defaultstate="collapsed" desc="QuizDTO custom map">
-        if (source instanceof QuizDTO && destination instanceof Quiz) {
-            QuizDTO src = (QuizDTO) source;
-            super.map(src, destination);
+        if (source instanceof QuizDTO quizDTO && destination instanceof Quiz quiz) {
+            super.map(quizDTO, quiz);
             
-            if ((src.getMediaContentName() == null || src.getMediaContentName().isBlank()) || src.getMediaContentOwner()== -1) {
-                ((Quiz) destination).setMediaContent(null);
+            if ((quizDTO.getMediaContentName() == null || quizDTO.getMediaContentName().isBlank()) || quizDTO.getMediaContentOwner()== -1) {
+                quiz.setMediaContent(null);
             } else {
                 //ha jók a kép adatai
-                User owner = this.userRepository.findById(src.getMediaContentOwner()).orElseThrow(() -> new NotFoundException(User.class, src.getMediaContentOwner()));
-                ((Quiz) destination).setMediaContent(this.findMediaById(owner, src.getMediaContentName()));
+                User owner = this.userRepository.findById(quizDTO.getMediaContentOwner()).orElseThrow(() -> new NotFoundException(User.class, quizDTO.getMediaContentOwner()));
+                quiz.setMediaContent(this.findMediaById(owner, quizDTO.getMediaContentName()));
             }
             return;
         }
         // </editor-fold>
  
-        // <editor-fold defaultstate="collapsed" desc="QuizDTO custom map">
+        // <editor-fold defaultstate="collapsed" desc="QuizTopicDTO custom map">
         if (source instanceof QuizTopicDTO quizTopicDTO && destination instanceof QuizTopic quizTopic) {
             
             quizTopic.setQuiz(this.quizRepository.findById(quizTopicDTO.getQuizId()).orElseThrow(() -> new NotFoundException(Quiz.class, quizTopicDTO.getQuizId())));
@@ -145,6 +196,30 @@ public class CustomModelMapper extends ModelMapper {
             return;
         }
         // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="QuizPlayerDTO custom map">
+        if (source instanceof QuizPlayerDTO quizPlayerDTO && destination instanceof QuizPlayer quizPlayer) {
+            super.map(quizPlayerDTO, quizPlayer);
+            
+            if (quizPlayerDTO.getPlayerId() != -1) {
+                quizPlayer.setPlayer(this.userRepository.findById(quizPlayerDTO.getPlayerId()).orElseThrow(() -> new NotFoundException(User.class, quizPlayerDTO.getPlayerId())));
+            } else {
+               quizPlayer.setPlayer(null);
+            }
+            quizPlayer.setQuizHistory(this.quizHistoryRepository.findById(quizPlayerDTO.getQuizHistoryId()).orElseThrow(() -> new NotFoundException(QuizHistory.class, quizPlayerDTO.getQuizHistoryId())));
+            
+            if ((quizPlayerDTO.getProfilePictureName() == null || quizPlayerDTO.getProfilePictureName().isBlank()) || quizPlayerDTO.getProfilePictureOwnerId() == -1) {                
+                quizPlayer.setProfilePicture(null);
+            } else {
+                //ha jók a kép adatai
+                User owner = this.userRepository.findById(quizPlayerDTO.getProfilePictureOwnerId()).orElseThrow(() -> new NotFoundException(User.class, quizPlayerDTO.getProfilePictureOwnerId()));
+                quizPlayer.setProfilePicture(this.findMediaById(owner, quizPlayerDTO.getProfilePictureName()));
+            }
+            
+            return;
+        }
+        // </editor-fold>
+        
         super.map(source, destination);
     }
     
@@ -227,6 +302,17 @@ public class CustomModelMapper extends ModelMapper {
         }
 
         return modelDTOS;
+    }
+    
+    public <S extends DTO, D extends Model> List<D> fromDTOList(List<S> sources, Class<D> destination) {   
+        List<D> destinationList = new ArrayList<>();
+        
+        if (!sources.isEmpty()) {
+            for (S source : sources) {
+                destinationList.add(this.fromDTO(source, destination));
+            }
+        }
+        return destinationList;
     }
     
     public Media findMediaById(User owner, String mediaName) {
