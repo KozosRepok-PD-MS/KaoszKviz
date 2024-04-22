@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { Quiz } from "../../model/Quiz";
 import "./QuizCard.css";
 import Button from "../buttons/Button";
 import { AuthContext } from "src/context/AuthContext";
+import CreateQuiz from "src/pages/CreateQuiz";
 
 
 export type QuizCardProps = {
@@ -13,8 +14,19 @@ export type QuizCardProps = {
 const QuizCard: React.FC<QuizCardProps> = (props: QuizCardProps) => {
     const{auth} = useContext(AuthContext);
     const authUserId = auth?.user?.id;
+    const [isEditing, setIsEditing] = useState(false);
+    const [editState, setEditState] = useState(<></>);
 
     let questionsLink: string = "/quiz/" + props.quiz.id;
+
+    function handleEdit(){
+        if (isEditing) {
+            setEditState(<CreateQuiz quizId={-1n} isnew={false}/>);
+        } else {
+            setEditState(<></>);
+        }
+        setIsEditing(!isEditing);
+    }
     
     return(
         <div className="quizCard">
@@ -26,7 +38,12 @@ const QuizCard: React.FC<QuizCardProps> = (props: QuizCardProps) => {
                 authUserId === props.quiz.ownerId ? 
                     <div>
                         <div className="quizCardEdit">
-                            <Button name="editButton" title="EDIT" type="button"/>
+                            {isEditing ? 
+                                <Button name="editButton" title="BACK" type="button" onClickFn={handleEdit}/>
+                                :
+                                <Button name="editButton" title="EDIT" type="button" onClickFn={handleEdit}/>}
+                            
+                            {editState}
                         </div>
                         <div className="quizCardDelete">
                             <Button name="deleteButton" title="DELETE" type="button"/>
@@ -34,7 +51,7 @@ const QuizCard: React.FC<QuizCardProps> = (props: QuizCardProps) => {
                     </div> 
                     : 
                     ""
-            }
+            }       
             <div><Link className="" to={questionsLink} style={{ textDecoration: 'none' }}>Kvíz részletei</Link></div>
             
         </div>

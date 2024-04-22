@@ -314,6 +314,23 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
         API_CONTROLLER.QUIZ,
         new Map([
             [
+                "getQuizById",
+                {
+                    method: HTTP_METOD.GET,
+                    requestParam: new Map([
+                        [
+                            "id",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                    ]),
+                    headers: new Map(),
+                }
+            ],
+            [
                 "getQuizesByUserId",
                 {
                     method: HTTP_METOD.GET,
@@ -336,6 +353,54 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     method: HTTP_METOD.POST,
                     requestBody: new Map([
                         
+                        [
+                            "title",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "description",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "isPublic",
+                            {
+                                type: DEFAULT_TYPES.BOOLEAN,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "shortAccessibleName",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                    ]),
+                }
+            ],
+            [
+                "updateQuiz",
+                {
+                    method: HTTP_METOD.PUT,
+                    requestBody: new Map([
+                        [
+                            "id",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
                         [
                             "title",
                             {

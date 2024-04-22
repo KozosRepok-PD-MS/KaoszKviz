@@ -7,37 +7,62 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
 import { AuthContext } from "../../context/AuthContext";
-import { QuizCreateFormType } from "src/model/Quiz";
+import { QuizCreateFormType, QuizModifyFormType } from "src/model/Quiz";
 
-const QuizForm: React.FC = (props) => {
+type QuizFormProps = {
+    isnew: boolean;
+    quizId: bigint;
+}
+
+const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
     const navigate: NavigateFunction = useNavigate();
     const{auth} = useContext(AuthContext);
     const userId = auth?.user?.id;
-    const[quizDatas, setQuizDatas] = useState<QuizCreateFormType>( {
+    const[newQuizDatas, setNewQuizDatas] = useState<QuizCreateFormType>( {
         ownerId: userId,
         title: "",
         description: "",
         isPublic: true,
         shortAccessibleNAme: ""
     });
-    const { setAuth } = useContext(AuthContext);
+    const[modifyQuizDatas, setModifyQuizDatas] = useState<QuizModifyFormType>( {
+        id: props.quizId,
+        title: "",
+        description: "",
+        isPublic: true,
+        shortAccessibleNAme: ""
+    });
     
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.name === "isPublic") {
-            setQuizDatas({
-              ...quizDatas,
-              [e.target.name]: e.target.checked,
-            });
-        } else {
-            setQuizDatas({
-              ...quizDatas,
-              [e.target.name]: e.target.value,
-            });
+        if(props.isnew){
+            if (e.target.name === "isPublic") {
+                setNewQuizDatas({
+                  ...newQuizDatas,
+                  [e.target.name]: e.target.checked,
+                });
+            } else {
+                setNewQuizDatas({
+                  ...newQuizDatas,
+                  [e.target.name]: e.target.value,
+                });
+            }
+        } else{
+            if (e.target.name === "isPublic") {
+                setModifyQuizDatas({
+                  ...modifyQuizDatas,
+                  [e.target.name]: e.target.checked,
+                });
+            } else {
+                setModifyQuizDatas({
+                  ...modifyQuizDatas,
+                  [e.target.name]: e.target.value,
+                });
+            }
         }
     };
 
-    function callbackFn(response: AxiosResponse<any, any>) {
+    function newCallbackFn(response: AxiosResponse<any, any>) {
         if (response.status === HttpStatusCode.Created) {
             console.log("kvíz létrehozva");
             
@@ -48,12 +73,26 @@ const QuizForm: React.FC = (props) => {
         }
     }
     
+    function modifyCallbackFn(response: AxiosResponse<any, any>) {
+        if (response.status === HttpStatusCode.Ok) {
+            console.log("kvíz modosítva");
+            
+            navigate("/myquizes");
+        } else {
+            console.log("nem sikertült módosítani a kvízt");
+            
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
-        
         try {
-            ApiHandler.executeApiCall(API_CONTROLLER.QUIZ, "addQuiz", callbackFn, quizDatas);
+            if(props.isnew){
+                ApiHandler.executeApiCall(API_CONTROLLER.QUIZ, "addQuiz", newCallbackFn, newQuizDatas);
+            } else{
+                ApiHandler.executeApiCall(API_CONTROLLER.QUIZ, "updateQuiz", modifyCallbackFn, modifyQuizDatas);
+            }
         } catch (error) {
             const ERR: ApiError = error as ApiError;
             
@@ -108,7 +147,10 @@ const QuizForm: React.FC = (props) => {
                         <LabeledInput {...input} key={index}/>
                     )
                 })}
-                <Button name="createQuiz" title="Kvíz létrehozása" type="submit"/>
+                {props.isnew ? 
+                    <Button name="createQuiz" title="Kvíz létrehozása" type="submit"/> 
+                    :
+                    <Button name="createQuiz" title="Kvíz módosítása" type="submit"/>}
             </form>
         </div>
     )
