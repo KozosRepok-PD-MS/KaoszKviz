@@ -13,7 +13,6 @@ import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
-import jakarta.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
@@ -59,7 +58,7 @@ public class CustomModelMapper extends ModelMapper {
         // </editor-fold>
                 
         // <editor-fold defaultstate="collapsed" desc="Quiz custom map">
-        if (source instanceof Quiz &&  QuizDTO.class.equals(destination)) {
+        if (source instanceof Quiz && QuizDTO.class.equals(destination)) {
             Quiz src = (Quiz) source;
             QuizDTO quizDTO = super.map(src, QuizDTO.class);
             Media mediaContent = src.getMediaContent();
@@ -71,6 +70,7 @@ public class CustomModelMapper extends ModelMapper {
                 quizDTO.setMediaContentOwner(-1);
                 quizDTO.setMediaContentName(null);
             }
+            return (D) quizDTO;
         }
         // </editor-fold>
         

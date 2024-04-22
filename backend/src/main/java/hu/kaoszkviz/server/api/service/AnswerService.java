@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.model.Question;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,10 +81,6 @@ public class AnswerService {
         
         if (answers.isEmpty()) {return ErrorManager.notFound();}
         
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(answers), HttpStatus.OK);
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+        return new ResponseEntity<>(Converter.ModelTableToJsonString(answers), HttpStatus.OK);
     }
 }

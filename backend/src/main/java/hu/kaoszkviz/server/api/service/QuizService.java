@@ -1,9 +1,8 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.dto.QuizDTO;
+import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.exception.UnauthorizedException;
-import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.model.Quiz;
 import hu.kaoszkviz.server.api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +55,16 @@ public class QuizService {
     }
     
     private ResponseEntity<String> processQuizList(List<Quiz> quizs) {
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.fromModelList(quizs, QuizDTO.class)), HttpStatus.OK);
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def();
-        }
+        return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.fromModelList(quizs, QuizDTO.class)), HttpStatus.OK);
+    }
+    
+    public ResponseEntity<String> getQuizById(long id) {
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
+        Quiz quiz = this.quizRepository.findById(id).orElseThrow(() -> new NotFoundException(Quiz.class, id));
+        if (quiz.getOwner().getId() != authUser.getId() && !quiz.isPublic() && !authUser.isAdmin()) { throw new UnauthorizedException(); }
+        QuizDTO quizDTO = this.customModelMapper.fromModel(quiz, QuizDTO.class);
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(quizDTO), HttpStatus.OK);
     }
     
     public ResponseEntity<String> addQuiz(QuizDTO quizDTO) {

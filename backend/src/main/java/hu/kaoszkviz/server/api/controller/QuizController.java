@@ -3,8 +3,6 @@ package hu.kaoszkviz.server.api.controller;
 import hu.kaoszkviz.server.api.dto.QuizDTO;
 import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.service.QuizService;
-import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +22,10 @@ public class QuizController {
     private QuizService quizService;
     
     @GetMapping(name = "")
-    public ResponseEntity<String> getQuizs(@RequestParam(required = false, defaultValue = "-1") long ownerId) {
+    public ResponseEntity<String> getQuizs(@RequestParam(required = false, defaultValue = "-1") long ownerId, @RequestParam(required = false, defaultValue = "-1") long id) {
+        if (id != -1) {
+            return this.quizService.getQuizById(id);
+        }
         ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         
         if (ownerId == -1) {

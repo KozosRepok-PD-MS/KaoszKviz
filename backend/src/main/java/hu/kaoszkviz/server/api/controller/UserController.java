@@ -2,7 +2,6 @@
 package hu.kaoszkviz.server.api.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
 import hu.kaoszkviz.server.api.dto.UserDTO;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
@@ -10,7 +9,6 @@ import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.service.UserService;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +32,7 @@ public class UserController {
     UserService userService;
     
     @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody(required = false) UserDTO user) throws JsonProcessingException {
+    public ResponseEntity<String> addUser(@RequestBody(required = false) UserDTO user) {
         if (user == null) { return ErrorManager.notFound("User"); }
         return this.userService.addUser(user);
     }

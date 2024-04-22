@@ -101,4 +101,20 @@ public class ErrorManager {
         return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
     }
     
+    /**
+     * A {@code ResponseEntity} that presents the {@code Internal Server Error} exception.
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> internal() {
+        return ErrorManager.internal("");
+    }
+    
+    /**
+     * A {@code ResponseEntity} that presents the {@code Internal Server Error} exception with the given {@code String}.
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> internal(String msg) {
+        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
 }

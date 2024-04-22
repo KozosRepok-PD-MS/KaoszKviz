@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.model.QuizPlayer;
 import hu.kaoszkviz.server.api.repository.QuizHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +29,6 @@ public class QuizPlayerService {
         
         if(quizPlayers.isEmpty()) {return ErrorManager.notFound("quizPlayers");}
         
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(quizPlayers), HttpStatus.OK);
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getMessage());
-        }
+        return new ResponseEntity<>(Converter.ModelTableToJsonString(quizPlayers), HttpStatus.OK);
     }
 }

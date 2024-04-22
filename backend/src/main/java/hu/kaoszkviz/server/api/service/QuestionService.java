@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
@@ -59,11 +58,7 @@ public class QuestionService {
         
         if(questions.isEmpty()) {return ErrorManager.notFound("questions");}
 
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK); //ErrorManager
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+        return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> addQuestion(HashMap<String, String> datas){

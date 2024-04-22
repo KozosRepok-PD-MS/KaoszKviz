@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
 import hu.kaoszkviz.server.api.dto.UserDTO;
 import hu.kaoszkviz.server.api.exception.NotFoundException;
@@ -20,7 +19,6 @@ import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -70,11 +68,7 @@ public class UserService {
             throw new NotFoundException(User.class, id);
         }
         
-        try {
-            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def("failed to get data");
-        }
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
     }
     
     public ResponseEntity<String> getUsersByName(String searchName) {
@@ -172,12 +166,7 @@ public class UserService {
         APIKey apiKey = new APIKey(user);
         this.apiKeyRepository.save(apiKey);
         
-        try {
-            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class)), HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
-        } catch (JsonProcessingException ex) {
-            this.apiKeyRepository.delete(apiKey);
-            return ErrorManager.def();
-        }
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class)), HeaderBuilder.build(ConfigDatas.API_KEY_HEADER, apiKey.getKey().toString()), HttpStatus.OK);
     }
     
     public ResponseEntity<String> logoutUser(String apiKey) {

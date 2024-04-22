@@ -1,6 +1,7 @@
 
 package hu.kaoszkviz.server.api.controller;
 
+import hu.kaoszkviz.server.api.exception.InternalServerErrorException;
 import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.exception.UnauthorizedException;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
@@ -27,6 +28,9 @@ public class KaoszContoller {
         
         if (e instanceof UnauthorizedException unauthEx) {
             return ErrorManager.unauth();
+        }
+        if (e instanceof InternalServerErrorException iseEx) {
+            return ErrorManager.internal();
         }
         
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

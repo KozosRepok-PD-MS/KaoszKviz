@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.model.Quiz;
 import hu.kaoszkviz.server.api.model.QuizTopic;
@@ -34,11 +33,7 @@ public class QuizTopicService {
     public ResponseEntity<String> getQuizTopics(Long id){
         List<QuizTopic> quizTopics = this.quizTopicRepository.searchByQuizId(id);
         
-        try{
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
-        } catch (JsonProcessingException ex){
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+        return new ResponseEntity<>(Converter.ModelTableToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> addQuizTopic(HashMap<String, String> datas){
