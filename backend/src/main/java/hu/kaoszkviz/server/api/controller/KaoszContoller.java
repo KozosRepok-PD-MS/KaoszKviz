@@ -23,12 +23,13 @@ public class KaoszContoller {
         }
         
         if (e instanceof NotFoundException notFoundEx) {
-            return ErrorManager.notFound(notFoundEx.getNotFoundClass().getSimpleName().toLowerCase() + ":" + notFoundEx.getNotFoundKey() + (msg != null ? ("->" + msg) : ""));
+            return ErrorManager.notFound(notFoundEx.getNotFoundClass().getSimpleName().toLowerCase() + (notFoundEx.getNotFoundKey() != null ? (":" + notFoundEx.getNotFoundKey()) : "") + (msg != null ? ("->" + msg) : ""));
         }
         
         if (e instanceof UnauthorizedException unauthEx) {
             return ErrorManager.unauth();
         }
+        
         if (e instanceof InternalServerErrorException iseEx) {
             return ErrorManager.internal();
         }
