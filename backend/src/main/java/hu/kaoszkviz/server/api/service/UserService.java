@@ -53,8 +53,10 @@ public class UserService {
         
         userToSave.setAdmin(false);
         userToSave.setStatus(User.Status.ACTIVE);
-        if (this.userRepository.save(userToSave) != null) {
-            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
+        userToSave = this.userRepository.save(userToSave);
+        
+        if (userToSave != null) {
+            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(userToSave, UserDTO.class)), HttpStatus.CREATED); //ErrorManager
         }
         
         return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
@@ -89,7 +91,7 @@ public class UserService {
         }
 
         try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.fromModelList(users, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
+            return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(users, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
         } catch (Exception ex) {
             return ErrorManager.def("failed to get data");
         }
@@ -105,7 +107,7 @@ public class UserService {
         user.setStatus(User.Status.DELETED);
 
         if (this.userRepository.save(user) != null) {
-            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
+            return new ResponseEntity<>("", HttpStatus.OK); //ErrorManager
         }
         
         return ErrorManager.def("failed to save");
@@ -124,9 +126,9 @@ public class UserService {
         User user = this.userRepository.findById(userDto.getId()).orElseThrow(() -> new NotFoundException(User.class, userDto.getId()));
             
         this.customModelMapper.updateFromDTO(userDto, user);
-
-        if (this.userRepository.save(user) != null) {
-            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
+        user = this.userRepository.save(user);
+        if (user != null) {
+            return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class)), HttpStatus.OK); //ErrorManager
         }
         
         return ErrorManager.def("failed to save");

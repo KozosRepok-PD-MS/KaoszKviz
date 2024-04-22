@@ -58,7 +58,7 @@ public class QuestionService {
         
         if(questions.isEmpty()) {return ErrorManager.notFound("questions");}
 
-        return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK); //ErrorManager
+        return new ResponseEntity<>(Converter.ModelListToJsonString(questions), HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> addQuestion(HashMap<String, String> datas){

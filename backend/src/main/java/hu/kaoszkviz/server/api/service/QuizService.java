@@ -55,7 +55,7 @@ public class QuizService {
     }
     
     private ResponseEntity<String> processQuizList(List<Quiz> quizs) {
-        return new ResponseEntity<>(Converter.ModelTableToJsonString(this.customModelMapper.fromModelList(quizs, QuizDTO.class)), HttpStatus.OK);
+        return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(quizs, QuizDTO.class)), HttpStatus.OK);
     }
     
     public ResponseEntity<String> getQuizById(long id) {

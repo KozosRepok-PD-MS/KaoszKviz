@@ -29,6 +29,6 @@ public class QuizPlayerService {
         
         if(quizPlayers.isEmpty()) {return ErrorManager.notFound("quizPlayers");}
         
-        return new ResponseEntity<>(Converter.ModelTableToJsonString(quizPlayers), HttpStatus.OK);
+        return new ResponseEntity<>(Converter.ModelListToJsonString(quizPlayers), HttpStatus.OK);
     }
 }

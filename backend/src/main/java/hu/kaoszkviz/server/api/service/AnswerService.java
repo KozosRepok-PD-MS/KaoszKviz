@@ -81,6 +81,6 @@ public class AnswerService {
         
         if (answers.isEmpty()) {return ErrorManager.notFound();}
         
-        return new ResponseEntity<>(Converter.ModelTableToJsonString(answers), HttpStatus.OK);
+        return new ResponseEntity<>(Converter.ModelListToJsonString(answers), HttpStatus.OK);
     }
 }

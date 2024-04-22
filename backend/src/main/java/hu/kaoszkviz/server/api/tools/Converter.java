@@ -16,7 +16,7 @@ public class Converter {
                                                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private static final JsonViewEnum DEFAULT_VIEW = JsonViewEnum.PUBLIC_VIEW;
     
-    public static <T> String ModelTableToJsonString(List<T> list) {
+    public static <T> String ModelListToJsonString(List<T> list) {
         return Converter.ModelTableToJsonString(list.toArray());
     }
     
@@ -25,7 +25,7 @@ public class Converter {
     }
     
     
-    public static <T> String ModelTableToJsonString(List<T> list, JsonViewEnum view) {
+    public static <T> String ModelListToJsonString(List<T> list, JsonViewEnum view) {
         return Converter.ModelTableToJsonString(list.toArray(), view);
     }
    

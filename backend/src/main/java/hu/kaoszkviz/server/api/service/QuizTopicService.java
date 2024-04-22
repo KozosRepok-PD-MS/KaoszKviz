@@ -32,8 +32,7 @@ public class QuizTopicService {
     
     public ResponseEntity<String> getQuizTopics(Long id){
         List<QuizTopic> quizTopics = this.quizTopicRepository.searchByQuizId(id);
-        
-        return new ResponseEntity<>(Converter.ModelTableToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
+        return new ResponseEntity<>(Converter.ModelListToJsonString(quizTopics, JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> addQuizTopic(HashMap<String, String> datas){

@@ -1,9 +1,7 @@
 package hu.kaoszkviz.server.api.controller;
 
-import hu.kaoszkviz.server.api.model.Topic;
+import hu.kaoszkviz.server.api.dto.TopicDTO;
 import hu.kaoszkviz.server.api.service.TopicService;
-import java.util.HashMap;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,17 +20,21 @@ public class TopicController {
     private TopicService topicService;
     
     @GetMapping(name = "")
-    public List<Topic> getTopics(@RequestParam(required = false, defaultValue = "") String searchString){
-        return this.topicService.getTopics(searchString);
+    public ResponseEntity<String> getTopics(@RequestParam(required = false, defaultValue = "") String searchString) {
+        if (searchString.isBlank()) {
+            return this.topicService.getTopics();
+        }
+        
+        return this.topicService.searchTopic(searchString);
     }
     
     @PostMapping("")
-    public ResponseEntity<String> addTopic(@RequestBody Topic topic) {
+    public ResponseEntity<String> addTopic(@RequestBody TopicDTO topic) {
         return this.topicService.addTopic(topic);
     }
     
     @DeleteMapping("")
-    public ResponseEntity<String> deleteById(@RequestBody HashMap<String, String> requestBody){
-        return this.topicService.deleteById(requestBody.get("id"));
+    public ResponseEntity<String> deleteById(@RequestParam long id){
+        return this.topicService.deleteById(id);
     }
 }
