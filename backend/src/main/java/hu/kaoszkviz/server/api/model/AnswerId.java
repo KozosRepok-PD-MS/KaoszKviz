@@ -16,4 +16,9 @@ public class AnswerId implements Serializable {
     
     @Getter
     private byte ordinalNumber;
+    
+    @Override
+    public String toString() {
+        return "[questionId:%d|ordinalNumber:%d]".formatted(this.question.getId(),this.ordinalNumber);
+    }
 }

@@ -1,6 +1,8 @@
 
 package hu.kaoszkviz.server.api.tools;
 
+import hu.kaoszkviz.server.api.config.ConfigDatas;
+import hu.kaoszkviz.server.api.dto.AnswerDTO;
 import hu.kaoszkviz.server.api.dto.DTO;
 import hu.kaoszkviz.server.api.dto.QuestionDTO;
 import hu.kaoszkviz.server.api.dto.QuizDTO;
@@ -9,6 +11,7 @@ import hu.kaoszkviz.server.api.dto.QuizTopicDTO;
 import hu.kaoszkviz.server.api.dto.UserDTO;
 import hu.kaoszkviz.server.api.exception.InternalServerErrorException;
 import hu.kaoszkviz.server.api.exception.NotFoundException;
+import hu.kaoszkviz.server.api.model.Answer;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.Model;
@@ -20,7 +23,9 @@ import hu.kaoszkviz.server.api.model.QuizPlayer;
 import hu.kaoszkviz.server.api.model.QuizTopic;
 import hu.kaoszkviz.server.api.model.Topic;
 import hu.kaoszkviz.server.api.model.User;
+import hu.kaoszkviz.server.api.repository.AnswerRepository;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
+import hu.kaoszkviz.server.api.repository.QuestionRepository;
 import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 import hu.kaoszkviz.server.api.repository.QuizHistoryRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
@@ -52,6 +57,12 @@ public class CustomModelMapper extends ModelMapper {
     
     @Autowired
     private QuestionTypeRepository questionTypeRepository;
+    
+    @Autowired
+    private AnswerRepository answerRepository;
+    
+    @Autowired
+    private QuestionRepository questionRepository;
     
 //    @Autowired
 //    private 
@@ -150,6 +161,21 @@ public class CustomModelMapper extends ModelMapper {
             }
             
             return (D) questionDTO;
+        }
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Answer custom map">
+        if (source instanceof Answer answer && AnswerDTO.class.equals(destination)) {
+            AnswerDTO answerDTO = super.map(answer, AnswerDTO.class);
+            
+            answerDTO.setQuestionId(answer.getQuestion().getId());
+            if (answer.getQuestion().getQuestionType().getType().equals(ConfigDatas.PAIRING_QUESTION_TYPE)) {
+                answerDTO.setCorrectAnswer(answerDTO.getCorrectAnswer());
+                answerDTO.setCorrect(true);
+            } else {
+                answerDTO.setCorrectAnswer(null);
+            }
+            return (D) answerDTO;
         }
         // </editor-fold>
         
@@ -266,6 +292,21 @@ public class CustomModelMapper extends ModelMapper {
         }
         // </editor-fold>
         
+        // <editor-fold defaultstate="collapsed" desc="AnswerDTO custom map">
+        if (source instanceof AnswerDTO answerDTO && destination instanceof Answer answer) {
+            super.map(answerDTO, answer);
+            
+            answer.setQuestion(this.questionRepository.findById(answerDTO.getQuestionId()).orElseThrow(() -> new NotFoundException(Question.class, answerDTO.getQuestionId())));
+            if (answer.getQuestion().getQuestionType().getType().equals(ConfigDatas.PAIRING_QUESTION_TYPE)) {
+                answer.setCorrectAnswer(answerDTO.getCorrectAnswer());
+                answer.setCorrect(true);
+            } else {
+                answer.setCorrectAnswer(null);
+            }
+            return;
+        }
+        // </editor-fold>
+        
         super.map(source, destination);
     }
     
@@ -332,7 +373,24 @@ public class CustomModelMapper extends ModelMapper {
             return;
         }
         // </editor-fold>
-
+        
+        // <editor-fold defaultstate="collapsed" desc="AnswerDTO custom map">
+        if (source instanceof AnswerDTO answerDTO && destination instanceof Answer answer) {
+            
+            answer.setAnswer(answerDTO.getAnswer());
+            answer.setCorrect(answerDTO.isCorrect());
+            if (answer.getQuestion().getQuestionType().getType().equals(ConfigDatas.PAIRING_QUESTION_TYPE)) {
+                answer.setCorrectAnswer(answerDTO.getCorrectAnswer());
+                answer.setCorrect(true);
+            } else {
+                answer.setCorrectAnswer(null);
+            }
+            answer.setQuestion(this.questionRepository.findById(answerDTO.getQuestionId()).orElseThrow(() -> new NotFoundException(Question.class, answerDTO.getQuestionId())));
+            
+            return;
+        }
+        // </editor-fold>
+        
         super.map(source, destination);
     }
     

@@ -1,7 +1,7 @@
 package hu.kaoszkviz.server.api.controller;
 
+import hu.kaoszkviz.server.api.dto.AnswerDTO;
 import hu.kaoszkviz.server.api.service.AnswerService;
-import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,8 +21,8 @@ public class AnswerController {
     private AnswerService answerService;
     
     @PostMapping(name = "")
-    public ResponseEntity<String> addAnswer(@RequestBody HashMap<String, String> requeqtBody){
-        return this.answerService.addAnswer(requeqtBody);
+    public ResponseEntity<String> addAnswer(@RequestBody AnswerDTO answerDTO){
+        return this.answerService.addAnswer(answerDTO);
     }
     
     @GetMapping
@@ -31,12 +31,12 @@ public class AnswerController {
     }
     
     @DeleteMapping(name = "")
-    public ResponseEntity<String> deleteByQuestionIdAndOrdinalNumber(@RequestBody HashMap<String, String> requestBody){
-        return this.answerService.deleteByQuestionIdAndOrdinalNumber(Long.valueOf(requestBody.get("questionId")), (byte) Integer.parseInt(requestBody.get("ordinalNumber")));
+    public ResponseEntity<String> deleteByQuestionIdAndOrdinalNumber(@RequestParam long questionId, @RequestParam byte ordinalNumber){
+        return this.answerService.deleteByQuestionIdAndOrdinalNumber(questionId, ordinalNumber);
     }
     
     @PutMapping(name = "")
-    public ResponseEntity<String> updateAnswer(@RequestBody HashMap<String, String> requestBody){
-        return this.answerService.updateAnswer(requestBody);
+    public ResponseEntity<String> updateAnswer(@RequestBody AnswerDTO answerDTO){
+        return this.answerService.updateAnswer(answerDTO);
     }
 }

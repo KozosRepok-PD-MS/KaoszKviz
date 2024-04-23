@@ -36,5 +36,8 @@ public class ConfigDatas {
     
     public static final String API_KEY_HEADER = "API-KEY";
     
+    public static final String PAIRING_QUESTION_TYPE = "pairing";
+    
+    public static final int MAX_ANSWER_FOR_QUESTION = 6;
     
 }
