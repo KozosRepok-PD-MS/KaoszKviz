@@ -2,6 +2,7 @@
 package hu.kaoszkviz.server.api.tools;
 
 import hu.kaoszkviz.server.api.dto.DTO;
+import hu.kaoszkviz.server.api.dto.QuestionDTO;
 import hu.kaoszkviz.server.api.dto.QuizDTO;
 import hu.kaoszkviz.server.api.dto.QuizPlayerDTO;
 import hu.kaoszkviz.server.api.dto.QuizTopicDTO;
@@ -11,6 +12,8 @@ import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.Model;
+import hu.kaoszkviz.server.api.model.Question;
+import hu.kaoszkviz.server.api.model.QuestionType;
 import hu.kaoszkviz.server.api.model.Quiz;
 import hu.kaoszkviz.server.api.model.QuizHistory;
 import hu.kaoszkviz.server.api.model.QuizPlayer;
@@ -18,6 +21,7 @@ import hu.kaoszkviz.server.api.model.QuizTopic;
 import hu.kaoszkviz.server.api.model.Topic;
 import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
+import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 import hu.kaoszkviz.server.api.repository.QuizHistoryRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
 import hu.kaoszkviz.server.api.repository.TopicRepository;
@@ -45,6 +49,9 @@ public class CustomModelMapper extends ModelMapper {
     
     @Autowired
     private QuizHistoryRepository quizHistoryRepository;
+    
+    @Autowired
+    private QuestionTypeRepository questionTypeRepository;
     
 //    @Autowired
 //    private 
@@ -123,6 +130,26 @@ public class CustomModelMapper extends ModelMapper {
             }
             
             return (D) quizPlayerDTO;
+        }
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Question custom map">
+        if (source instanceof Question question && QuestionDTO.class.equals(destination)) {
+            QuestionDTO questionDTO = super.map(question, QuestionDTO.class);
+            
+            questionDTO.setQuizId(question.getQuiz().getId());
+            questionDTO.setQuestionType(question.getQuestionType().getType());
+            Media profilePicture = question.getMediaContent();
+            
+            if (profilePicture != null) {
+                questionDTO.setMediaContentOwnerId(profilePicture.getOwner().getId());
+                questionDTO.setMediaContentName(profilePicture.getFileName());
+            } else {
+                questionDTO.setMediaContentOwnerId(-1);
+                questionDTO.setMediaContentName(null);
+            }
+            
+            return (D) questionDTO;
         }
         // </editor-fold>
         
@@ -220,6 +247,25 @@ public class CustomModelMapper extends ModelMapper {
         }
         // </editor-fold>
         
+        // <editor-fold defaultstate="collapsed" desc="QuestionDTO custom map">
+        if (source instanceof QuestionDTO questionDTO && destination instanceof Question question) {
+            super.map(questionDTO, question);
+            
+            question.setQuiz(this.quizRepository.findById(questionDTO.getQuizId()).orElseThrow(() -> new NotFoundException(QuizHistory.class, questionDTO.getQuizId())));
+            question.setQuestionType(this.questionTypeRepository.findById(questionDTO.getQuestionType()).orElseThrow(() -> new NotFoundException(QuestionType.class, questionDTO.getQuestionType())));
+            
+            if ((questionDTO.getMediaContentName()== null || questionDTO.getMediaContentName().isBlank()) || questionDTO.getMediaContentOwnerId()== -1) {                
+                question.setMediaContent(null);
+            } else {
+                //ha jók a kép adatai
+                User owner = this.userRepository.findById(questionDTO.getMediaContentOwnerId()).orElseThrow(() -> new NotFoundException(User.class, questionDTO.getMediaContentOwnerId()));
+                question.setMediaContent(this.findMediaById(owner, questionDTO.getMediaContentName()));
+            }
+            
+            return;
+        }
+        // </editor-fold>
+        
         super.map(source, destination);
     }
     
@@ -232,18 +278,16 @@ public class CustomModelMapper extends ModelMapper {
      */
     public <S extends DTO, D extends Model> void updateFromDTO(S source, D destination) {
         // <editor-fold defaultstate="collapsed" desc="UserDTO custom map">
-        if (source instanceof UserDTO && destination instanceof User) {
-            UserDTO src = (UserDTO) source;
+        if (source instanceof UserDTO userDTO && destination instanceof User user) {
+            user.setUsername(userDTO.getUsername());
+            user.setEmail(userDTO.getEmail());
             
-            ((User) destination).setUsername(src.getUsername());
-            ((User) destination).setEmail(src.getEmail());
-            
-            if ((src.getProfilePictureName() == null || src.getProfilePictureName().isBlank()) || src.getProfilePictureOwnerId() == -1) {                
-                ((User) destination).setProfilePicture(null);
+            if ((userDTO.getProfilePictureName() == null || userDTO.getProfilePictureName().isBlank()) || userDTO.getProfilePictureOwnerId() == -1) {                
+                user.setProfilePicture(null);
             } else {
                 //ha jók a kép adatai
-                User owner = this.userRepository.findById(src.getProfilePictureOwnerId()).orElseThrow(() -> new NotFoundException(User.class, src.getProfilePictureOwnerId()));
-                ((User) destination).setProfilePicture(this.findMediaById(owner, src.getProfilePictureName()));
+                User owner = this.userRepository.findById(userDTO.getProfilePictureOwnerId()).orElseThrow(() -> new NotFoundException(User.class, userDTO.getProfilePictureOwnerId()));
+                user.setProfilePicture(this.findMediaById(owner, userDTO.getProfilePictureName()));
             }
             
             return;
@@ -251,23 +295,40 @@ public class CustomModelMapper extends ModelMapper {
         // </editor-fold>
         
         // <editor-fold defaultstate="collapsed" desc="QuizDTO custom map">
-        if (source instanceof QuizDTO && destination instanceof Quiz) {
-            QuizDTO src = (QuizDTO) source;
+        if (source instanceof QuizDTO quizDTO && destination instanceof Quiz quiz) {
             
-            ((Quiz) destination).setDescription(src.getDescription());
-            ((Quiz) destination).setPublic(src.isPublic());
-            ((Quiz) destination).setShortAccessibleName(src.getShortAccessibleName());
-            ((Quiz) destination).setTitle(src.getTitle());
+            quiz.setDescription(quizDTO.getDescription());
+            quiz.setPublic(quizDTO.isPublic());
+            quiz.setShortAccessibleName(quizDTO.getShortAccessibleName());
+            quiz.setTitle(quizDTO.getTitle());
             // ! TODO
 //            updateQuiz.setTopics(quiz.getTopics());
             
-            if ((src.getMediaContentName() == null || src.getMediaContentName().isBlank()) || src.getMediaContentOwner()== -1) {
-                ((Quiz) destination).setMediaContent(null);
+            if ((quizDTO.getMediaContentName() == null || quizDTO.getMediaContentName().isBlank()) || quizDTO.getMediaContentOwner()== -1) {
+                quiz.setMediaContent(null);
             } else {
                 //ha jók a kép adatai
-                User owner = this.userRepository.findById(src.getMediaContentOwner()).orElseThrow(() -> new NotFoundException(User.class, src.getMediaContentOwner()));
-                ((Quiz) destination).setMediaContent(this.findMediaById(owner, src.getMediaContentName()));
+                User owner = this.userRepository.findById(quizDTO.getMediaContentOwner()).orElseThrow(() -> new NotFoundException(User.class, quizDTO.getMediaContentOwner()));
+                quiz.setMediaContent(this.findMediaById(owner, quizDTO.getMediaContentName()));
             }
+            return;
+        }
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="QuestionDTO custom map">
+        if (source instanceof QuestionDTO questionDTO && destination instanceof Question question) {
+            
+            question.setQuestion(questionDTO.getQuestion());
+            question.setTimeToAnswer(questionDTO.getTimeToAnswer());
+            
+            if ((questionDTO.getMediaContentName()== null || questionDTO.getMediaContentName().isBlank()) || questionDTO.getMediaContentOwnerId()== -1) {                
+                question.setMediaContent(null);
+            } else {
+                //ha jók a kép adatai
+                User owner = this.userRepository.findById(questionDTO.getMediaContentOwnerId()).orElseThrow(() -> new NotFoundException(User.class, questionDTO.getMediaContentOwnerId()));
+                question.setMediaContent(this.findMediaById(owner, questionDTO.getMediaContentName()));
+            }
+            
             return;
         }
         // </editor-fold>
