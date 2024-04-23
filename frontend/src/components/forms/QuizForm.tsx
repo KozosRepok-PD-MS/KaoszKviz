@@ -104,7 +104,7 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
         {
             label: "A kvíz címe",
             inputProps: {
-                name: "quizTitle",
+                name: "title",
                 placeholder: "",
                 type: "text",
                 onChangeFn: handleChange
@@ -113,7 +113,7 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
         {
             label: "A kvíz leírása",
             inputProps: {
-                name: "quizDescription",
+                name: "description",
                 placeholder: "",
                 type: "text",
                 onChangeFn: handleChange
@@ -122,7 +122,7 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
         {
             label: "Publikus kvíz?",
             inputProps: {
-                name: "quizIsPublic",
+                name: "isPublic",
                 placeholder: "",
                 type: "checkbox",
                 onChangeFn: handleChange
@@ -131,7 +131,7 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
         {
             label: "Rövid név (max 3 betű)",
             inputProps: {
-                name: "quizShortAccessibleNAme",
+                name: "shortAccessibleName",
                 placeholder: "",
                 type: "text",
                 onChangeFn: handleChange

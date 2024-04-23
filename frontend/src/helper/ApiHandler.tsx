@@ -5,7 +5,7 @@ import { API_KEY_STRING } from "../config/GlobalDatas";
 export default class ApiHandler {
     static #baseUrl: string ="http://localhost:5556";
     
-    static executeApiCall(controller: API_CONTROLLER, method: string, callback: Function, requestBody?: Object, requestParam?: Map<string, string>, headers?: Map<string, string>): void {
+    static executeApiCall(controller: API_CONTROLLER, method: string, callback: Function, requestBody: Object = new Map<string, string>(), requestParam?: Map<string, string>, headers: Map<string, string> = new Map<string, string>()): void {
         if (!apiEndpoints.has(controller)) {
             throw new Error("controller not found");
         }
@@ -16,24 +16,62 @@ export default class ApiHandler {
         }
 
         const API_ENDPOINT: ApiEndpoint = ENDPOINT.get(method)!;
-        requestBody = requestBody ? requestBody : new Map<string, string>();
-        requestParam = requestParam ? requestParam : new Map<string, string>();
-        headers = headers ? headers : new Map<string, string>();
-
-        let url = API_ENDPOINT.url ? ApiHandler.buildEndpoint(controller, API_ENDPOINT.url!) : ApiHandler.buildEndpoint(controller);
         
-        if (!ApiHandler.#isValidRequest(requestBody, requestParam, API_ENDPOINT)) { return; }
+        let url: string = API_ENDPOINT.url ? ApiHandler.buildEndpoint(controller, API_ENDPOINT.url!) : ApiHandler.buildEndpoint(controller);
+        url = requestParam ? ApiHandler.buildUrl(url, requestParam) : ApiHandler.buildUrl(url);
+        const headersConfig: AxiosRequestConfig<any> = ApiHandler.#createRequestConfig(headers);
+        
+        if (!ApiHandler.#isValidRequest(requestBody, requestParam ? requestParam : new Map<string, string>() , API_ENDPOINT)) { return; }
 
         try {
             switch (API_ENDPOINT.method) {
                 case HTTP_METOD.POST:
-                    ApiHandler.postRequest(url, callback, requestBody, requestParam, headers)
+                    console.log("POST: => " + url);
+                    axios.post(url, requestBody, headersConfig)
+                         .then((result: AxiosResponse<any, any>) => {
+                            console.log(result);
+                            
+                            callback(result);
+                            
+                         })
+                         .catch((error: AxiosError) => {
+                            let response: AxiosResponse = error.response!;
+                            console.log(response);
+                            
+                            throw new ApiError(response.status, response.data);
+                         });
                     break;
                 case HTTP_METOD.PUT:
-                    console.log("PUT üres");
+                    console.log("PUT: => " + url);
+                    axios.put(url, requestBody, ApiHandler.#createRequestConfig(headers))
+                         .then((result: AxiosResponse<any, any>) => {
+                            console.log(result);
+                            
+                            callback(result);
+                            
+                         })
+                         .catch((error: AxiosError) => {
+                            let response: AxiosResponse = error.response!;
+                            console.log(response);
+                            
+                            throw new ApiError(response.status, response.data);
+                         });
                     break;
                 case HTTP_METOD.DELETE:
-                    console.log("DELETE üres");
+                    console.log("DELETE: => " + url);
+                    axios.delete(url, ApiHandler.#createRequestConfig(headers))
+                         .then((result: AxiosResponse<any, any>) => {
+                            console.log(result);
+                            
+                            callback(result);
+                            
+                         })
+                         .catch((error: AxiosError) => {
+                            let response: AxiosResponse = error.response!;
+                            console.log(response);
+                            
+                            throw new ApiError(response.status, response.data);
+                         });
                     break;
                 case HTTP_METOD.PATCH:
                     console.log("PATCH üres");
@@ -41,44 +79,19 @@ export default class ApiHandler {
             
                 default:
                     //GET as default
-                    ApiHandler.getRequest(url, callback, requestParam, headers);
+                    console.log("GET: => " + url);
+                    axios.get(url, ApiHandler.#createRequestConfig(headers))
+                         .then((result: AxiosResponse<any, any>) => {
+                            callback(result);
+                         })
+                         .catch((error) => {
+                            throw new Error(error);
+                         });
                     break;
             }
         } catch (error) {
             throw error;
         }
-    }
-
-    static postRequest(endpoint: string, callback: Function, requestBody?: Object, parameters?: Map<string, string>, headers?: Map<string, string>) {
-        headers = headers ? headers : new Map<string, string>();
-        let url = parameters ? ApiHandler.buildUrl(endpoint, parameters) : ApiHandler.buildUrl(endpoint);
-        console.log("POST: => " + url);
-        axios.post(url, requestBody, ApiHandler.#createRequestConfig(headers))
-             .then((result: AxiosResponse<any, any>) => {
-                console.log(result);
-                
-                callback(result);
-                
-             })
-             .catch((error: AxiosError) => {
-                let response: AxiosResponse = error.response!;
-                console.log(response);
-                
-                throw new ApiError(response.status, response.data);
-             });
-    }
-
-    static getRequest(endpoint: string, callback: Function, parameters?: Map<string, string>, headers?: Map<string, string>) {
-        headers = headers ? headers : new Map<string, string>();
-        let url = parameters ? ApiHandler.buildUrl(endpoint, parameters) : ApiHandler.buildUrl(endpoint);
-        console.log("GET: => " + url);
-        axios.get(url, ApiHandler.#createRequestConfig(headers))
-             .then((result: AxiosResponse<any, any>) => {
-                callback(result);
-             })
-             .catch((error) => {
-                throw new Error(error);
-             });
     }
 
     static buildEndpoint(controller: API_CONTROLLER, endpoint?: string): string {
@@ -149,6 +162,7 @@ export default class ApiHandler {
                 }
                 break;
             case DEFAULT_TYPES.BOOLEAN:
+                valueToCheck = valueToCheck.toString();
                 if (valueToCheck !== "true" && valueToCheck !== "false" && valueToCheck !== "0" && valueToCheck !== "1") {
                     return false;
                 }
