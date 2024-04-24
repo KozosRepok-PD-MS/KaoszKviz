@@ -19,6 +19,7 @@ import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class UserService {
             return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(userToSave, UserDTO.class)), HttpStatus.CREATED); //ErrorManager
         }
         
-        return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
+        return ErrorManager.def();
     }
     
     public ResponseEntity<String> getUserById(long id) {
@@ -89,11 +90,16 @@ public class UserService {
         if (users.isEmpty()) {
             throw new NotFoundException(User.class, "");
         }
-
+        
+        Optional<User> rootUser = this.userRepository.findById(0l);
+        if (rootUser.isPresent()) {
+            users.remove(rootUser.get());
+        }
+        
         try {
             return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(users, UserDTO.class), JsonViewEnum.PUBLIC_VIEW), HttpStatus.OK);
         } catch (Exception ex) {
-            return ErrorManager.def("failed to get data");
+            return ErrorManager.def();
         }
     }
     
@@ -110,7 +116,7 @@ public class UserService {
             return new ResponseEntity<>("", HttpStatus.OK); //ErrorManager
         }
         
-        return ErrorManager.def("failed to save");
+        return ErrorManager.def();
     }
 
     
@@ -131,7 +137,7 @@ public class UserService {
             return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(user, UserDTO.class)), HttpStatus.OK); //ErrorManager
         }
         
-        return ErrorManager.def("failed to save");
+        return ErrorManager.def();
     }
     
     public ResponseEntity<String> generatePasswordResetToken(String userEmail) {

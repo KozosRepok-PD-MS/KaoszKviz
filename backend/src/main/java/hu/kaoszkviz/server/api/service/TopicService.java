@@ -57,7 +57,7 @@ public class TopicService {
         }
         
         this.topicRepository.delete(topicToDelete);
-        return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
+        return new ResponseEntity<>("", HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> addTopic(TopicDTO topicDTO) {

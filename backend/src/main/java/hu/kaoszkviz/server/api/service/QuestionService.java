@@ -84,8 +84,10 @@ public class QuestionService {
         Question question = this.questionRepository.findById(questionDTO.getId()).orElseThrow(() -> new NotFoundException(Question.class, questionDTO.getId()));
         
         this.customModelMapper.updateFromDTO(questionDTO, question);
-        this.questionRepository.save(question);
+        question = this.questionRepository.save(question);
         
-        return new ResponseEntity<>("", HttpStatus.OK);
+        if (question == null) { return ErrorManager.def(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.OK);
     }
 }

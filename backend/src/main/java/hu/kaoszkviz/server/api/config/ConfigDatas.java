@@ -40,4 +40,7 @@ public class ConfigDatas {
     
     public static final int MAX_ANSWER_FOR_QUESTION = 6;
     
+    public static final byte MAX_TIME_TO_ANSWER_IN_QUESTION = 90;
+    public static final byte DEFAULT_TIME_TO_ANSWER_IN_QUESTION = 10;
+    
 }

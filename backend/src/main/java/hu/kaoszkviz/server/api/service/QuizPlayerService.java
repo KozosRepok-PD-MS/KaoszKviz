@@ -43,6 +43,6 @@ public class QuizPlayerService {
             this.quizPlayerRepository.save(quizPlayer);
         }
         
-        return new ResponseEntity<>("", HttpStatus.OK);
+        return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(quizPlayers, QuizPlayerDTO.class)), HttpStatus.OK);
     }
 }

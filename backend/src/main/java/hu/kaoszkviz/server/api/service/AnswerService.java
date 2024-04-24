@@ -65,9 +65,11 @@ public class AnswerService {
         Answer answer = this.answerRepository.findById(id).orElseThrow(() -> new NotFoundException(Answer.class, id));
         
         this.customModelMapper.updateFromDTO(answerDTO, answer);
-        this.answerRepository.save(answer);
+        answer = this.answerRepository.save(answer);
         
-        return new ResponseEntity<>("", HttpStatus.OK); // ErrorManager
+        if (answer == null) { return ErrorManager.def(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(answer, AnswerDTO.class)), HttpStatus.OK); // ErrorManager
     }
     
     public ResponseEntity<String> getAnswers(long questionId) {

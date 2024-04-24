@@ -2,6 +2,7 @@
 package hu.kaoszkviz.server.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import hu.kaoszkviz.server.api.jsonview.NoContainJsonView;
 import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
 import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import hu.kaoszkviz.server.api.model.Quiz;
@@ -28,7 +29,7 @@ public class QuizDTO implements DTO {
     private String description;
     
     @JsonView(PublicJsonView.class)
-    private long mediaContentOwner = -1;
+    private long mediaContentOwnerId = -1;
     
     @JsonView(PublicJsonView.class)
     private String mediaContentName = null;
@@ -39,5 +40,6 @@ public class QuizDTO implements DTO {
     @JsonView(PublicJsonView.class)
     private String shortAccessibleName;
     
+    @JsonView(NoContainJsonView.class)
     private Quiz.Status status;
 }

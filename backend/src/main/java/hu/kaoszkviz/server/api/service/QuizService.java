@@ -1,6 +1,7 @@
 package hu.kaoszkviz.server.api.service;
 
 import hu.kaoszkviz.server.api.dto.QuizDTO;
+import hu.kaoszkviz.server.api.exception.InternalServerErrorException;
 import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.exception.UnauthorizedException;
 import hu.kaoszkviz.server.api.model.Quiz;
@@ -73,15 +74,14 @@ public class QuizService {
         Optional<User> user = this.userRepository.findById(quizDTO.getOwnerId());
         if (user.isEmpty()) { return ErrorManager.notFound("user"); }
         
-        Quiz quiz = customModelMapper.map(quizDTO, Quiz.class);
+        Quiz quiz = customModelMapper.fromDTO(quizDTO, Quiz.class);
         
         quiz.setStatus(Quiz.Status.ACTIVE);
+        quiz = this.quizRepository.save(quiz);
         
-        if (this.quizRepository.save(quiz) != null) {
-            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
-        }
+        if (quiz == null) { return ErrorManager.def(); }
         
-        return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(quiz, QuizDTO.class)), HttpStatus.CREATED); //ErrorManager
     }
     
     public ResponseEntity<String> deleteById(long id) {
@@ -94,6 +94,7 @@ public class QuizService {
         Quiz quiz = quizOptional.get();
         
         if (auth.getPrincipal().isAdmin() && quiz.getOwner().getId() != auth.getPrincipal().getId()) { return ErrorManager.unauth(); }
+        if (quiz.getStatus() == Quiz.Status.DELETED) { throw new InternalServerErrorException(); }
         
         quiz.setStatus(Quiz.Status.DELETED);
         this.quizRepository.save(quiz);
@@ -101,17 +102,17 @@ public class QuizService {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
     
-    public ResponseEntity<String> updateQuiz(QuizDTO quiz) {
-        Optional<Quiz> OptionalQuiz = this.quizRepository.findById(quiz.getId());
-        if(OptionalQuiz.isPresent()){
-            Quiz quizToUpdate = OptionalQuiz.get();
-            if (quizToUpdate.getOwner().getId() != quiz.getOwnerId()) { throw new UnauthorizedException(); }
-            
-            this.customModelMapper.updateFromDTO(quiz, quizToUpdate);
-            this.quizRepository.save(quizToUpdate);
-            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
-        } else {
-            return ErrorManager.notFound("quiz");
-        }
+    public ResponseEntity<String> updateQuiz(QuizDTO quizDTO) {
+        Quiz quiz = this.quizRepository.findById(quizDTO.getId()).orElseThrow(() -> new NotFoundException(Quiz.class, quizDTO.getId()));
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
+        
+        if (quiz.getOwner().getId() != authUser.getId()) { throw new UnauthorizedException(); }
+
+        this.customModelMapper.updateFromDTO(quizDTO, quiz);
+        quiz = this.quizRepository.save(quiz);
+        
+        if (quiz == null) { return ErrorManager.def(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(quiz, QuizDTO.class)), HttpStatus.OK); //ErrorManager
     }
 }

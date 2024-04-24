@@ -97,13 +97,15 @@ public class CustomModelMapper extends ModelMapper {
         // <editor-fold defaultstate="collapsed" desc="Quiz custom map">
         if (source instanceof Quiz quiz && QuizDTO.class.equals(destination)) {
             QuizDTO quizDTO = super.map(quiz, QuizDTO.class);
+            
+            quizDTO.setOwnerId(quiz.getOwner().getId());
             Media mediaContent = quiz.getMediaContent();
             
             if (mediaContent != null) {
-                quizDTO.setMediaContentOwner(mediaContent.getOwner().getId());
+                quizDTO.setMediaContentOwnerId(mediaContent.getOwner().getId());
                 quizDTO.setMediaContentName(mediaContent.getFileName());
             } else {
-                quizDTO.setMediaContentOwner(-1);
+                quizDTO.setMediaContentOwnerId(-1);
                 quizDTO.setMediaContentName(null);
             }
             return (D) quizDTO;
@@ -230,11 +232,11 @@ public class CustomModelMapper extends ModelMapper {
         if (source instanceof QuizDTO quizDTO && destination instanceof Quiz quiz) {
             super.map(quizDTO, quiz);
             
-            if ((quizDTO.getMediaContentName() == null || quizDTO.getMediaContentName().isBlank()) || quizDTO.getMediaContentOwner()== -1) {
+            if ((quizDTO.getMediaContentName() == null || quizDTO.getMediaContentName().isBlank()) || quizDTO.getMediaContentOwnerId()== -1) {
                 quiz.setMediaContent(null);
             } else {
                 //ha jók a kép adatai
-                User owner = this.userRepository.findById(quizDTO.getMediaContentOwner()).orElseThrow(() -> new NotFoundException(User.class, quizDTO.getMediaContentOwner()));
+                User owner = this.userRepository.findById(quizDTO.getMediaContentOwnerId()).orElseThrow(() -> new NotFoundException(User.class, quizDTO.getMediaContentOwnerId()));
                 quiz.setMediaContent(this.findMediaById(owner, quizDTO.getMediaContentName()));
             }
             return;
@@ -279,6 +281,8 @@ public class CustomModelMapper extends ModelMapper {
             
             question.setQuiz(this.quizRepository.findById(questionDTO.getQuizId()).orElseThrow(() -> new NotFoundException(QuizHistory.class, questionDTO.getQuizId())));
             question.setQuestionType(this.questionTypeRepository.findById(questionDTO.getQuestionType()).orElseThrow(() -> new NotFoundException(QuestionType.class, questionDTO.getQuestionType())));
+            question.setTimeToAnswer(questionDTO.getTimeToAnswer());
+            question.setTimeToAnswer(this.validateTimeToAnser(questionDTO.getTimeToAnswer()));
             
             if ((questionDTO.getMediaContentName()== null || questionDTO.getMediaContentName().isBlank()) || questionDTO.getMediaContentOwnerId()== -1) {                
                 question.setMediaContent(null);
@@ -345,11 +349,11 @@ public class CustomModelMapper extends ModelMapper {
             // ! TODO
 //            updateQuiz.setTopics(quiz.getTopics());
             
-            if ((quizDTO.getMediaContentName() == null || quizDTO.getMediaContentName().isBlank()) || quizDTO.getMediaContentOwner()== -1) {
+            if ((quizDTO.getMediaContentName() == null || quizDTO.getMediaContentName().isBlank()) || quizDTO.getMediaContentOwnerId()== -1) {
                 quiz.setMediaContent(null);
             } else {
                 //ha jók a kép adatai
-                User owner = this.userRepository.findById(quizDTO.getMediaContentOwner()).orElseThrow(() -> new NotFoundException(User.class, quizDTO.getMediaContentOwner()));
+                User owner = this.userRepository.findById(quizDTO.getMediaContentOwnerId()).orElseThrow(() -> new NotFoundException(User.class, quizDTO.getMediaContentOwnerId()));
                 quiz.setMediaContent(this.findMediaById(owner, quizDTO.getMediaContentName()));
             }
             return;
@@ -360,7 +364,7 @@ public class CustomModelMapper extends ModelMapper {
         if (source instanceof QuestionDTO questionDTO && destination instanceof Question question) {
             
             question.setQuestion(questionDTO.getQuestion());
-            question.setTimeToAnswer(questionDTO.getTimeToAnswer());
+            question.setTimeToAnswer(this.validateTimeToAnser(questionDTO.getTimeToAnswer()));
             
             if ((questionDTO.getMediaContentName()== null || questionDTO.getMediaContentName().isBlank()) || questionDTO.getMediaContentOwnerId()== -1) {                
                 question.setMediaContent(null);
@@ -436,5 +440,9 @@ public class CustomModelMapper extends ModelMapper {
     
     public Media findMediaById(User owner, String mediaName) {
         return this.mediaRepository.findById(new MediaId(owner, mediaName)).orElseThrow(() -> new NotFoundException(Media.class, ""));
+    }
+    
+    private byte validateTimeToAnser(byte seconds) {
+        return seconds <= ConfigDatas.DEFAULT_TIME_TO_ANSWER_IN_QUESTION ? ConfigDatas.DEFAULT_TIME_TO_ANSWER_IN_QUESTION : (seconds > ConfigDatas.MAX_TIME_TO_ANSWER_IN_QUESTION ? ConfigDatas.MAX_TIME_TO_ANSWER_IN_QUESTION : seconds);
     }
 }
