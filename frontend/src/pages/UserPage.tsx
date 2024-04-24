@@ -41,7 +41,7 @@ const UserPage: React.FC = (props: UserProps) => {
         } catch (error) {
             const ERR: ApiError = error as ApiError;
             
-            alert(ERR.getMessage);
+            console.log(ERR.getMessage)
         }
     }, []);
 

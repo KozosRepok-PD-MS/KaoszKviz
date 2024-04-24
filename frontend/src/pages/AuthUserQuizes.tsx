@@ -1,12 +1,10 @@
 
-import React, { ReactEventHandler, SyntheticEvent, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { TUserList, User } from "../model/User";
+import { User } from "../model/User";
 import { AxiosResponse } from "axios";
 import ApiHandler, { ApiError } from "../helper/ApiHandler";
 import { API_CONTROLLER } from "../config/ApiEndpoints";
-import UserCard from "../components/card/UserCard";
-import { USER_DETAILS_STRING } from "src/config/GlobalDatas";
 import { Quiz, TQuizList } from "src/model/Quiz";
 import QuizCard from "src/components/card/QuizCard";
 import { AuthContext } from "src/context/AuthContext";
@@ -30,10 +28,10 @@ const AuthUserQuizes: React.FC = (props: UsersProps) => {
         setUser(response.data as User);
         console.log(response.data);
     }
-
+    
     useEffect(() => {
         try {
-            if (!userId) { alert("no id"); }
+            if (!userId) { console.log("no id"); }
             ApiHandler.executeApiCall(API_CONTROLLER.QUIZ, "getQuizesByUserId", callbackFnQuiz, undefined, new Map([
                 [
                     "ownerId",
@@ -49,9 +47,9 @@ const AuthUserQuizes: React.FC = (props: UsersProps) => {
         } catch (error) {
             const ERR: ApiError = error as ApiError;
             
-            alert(ERR.getMessage);
+            console.log(ERR.getMessage)
         }
-    }, []);
+    }, [userId]);
 
     return(
         <div className="content">

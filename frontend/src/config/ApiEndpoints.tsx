@@ -38,7 +38,6 @@ export type ApiEndpoint = {
     requestBody?: Map<string, RequestVariableProperty>;
     requestParam?: Map<string, RequestVariableProperty>;
     headers?: Map<string, RequestVariableProperty>;
-    requiredHttpCode?: number;
 }
 
 export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new Map([
@@ -244,7 +243,6 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                             }
                         ],
                     ]),
-                    requiredHttpCode: HttpStatusCode.Created
                 }
             ],
             [

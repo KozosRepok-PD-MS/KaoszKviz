@@ -14,7 +14,7 @@ export default class ApiHandler {
         if (!ENDPOINT.has(method)) {
             throw new Error("method not found");
         }
-
+        
         const API_ENDPOINT: ApiEndpoint = ENDPOINT.get(method)!;
         
         let url: string = API_ENDPOINT.url ? ApiHandler.buildEndpoint(controller, API_ENDPOINT.url!) : ApiHandler.buildEndpoint(controller);
@@ -30,9 +30,7 @@ export default class ApiHandler {
                     axios.post(url, requestBody, headersConfig)
                          .then((result: AxiosResponse<any, any>) => {
                             console.log(result);
-                            
                             callback(result);
-                            
                          })
                          .catch((error: AxiosError) => {
                             let response: AxiosResponse = error.response!;
@@ -46,9 +44,7 @@ export default class ApiHandler {
                     axios.put(url, requestBody, ApiHandler.#createRequestConfig(headers))
                          .then((result: AxiosResponse<any, any>) => {
                             console.log(result);
-                            
                             callback(result);
-                            
                          })
                          .catch((error: AxiosError) => {
                             let response: AxiosResponse = error.response!;
@@ -62,9 +58,7 @@ export default class ApiHandler {
                     axios.delete(url, ApiHandler.#createRequestConfig(headers))
                          .then((result: AxiosResponse<any, any>) => {
                             console.log(result);
-                            
                             callback(result);
-                            
                          })
                          .catch((error: AxiosError) => {
                             let response: AxiosResponse = error.response!;
@@ -85,6 +79,8 @@ export default class ApiHandler {
                             callback(result);
                          })
                          .catch((error) => {
+                            console.log(error);
+                            
                             throw new Error(error);
                          });
                     break;

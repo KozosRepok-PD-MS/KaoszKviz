@@ -30,9 +30,9 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
             ]),);            
         } catch (error) {
             const ERR: ApiError = error as ApiError;            
-            alert(ERR.getMessage);
+            console.log(ERR.getMessage)
         }
-    }, []);
+    }, [id]);
     
     return(
         <div className="questionCard">
