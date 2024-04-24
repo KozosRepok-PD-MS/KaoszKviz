@@ -18,24 +18,20 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @Table(name = Topic.TABLE_NAME)
-public class Topic {
+public class Topic implements Model {
     @Id
-    @Setter
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @Setter
-    @Getter
     @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20)
     private String title;
     
-    @Getter
-    @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "topic")
     private List<QuizTopic> quizTopics = new ArrayList<>();
     

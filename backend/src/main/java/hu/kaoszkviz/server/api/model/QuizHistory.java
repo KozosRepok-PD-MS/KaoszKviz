@@ -1,5 +1,7 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
@@ -37,25 +40,28 @@ public class QuizHistory {
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
     
     @Getter
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "starter_user_id", nullable = false)
     private User starter;
     
     @Getter
     @Setter
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @CreationTimestamp
     @Column(name = "starting_time", nullable = false)
     private LocalDateTime startingTime;
     
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quizHistory")
     private List<QuizPlayer> players = new ArrayList<>();
     

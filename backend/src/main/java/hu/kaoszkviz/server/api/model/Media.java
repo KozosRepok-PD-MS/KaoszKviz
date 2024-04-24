@@ -1,5 +1,7 @@
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,11 +26,12 @@ import lombok.Setter;
 @EqualsAndHashCode
 @IdClass(MediaId.class)
 @Table(name = Media.TABLE_NAME)
-public class Media {
+public class Media implements Model {
     @Id
     @Setter
     @Getter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
     
@@ -46,24 +49,28 @@ public class Media {
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
     private List<Quiz> quizs = new ArrayList<Quiz>();
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profilePicture")
     private List<QuizPlayer> players = new ArrayList<>();
     
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profilePicture")
     private List<User> users = new ArrayList<>();
 
     @Getter
     @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
     private List<Question> questions = new ArrayList<>();
-
+    
     
     public static final String TABLE_NAME = "media";
     public static final long MAX_FIE_SIZE = 5_000_000;

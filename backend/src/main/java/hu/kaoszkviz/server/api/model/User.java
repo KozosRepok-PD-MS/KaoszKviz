@@ -1,8 +1,11 @@
 
 package hu.kaoszkviz.server.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,81 +23,74 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = User.TABLE_NAME)
-public class User {
+public class User implements Model {
+    public static enum Status {ACTIVE, DELETED};
+    
     @Id
-    @Setter
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @Setter
-    @Getter
     @Column(nullable = false, columnDefinition = "nvarchar(20)", length = 20, unique = true)
     private String username;
     
-    @Getter
-    @Setter
     @Column(nullable = false, unique = true)
     private String email;
     
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String password;
     
-    @Getter
-    @Setter
     @Column(columnDefinition = "bit default 0")
     private boolean admin;
 
-    @Getter
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumns({
         @JoinColumn(name="profile_picture_file_name"),
         @JoinColumn(name="profile_picture_owner_id")
     })
     private Media profilePicture;
     
-    @Getter
-    @Setter
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @CreationTimestamp
     @Column(updatable = false, name = "registered_at")
     private LocalDateTime registeredAt;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
     
-    @Getter
-    @Setter
+    
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<PasswordResetToken> passwordResetTokens = new ArrayList<PasswordResetToken>();
     
-    @Getter
-    @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Quiz> quizs = new ArrayList<>();
     
-    @Getter
-    @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<Media> medias = new ArrayList<>();
     
-    @Getter
-    @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "starter")
     private List<QuizHistory> histories = new ArrayList<>();
     
-    @Getter
-    @Setter
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "player")
     private List<QuizPlayer> players = new ArrayList<>();
     
-    
+    @JsonBackReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<APIKey> apiKeys = new ArrayList<>();
+
     public static final String TABLE_NAME = "usr";
 }

@@ -15,23 +15,21 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @IdClass(QuizTopicId.class)
 @Table(name = QuizTopic.TABLE_NAME)
-public class QuizTopic {
+public class QuizTopic implements Model {
     @Id
-    @Getter
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
     
     @Id
-    @Getter
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
     

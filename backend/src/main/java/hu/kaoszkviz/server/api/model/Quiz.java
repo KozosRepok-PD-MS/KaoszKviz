@@ -3,6 +3,8 @@ package hu.kaoszkviz.server.api.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,35 +25,29 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = Quiz.TABLE_NAME)
-public class Quiz {
+public class Quiz implements Model {
+    public static enum Status {ACTIVE, DELETED};
+    
     @Id
-    @Getter
-    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @Getter
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @Getter
-    @Setter
     @Column(columnDefinition = "nvarchar(30)", length = 30, nullable = false)
     private String title;
     
-    @Getter
-    @Setter
     @Column(columnDefinition = "nvarchar(500)", length = 500)
     private String description;
     
-    @Getter
-    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name="media_file_name"),
@@ -59,29 +55,22 @@ public class Quiz {
     })
     private Media mediaContent;
     
-    @Getter
-    @Setter
     @Column(name = "is_public", columnDefinition = "bit default 0")
     private boolean isPublic;
     
-    @Getter
-    @Setter
-    @Column(name = "short_accessible_name")
+    @Column(name = "short_accessible_name", unique = true)
     private String shortAccessibleName;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
     
-    @Getter
-    @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizHistory> quizs = new ArrayList<>();
     
-    @Getter
-    @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizTopic> topics = new ArrayList<>();
     
-    @Getter
-    @Setter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<Question> questions = new ArrayList<>();
     
