@@ -6,8 +6,16 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import Button from "../buttons/Button";
 import Input from "../inputs/Input";
 
+export type FilleUploadFormProps = {
+    callback: Function;
+}
 
-const FileUploadForm: React.FC = (props) => {
+export type SuccessUploadDatas = {
+    filename: string;
+    owner: bigint;
+}
+
+const FileUploadForm: React.FC<FilleUploadFormProps> = (props: FilleUploadFormProps) => {
     //const navigate: NavigateFunction = useNavigate();
     const[formData, setFormData] = useState(new FormData());
     
@@ -26,6 +34,7 @@ const FileUploadForm: React.FC = (props) => {
 
         if (response.status === HttpStatusCode.Created) {
             console.log("sikeres feltöltés");
+            props.callback(response.data);
         } else {
             console.log("sikertelen feltöltés");
             

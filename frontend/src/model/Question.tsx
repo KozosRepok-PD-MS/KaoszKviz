@@ -7,6 +7,8 @@ export interface Question {
 	questionType?: string;
 	question?: String;
 	timeToAnswer?: number;
+	mediaContentOwnerId?: bigint;
+	mediaContentName?: string;
 }
 
 /* export interface Question {

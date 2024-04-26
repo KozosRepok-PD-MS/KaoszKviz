@@ -3,10 +3,11 @@ import { Question } from "../../model/Question";
 import "./QuestionCard.css";
 import { Answer, TAnswerList } from "src/model/Answer";
 import { AxiosResponse } from "axios";
-import ApiHandler, { ApiError } from "src/helper/ApiHandler";
-import { API_CONTROLLER } from "src/config/ApiEndpoints";
+import { API_CONTROLLER } from "../../config/ApiEndpoints";
 import { AuthContext } from "src/context/AuthContext";
 import AnswerCard from "./AnswerCard";
+import ImageComp from "../images/ImageComp";
+import ApiHandler, { ApiError } from "src/helper/ApiHandler";
 import Button from "../buttons/Button";
 import AnswerForm from "../forms/AnswerCreateForm";
 import QuestionForm from "../forms/QuestionCreateForm";
@@ -76,7 +77,9 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
     
     return(
         <div className="questionCard">
-            <div className="questionCardImg"><img src="/logo512.png"/></div>
+            <div className="questionCardImg">
+                <ImageComp name="" src={ApiHandler.imageLinkBuild(props.question.mediaContentOwnerId, props.question.mediaContentName)}/>
+            </div>
             <div className="questionCardDatas">
                 <div className="questionCardQuestion">Kérdés: {props.question.question}</div>
                 <div className="questionCardQuestionType">Kérdés típus: {props.question.questionType?.toString()} {/** //!TODO Backend még rosszul adja a választ. Át kell majd írni **/}
