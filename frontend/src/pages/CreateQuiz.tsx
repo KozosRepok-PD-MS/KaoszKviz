@@ -4,7 +4,7 @@ import QuizForm from "../components/forms/QuizForm";
 
 type Props = {
     isnew: boolean;
-    quizId: bigint;
+    quizId: String;//!TODO nem string
 }
 
 export default function CreateQuiz(props: Props){

@@ -6,3 +6,9 @@
 .questionCardAnswers{
     border: 1px solid black;
 }
+
+.newAnswer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

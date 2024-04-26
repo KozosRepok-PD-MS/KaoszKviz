@@ -5,9 +5,10 @@ import { AxiosResponse } from "axios";
 import ApiHandler, { ApiError } from "../helper/ApiHandler";
 import { API_CONTROLLER } from "../config/ApiEndpoints";
 import QuestionCard from "../components/card/QuestionCard";
-import { useParams } from "react-router";
+import { NavigateFunction, useNavigate, useParams } from "react-router";
 import { AuthContext } from "src/context/AuthContext";
 import CreateQuiz from "./CreateQuiz";
+import QuestionForm from "../components/forms/QuestionCreateForm";
 import Button from "src/components/buttons/Button";
 import { Quiz } from "src/model/Quiz";
 import "./QuestionList.css";
@@ -16,6 +17,7 @@ type QuestionProps = {}
 
 
 const QuestionList: React.FC = (props: QuestionProps) => {
+    const navigate: NavigateFunction = useNavigate();
     const{auth} = useContext(AuthContext);
     const {id: quizId} = useParams();
     const authUserId = auth?.user?.id;
@@ -23,14 +25,35 @@ const QuestionList: React.FC = (props: QuestionProps) => {
     const [editState, setEditState] = useState(<></>);
     const[questions, setQustions] = useState<TQuestionList>( {} as TQuestionList );
     const[quiz, setQuiz] = useState<Quiz>({} as Quiz);
+    const [newQuestionState, setNewQuestionState] = useState(<></>);
 
     function handleEdit(){
         if (isEditing) {
-            setEditState(<CreateQuiz quizId={BigInt(quizId!)} isnew={false}/>);
+            setEditState(<CreateQuiz quizId={quizId!} isnew={false}/>);
         } else {
             setEditState(<></>);
         }
         setIsEditing(!isEditing);
+    }
+
+    function deleteCallbackFn() {
+        navigate("/myquizes");
+    }
+
+    function handleDelete(){
+        try {
+            ApiHandler.executeApiCall(API_CONTROLLER.QUIZ, "deleteQuizById", deleteCallbackFn, undefined, new Map([
+                [
+                    "id",
+                    quizId!.toString()
+                ]
+            ]),);
+            console.log(quizId!.toString());
+            
+        } catch (error) {
+            const ERR: ApiError = error as ApiError;            
+            console.log(ERR.getMessage)
+        }
     }
 
     function questionCallbackFn(response: AxiosResponse<any, any>) {
@@ -39,6 +62,10 @@ const QuestionList: React.FC = (props: QuestionProps) => {
     
     function quizCallbackFn(response: AxiosResponse<any, any>) {
         setQuiz(response.data as Quiz);
+    }
+
+    function handleNewQuestion(){
+        setNewQuestionState(<QuestionForm quizId={quizId!} isnew={true}/>);
     }
 
     useEffect(() => {
@@ -66,21 +93,21 @@ const QuestionList: React.FC = (props: QuestionProps) => {
         <div className="content">
             <div className="questionList">
                 <div className="quizDatas">
-                    <div className="quizCardName">{quiz.title}cím.....</div>
+                    <div className="quizCardName">{quiz.title}</div>
                     <div className="quizCardImg"><img src="/logo512.png"/></div>
-                    <div className="quizCardDescription">{quiz.description}leírás......................................</div>
+                    <div className="quizCardDescription">{quiz.description}</div>
                     {
                         authUserId === quiz.ownerId ? 
                             <div>
                                 <div className="quizCardEdit">
                                     {isEditing ? 
-                                        <Button name="editButton" title="BACK" type="button" onClickFn={handleEdit}/>
+                                        <Button name="editButton" title="BECSUK" type="button" onClickFn={handleEdit}/>
                                         :
-                                        <Button name="editButton" title="EDIT" type="button" onClickFn={handleEdit}/>}
+                                        <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleEdit}/>}
                                     {editState}
                                 </div>
                                 <div className="quizCardDelete">
-                                    <Button name="deleteButton" title="DELETE" type="button"/>
+                                    <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
                                 </div>
                             </div> 
                             : 
@@ -98,6 +125,8 @@ const QuestionList: React.FC = (props: QuestionProps) => {
                         :
                             "Ennek a kvíznek nincs kérdése"
                     }
+                    <Button name="newQuestion" title="Új kérdés" type="button" onClickFn={handleNewQuestion}/>
+                    <div className="newQuestion">{newQuestionState}</div>
                 </div>
             </div>
         </div>
