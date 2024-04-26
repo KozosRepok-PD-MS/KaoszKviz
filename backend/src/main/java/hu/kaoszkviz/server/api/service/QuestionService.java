@@ -55,6 +55,15 @@ public class QuestionService {
         return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(questions, QuestionDTO.class)), HttpStatus.OK); //ErrorManager
     }
     
+    public ResponseEntity<String> getQuestionById(Long id) {
+        Question question = this.questionRepository.findById(id).orElseThrow(() -> new NotFoundException(Question.class, id));
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
+        
+        if (authUser.getId() != question.getQuiz().getOwner().getId()) { throw new UnauthorizedException(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.OK);
+    }
+    
     public ResponseEntity<String> addQuestion(QuestionDTO questionDTO) {
         Question question = this.customModelMapper.fromDTO(questionDTO, Question.class);
         User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
@@ -65,7 +74,7 @@ public class QuestionService {
         
         if (question == null) { throw new InternalServerErrorException(); }
         
-        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.OK);
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.CREATED);
     }
     
     public ResponseEntity<String> deleteQuestion(Long id) {

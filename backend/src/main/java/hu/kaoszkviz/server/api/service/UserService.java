@@ -3,6 +3,7 @@ package hu.kaoszkviz.server.api.service;
 import hu.kaoszkviz.server.api.config.ConfigDatas;
 import hu.kaoszkviz.server.api.dto.UserDTO;
 import hu.kaoszkviz.server.api.exception.NotFoundException;
+import hu.kaoszkviz.server.api.exception.UnauthorizedException;
 import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.model.APIKey;
 import hu.kaoszkviz.server.api.model.PasswordResetToken;
@@ -18,6 +19,7 @@ import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import hu.kaoszkviz.server.api.tools.HeaderBuilder;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,6 +46,9 @@ public class UserService {
     
     @Autowired
     CustomModelMapper customModelMapper;
+    
+    @Autowired
+    EmailSenderService emailSenderService;
     
     public ResponseEntity<String> addUser(UserDTO user) {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
@@ -147,12 +152,16 @@ public class UserService {
         passwordResetToken = this.passwordResetTokenRepository.save(passwordResetToken);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER, passwordResetToken.getKey().toString());
+        //headers.add(ConfigDatas.PASSWORD_RESET_TOKEN_HEADER, passwordResetToken.getKey().toString());
+        
+        this.emailSenderService.sendResetPasswordToken(passwordResetToken);
         return new ResponseEntity<>("", headers, HttpStatus.OK); //ErrorManager
     }
     
     public ResponseEntity<String> resetPassword(UUID resetKey,String newPassword) {
         PasswordResetToken token = this.passwordResetTokenRepository.getByKey(resetKey).orElseThrow(()-> new NotFoundException(PasswordResetToken.class, ""));
+        if (token.getExpiresAt().isBefore(LocalDateTime.now())) {throw new UnauthorizedException("token expired"); }
+        
         User userToModify = token.getUser();
         
         try {

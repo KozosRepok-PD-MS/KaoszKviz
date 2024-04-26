@@ -13,6 +13,7 @@ public class ConfigDatas {
         put(HttpMethod.GET, new String[] {
             "/",
             "/media/**",
+            "/media/*/*",
         });
         put(HttpMethod.POST, new String[] {
             "/user",

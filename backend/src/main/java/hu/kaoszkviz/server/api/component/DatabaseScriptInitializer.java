@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseScriptInitializer {
-    @Value("${application.generate.sqlscript}")
+    @Value("${application.generate.sqlscript:false}")
     private boolean generateScript;
     
     @Value("${spring.jpa.hibernate.ddl-auto}")
