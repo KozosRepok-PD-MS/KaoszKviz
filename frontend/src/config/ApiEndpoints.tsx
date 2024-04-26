@@ -434,6 +434,23 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     ]),
                 }
             ],
+            [
+                "deleteQuizById",
+                {
+                    method: HTTP_METOD.DELETE,
+                    requestParam: new Map([
+                        [
+                            "id",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                    ]),
+                    headers: new Map(),
+                }
+            ],
         ]),
     ],
     [
@@ -468,6 +485,80 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                     headers: new Map(),
                 }
             ],
+            [
+                "addQuestion",
+                {
+                    method: HTTP_METOD.POST,
+                    requestBody: new Map([
+                        
+                        [
+                            "quizId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "question",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "questionType",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "timeToAnswer",
+                            {
+                                type: DEFAULT_TYPES.NUMBER,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                    ]),
+                }
+            ],
+            [
+                "updateQuestion",
+                {
+                    method: HTTP_METOD.POST,
+                    requestBody: new Map([
+                        
+                        [
+                            "quizId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "question",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "timeToAnswer",
+                            {
+                                type: DEFAULT_TYPES.NUMBER,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                    ]),
+                }
+            ],
         ])
     ],
     [
@@ -488,6 +579,47 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                         ],
                     ]),
                     headers: new Map(),
+                }
+            ],
+            [
+                "addAnswer",
+                {
+                    method: HTTP_METOD.POST,
+                    requestBody: new Map([
+                        
+                        [
+                            "questionId",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "answer",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "correct",
+                            {
+                                type: DEFAULT_TYPES.BOOLEAN,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "correctAnswer",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: false,
+                                defaultValue: "",
+                            }
+                        ],
+                    ]),
                 }
             ],
         ])

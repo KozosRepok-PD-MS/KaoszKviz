@@ -21,7 +21,7 @@ export interface QuizCreateFormType {
 }
 
 export interface QuizModifyFormType {
-    id?: bigint;
+    id?: String; //!TODO nem string
     title: string;
     description: string;
     isPublic: boolean;

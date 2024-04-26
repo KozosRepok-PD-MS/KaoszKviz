@@ -22,9 +22,14 @@ export interface Question {
 export type TQuestionList = Question[];
 
 export interface QuestionCreateFormType {
-    
+    quizId?: String;
+	question?: String;
+	questionType?: string;
+	timeToAnswer?: number;
 }
 
 export interface QuizModifyFormType {
-
+	quizId?: String;
+	question?: String;
+	timeToAnswer?: number;
 }

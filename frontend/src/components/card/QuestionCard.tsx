@@ -7,6 +7,8 @@ import { API_CONTROLLER } from "../../config/ApiEndpoints";
 import AnswerCard from "./AnswerCard";
 import ImageComp from "../images/ImageComp";
 import ApiHandler, { ApiError } from "src/helper/ApiHandler";
+import Button from "../buttons/Button";
+import AnswerForm from "../forms/AnswerCreateForm";
 
 export type QuestionCardProps = {
     question: Question
@@ -15,9 +17,14 @@ export type QuestionCardProps = {
 const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => {
     const[answers, setAnswers] = useState<TAnswerList>( {} as TAnswerList );
     const id = props.question.id;
+    const [newAnswerState, setNewAnswerState] = useState(<></>);
 
     function callbackFn(response: AxiosResponse<any, any>) {
         setAnswers(response.data as TAnswerList);
+    }
+
+    function handleNewAnswer(){
+        setNewAnswerState(<AnswerForm questionId={id!.toString()} isnew={true}/>);
     }
     
     useEffect(() => {
@@ -45,16 +52,18 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
                 </div>
                 <div className="questionCardTimeToAnswer">Kérdés megválaszolására álló idő: {props.question.timeToAnswer}</div>
                 <div className="questionCardAnswers">
-                                {
-                                    answers.length > 0 ?
-                                        answers.map((answer: Answer, key: number) => {
-                                            return(
-                                                <AnswerCard answer={answer} key={key}></AnswerCard>
-                                            )
-                                        })
-                                    :
-                                        "Ennek a kérdésnek nincs válasza"
-                                }
+                    {
+                        answers.length > 0 ?
+                            answers.map((answer: Answer, key: number) => {
+                                return(
+                                    <AnswerCard answer={answer} key={key}></AnswerCard>
+                                )
+                            })
+                        :
+                            "Ennek a kérdésnek nincs válasza"
+                    }
+                    <Button name="newAnswer" title="Új válasz" type="button" onClickFn={handleNewAnswer}/>
+                    <div className="newAnswer">{newAnswerState}</div>
                 </div>
             </div>
         </div>

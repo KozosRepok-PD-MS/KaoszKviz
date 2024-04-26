@@ -28,7 +28,7 @@ function App() {
                             <Route path="users" element={<UsersList />} />
                             <Route path="user/:id" element={<UserPage />} />
                             <Route path="myquizes" element={<AuthUserQuizes />} />
-                            <Route path="newquiz" element={<CreateQuiz quizId={-1n} isnew={true}/>} />
+                            <Route path="newquiz" element={<CreateQuiz quizId={""} isnew={true}/>} /> //!TODO nem string
                             <Route path="quiz/:id" element={<QuestionList />} />
                             <Route path="profile" element={<UserDatas />} />
                             <Route path="*" element={<NoPage />} />

@@ -11,7 +11,7 @@ import { QuizCreateFormType, QuizModifyFormType } from "src/model/Quiz";
 
 type QuizFormProps = {
     isnew: boolean;
-    quizId: bigint;
+    quizId: String;//!TODO nem string
 }
 
 const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {

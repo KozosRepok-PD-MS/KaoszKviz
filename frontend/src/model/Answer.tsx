@@ -9,7 +9,10 @@ export interface Answer {
 export type TAnswerList = Answer[];
 
 export interface AnswerCreateFormType {
-
+    questionId?: String; //!TODO nem string
+    answer?: string;
+    correct?: boolean;
+    correctAnswer?: string;
 }
 
 export interface AnswerModifyFormType {
