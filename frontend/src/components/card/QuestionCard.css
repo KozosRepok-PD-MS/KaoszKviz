@@ -12,3 +12,9 @@
     justify-content: center;
     align-items: center;
 }
+
+.questionCardEdit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

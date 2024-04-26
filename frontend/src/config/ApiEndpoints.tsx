@@ -529,11 +529,11 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
             [
                 "updateQuestion",
                 {
-                    method: HTTP_METOD.POST,
+                    method: HTTP_METOD.PUT,
                     requestBody: new Map([
                         
                         [
-                            "quizId",
+                            "id",
                             {
                                 type: DEFAULT_TYPES.BIGINT,
                                 required: true,
@@ -557,6 +557,23 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                             }
                         ],
                     ]),
+                }
+            ],
+            [
+                "deleteQuestionById",
+                {
+                    method: HTTP_METOD.DELETE,
+                    requestParam: new Map([
+                        [
+                            "id",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                    ]),
+                    headers: new Map(),
                 }
             ],
         ])
@@ -620,6 +637,72 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                             }
                         ],
                     ]),
+                }
+            ],
+            [
+                "updateAnswer",
+                {
+                    method: HTTP_METOD.PUT,
+                    requestBody: new Map([
+                        
+                        [
+                            "questionId",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "answer",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "correct",
+                            {
+                                type: DEFAULT_TYPES.BOOLEAN,
+                                required: true,
+                                defaultValue: "",
+                            }
+                        ],
+                        [
+                            "correctAnswer",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: false,
+                                defaultValue: "",
+                            }
+                        ],
+                    ]),
+                }
+            ],
+            [
+                "deleteAnswerById",
+                {
+                    method: HTTP_METOD.DELETE,
+                    requestParam: new Map([
+                        [
+                            "questionId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                        [
+                            "ordinalNumber",
+                            {
+                                type: DEFAULT_TYPES.NUMBER,
+                                required: true,
+                                defaultValue: "-1"
+                            }
+                        ],
+                    ]),
+                    headers: new Map(),
                 }
             ],
         ])

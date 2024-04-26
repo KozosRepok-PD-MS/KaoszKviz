@@ -21,21 +21,23 @@ const QuestionList: React.FC = (props: QuestionProps) => {
     const{auth} = useContext(AuthContext);
     const {id: quizId} = useParams();
     const authUserId = auth?.user?.id;
-    const [isEditing, setIsEditing] = useState(false);
-    const [editState, setEditState] = useState(<></>);
+
+    const [isQuizEditing, setIsQuizEditing] = useState(false);
+    const [editQuizState, setEditQuizState] = useState(<></>);
+    
     const[questions, setQustions] = useState<TQuestionList>( {} as TQuestionList );
     const[quiz, setQuiz] = useState<Quiz>({} as Quiz);
     const [newQuestionState, setNewQuestionState] = useState(<></>);
 
-    function handleEdit(){
-        if (isEditing) {
-            setEditState(<CreateQuiz quizId={quizId!} isnew={false}/>);
+    function handleQuizEdit(){
+        if (isQuizEditing) {
+            setEditQuizState(<CreateQuiz quizId={quizId!} isnew={false}/>);
         } else {
-            setEditState(<></>);
+            setEditQuizState(<></>);
         }
-        setIsEditing(!isEditing);
+        setIsQuizEditing(!isQuizEditing);
     }
-
+    
     function deleteCallbackFn() {
         navigate("/myquizes");
     }
@@ -65,7 +67,7 @@ const QuestionList: React.FC = (props: QuestionProps) => {
     }
 
     function handleNewQuestion(){
-        setNewQuestionState(<QuestionForm quizId={quizId!} isnew={true}/>);
+        setNewQuestionState(<QuestionForm questionId="" quizId={quizId!} isnew={true}/>);
     }
 
     useEffect(() => {
@@ -100,11 +102,11 @@ const QuestionList: React.FC = (props: QuestionProps) => {
                         authUserId === quiz.ownerId ? 
                             <div>
                                 <div className="quizCardEdit">
-                                    {isEditing ? 
-                                        <Button name="editButton" title="BECSUK" type="button" onClickFn={handleEdit}/>
+                                    {isQuizEditing ? 
+                                        <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuizEdit}/>
                                         :
-                                        <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleEdit}/>}
-                                    {editState}
+                                        <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuizEdit}/>}
+                                    {editQuizState}
                                 </div>
                                 <div className="quizCardDelete">
                                     <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
@@ -119,14 +121,21 @@ const QuestionList: React.FC = (props: QuestionProps) => {
                         questions.length > 0 ?
                             questions.map((question: Question, key: number) => {
                                 return(
-                                    <QuestionCard question={question} key={key}></QuestionCard>
+                                    <QuestionCard question={question} quizOwnerId={quiz.ownerId!.toString()} key={key}></QuestionCard>
                                 )
                             })
                         :
                             "Ennek a kvíznek nincs kérdése"
                     }
-                    <Button name="newQuestion" title="Új kérdés" type="button" onClickFn={handleNewQuestion}/>
-                    <div className="newQuestion">{newQuestionState}</div>
+                    {
+                        authUserId === quiz.ownerId ? 
+                            <div>
+                                <Button name="newQuestion" title="Új kérdés" type="button" onClickFn={handleNewQuestion}/>
+                                <div className="newQuestion">{newQuestionState}</div>
+                            </div> 
+                            :
+                            <></>
+                    }
                 </div>
             </div>
         </div>

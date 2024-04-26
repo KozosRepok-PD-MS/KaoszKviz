@@ -16,5 +16,9 @@ export interface AnswerCreateFormType {
 }
 
 export interface AnswerModifyFormType {
-
+    questionId?: String; //!TODO nem string
+    ordinalNumber?: string; //!TODO nem string
+    answer?: string;
+    correct?: boolean;
+    correctAnswer?: string;
 }
