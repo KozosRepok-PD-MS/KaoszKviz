@@ -11,6 +11,7 @@ import CreateQuiz from "./CreateQuiz";
 import Button from "src/components/buttons/Button";
 import { Quiz } from "src/model/Quiz";
 import "./QuestionList.css";
+import ImageComp from "src/components/images/ImageComp";
 
 type QuestionProps = {}
 
@@ -60,14 +61,14 @@ const QuestionList: React.FC = (props: QuestionProps) => {
             const ERR: ApiError = error as ApiError;            
             console.log(ERR.getMessage)
         }
-    }, []);
+    }, [quizId]);
 
     return(
         <div className="content">
             <div className="questionList">
                 <div className="quizDatas">
                     <div className="quizCardName">{quiz.title}cím.....</div>
-                    <div className="quizCardImg"><img src="/logo512.png"/></div>
+                    <div className="quizCardImg"><ImageComp name='quizCardImg' src={ApiHandler.imageLinkBuild(quiz.mediaOwnerId, quiz.mediaFileName)}/></div>
                     <div className="quizCardDescription">{quiz.description}leírás......................................</div>
                     {
                         authUserId === quiz.ownerId ? 

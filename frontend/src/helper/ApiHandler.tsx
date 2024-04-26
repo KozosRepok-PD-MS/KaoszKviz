@@ -90,6 +90,13 @@ export default class ApiHandler {
         }
     }
 
+    static imageLinkBuild(ownerId?: bigint | string, imageName?: string) {
+        if (ownerId === null || ownerId! === -1n || imageName === null || imageName === "") {
+            return "/logo192.png";
+        }
+        return `${this.#baseUrl}/media/${ownerId}/${imageName}`;
+    }
+
     static buildEndpoint(controller: API_CONTROLLER, endpoint?: string): string {
         let endpointStr =  controller.toString();
         endpointStr = endpoint ? (endpointStr + "/" + endpoint) : endpointStr;

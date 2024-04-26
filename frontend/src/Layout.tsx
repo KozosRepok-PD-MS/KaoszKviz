@@ -78,6 +78,13 @@ const Layout = () => {
                             </li>
                         :   ""
                     }
+                    {
+                        auth?.isAuthenticated ?
+                            <li className="">
+                                <Link className="" to="/profile" style={{ textDecoration: 'none' }}>Profilom</Link>
+                            </li>
+                        :   ""
+                    }
                 </ul>
             </nav>
             <article>

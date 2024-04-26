@@ -10,6 +10,7 @@ import CreateQuiz from "./pages/CreateQuiz";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import UsersList from './pages/UsersList';
+import UserDatas from './pages/UserDatas';
 import QuestionList from './pages/QuestionList';
 import UserPage from './pages/UserPage';
 import AuthUserQuizes from './pages/AuthUserQuizes';
@@ -29,6 +30,7 @@ function App() {
                             <Route path="myquizes" element={<AuthUserQuizes />} />
                             <Route path="newquiz" element={<CreateQuiz quizId={-1n} isnew={true}/>} />
                             <Route path="quiz/:id" element={<QuestionList />} />
+                            <Route path="profile" element={<UserDatas />} />
                             <Route path="*" element={<NoPage />} />
                         </Route>
                     </Routes>

@@ -8,6 +8,8 @@ export interface User {
     admin?: boolean;
     registeredAt?: LocalDateTime;
     status?: string;
+    profilePictureOwnerId?: bigint;
+    profilePictureName?: string;
 }
 
 export type TUserList = User[];
