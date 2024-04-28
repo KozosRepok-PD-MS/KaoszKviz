@@ -17,16 +17,16 @@ const AnswerCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => {
     const{auth} = useContext(AuthContext);
     const authUserId = auth?.user?.id;
     
-    const [isQuestionEditing, setIsQuestionEditing] = useState(false);
-    const [editQuestionState, setEditQuestionState] = useState(<></>);
+    const [isAnswerEditing, setIsAnswerEditing] = useState(false);
+    const [editAnswerState, setEditAnswerState] = useState(<></>);
 
     function handleQuestionEdit(){
-        if (isQuestionEditing) {
-            setEditQuestionState(<AnswerForm ordinalNumber={props.answer.ordinalNumber!.toString()} questionId={props.questionId!} isnew={false}/>);
+        if (isAnswerEditing) {
+            setEditAnswerState(<AnswerForm ordinalNumber={props.answer.ordinalNumber!.toString()} questionId={props.questionId!} isnew={false}/>);
         } else {
-            setEditQuestionState(<></>);
+            setEditAnswerState(<></>);
         }
-        setIsQuestionEditing(!isQuestionEditing);
+        setIsAnswerEditing(!isAnswerEditing);
     }
     
     function deleteCallbackFn() {
@@ -57,15 +57,17 @@ const AnswerCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => {
             <div className="answerCardItem">{props.answer.correct ? "helyes válasz" : "helytelen válasz"}</div>
             {
                 authUserId?.toString() === props.quizOwnerId ?
-                <div className="questionCardEdit">
-                    {isQuestionEditing ? 
-                        <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuestionEdit}/>
-                        :
-                        <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuestionEdit}/>}
-                    {editQuestionState}
-                    <div className="answerCardDelete">
-                        <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
+                <div className="handle">
+                    <div className="handleButtons">
+                        {isAnswerEditing ? 
+                            <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuestionEdit}/>
+                            :
+                            <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuestionEdit}/>}
+                        <div className="answerCardDelete">
+                            <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
+                        </div>
                     </div>
+                    <div>{editAnswerState}</div>
                 </div>
                 :
                 <></>

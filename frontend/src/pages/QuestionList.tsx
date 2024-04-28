@@ -101,18 +101,20 @@ const QuestionList: React.FC = (props: QuestionProps) => {
                     <div className="quizCardDescription">{quiz.description}</div>
                     {
                         authUserId === quiz.ownerId ? 
-                            <div>
-                                <div className="quizCardEdit">
-                                    {isQuizEditing ? 
-                                        <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuizEdit}/>
-                                        :
-                                        <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuizEdit}/>}
-                                    {editQuizState}
-                                </div>
-                                <div className="quizCardDelete">
-                                    <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
-                                </div>
-                            </div> 
+                            <div className="handle">
+                                <div className="handleButtons">
+                                    <div className="quizCardEdit">
+                                        {isQuizEditing ? 
+                                            <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuizEdit}/>
+                                            :
+                                            <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuizEdit}/>}
+                                    </div>
+                                    <div className="quizCardDelete">
+                                        <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
+                                    </div>
+                                </div> 
+                                <div className="editForm">{editQuizState}</div>
+                            </div>
                             : 
                             ""
                     }
@@ -130,7 +132,7 @@ const QuestionList: React.FC = (props: QuestionProps) => {
                     }
                     {
                         authUserId === quiz.ownerId ? 
-                            <div>
+                            <div className="newSomething">
                                 <Button name="newQuestion" title="Új kérdés" type="button" onClickFn={handleNewQuestion}/>
                                 <div className="newQuestion">{newQuestionState}</div>
                             </div> 

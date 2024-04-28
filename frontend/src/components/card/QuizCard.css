@@ -1,9 +1,11 @@
 .quizCard{
-    border: 1px solid black;
+    border: 5px solid #161925;
+    border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    margin: 10px;
 }
 
 .quizCardName, .quizCardImg{
@@ -18,7 +20,34 @@
     text-align: center;
 }
 
+.quizCardImg, .quizCardStart{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .quizCardImg img{
     width: 100%;
-    max-width: 300px;
+    max-width: 600px !important;
+}
+
+@media screen and (max-width: 700px) {
+    .quizCard{
+        flex-wrap: nowrap;
+        flex-direction: column;
+    }
+    .quizCardName, .quizCardImg{
+        flex: 1 0 calc(100% - 20px); 
+    }
+    .quizCardDescription, .quizCardStart{
+        flex: 1 0 calc(100% - 20px);
+    }
+    .quizCardImg img{
+        width: 400px !important;
+    }
+}
+@media screen and (max-width: 450px) {
+    .quizCardImg img{
+        width: 250px !important;
+    }
 }

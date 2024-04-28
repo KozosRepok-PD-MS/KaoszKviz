@@ -88,19 +88,23 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
                 {
                     authUserId?.toString() === props.quizOwnerId ? 
                     <div>
-                            <div>
+                        <div className="handle">
+                            <div className="handleButtons">
                                 {isEditing ? 
                                     <Button name="editButton" title="BECSUK" type="button" onClickFn={handleEdit}/>
                                     :
                                     <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleEdit}/>}
-                                <div className="questionCardEdit">{editState}</div>
                                 <div className="questionCardDelete">
                                     <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
                                 </div>
                             </div>
+                            <div className="questionCardEdit">{editState}</div>
+                        </div>
+                        <div className="newSomething">
                             <Button name="newAnswer" title="Új válasz" type="button" onClickFn={handleNewAnswer}/>
                             <div className="newAnswer">{newAnswerState}</div>
-                        </div> 
+                        </div>
+                    </div> 
                         :
                         <></>
                     }

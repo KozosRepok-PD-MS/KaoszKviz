@@ -138,7 +138,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                         <LabeledInput {...input} key={index}/>
                     )
                 })}
-                <Button name="createQuiz" title="Kérdés létrehozása" type="submit"/> 
+                <Button name="createQuestion" title="Kérdés létrehozása" type="submit"/> 
             </form>
         </div>
     )

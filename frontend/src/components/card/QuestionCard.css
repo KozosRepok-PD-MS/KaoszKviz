@@ -1,6 +1,13 @@
+
+.questionCardImg{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .questionCardImg img{
     width: 100%;
-    max-width: 300px;
+    width: 600px;
 }
 
 .questionCardAnswers{
@@ -18,3 +25,14 @@
     justify-content: center;
     align-items: center;
 }
+@media screen and (max-width: 700px) {
+    .questionCardImg img{
+        width: 400px;
+    }
+}
+@media screen and (max-width: 450px) {
+    .questionCardImg img{
+        width: 250px;
+    }
+}
+

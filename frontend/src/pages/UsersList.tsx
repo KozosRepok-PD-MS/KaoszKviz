@@ -25,7 +25,7 @@ const UsersList: React.FC = (props: UsersProps) => {
             
             console.log(ERR.getMessage)
         }
-    }, [users]);
+    }, []);
 
     return(
         <div className="content">

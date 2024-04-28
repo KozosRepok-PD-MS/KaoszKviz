@@ -8,11 +8,11 @@ type Props = {}
 export default function Game(props: Props){
     return(
         <div className="content">
-            <LabeledInput label="Játék kódja:" inputProps={{
+            <div className="gameCode"><LabeledInput label="Játék kódja:" inputProps={{
                 name: "gamePin",
                 type: "number",
                 placeholder: "000000"
-            }}/>
+            }}/></div>
             <Button name="playGame" title="Csatlakozás" type="button"/>
         </div>
     )

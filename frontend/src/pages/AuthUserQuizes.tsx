@@ -51,10 +51,15 @@ const AuthUserQuizes: React.FC = (props: UsersProps) => {
         }
     }, [userId]);
 
+    const linkStyle = {
+        textDecoration: "none",
+        color: '#CBF7ED'
+    };
+
     return(
         <div className="content">
-           <div>Üdv {user?.username}!</div>
-           <div><Link to="/newquiz">Új kvíz létrehozása</Link></div>
+           <div className="greetings">Üdv {user?.username}!</div>
+           <div className="newQuizButton"><Link to="/newquiz" style={linkStyle}>Új kvíz létrehozása</Link></div>
             <div>
                 {
                     quizes.length > 0 ?

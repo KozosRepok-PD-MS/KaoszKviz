@@ -4,12 +4,13 @@ import "./Input.css";
 
 export type InputProps = {
     name: string;
-    type: "number" | "text" | "email" | "password" | "file" | "checkbox";
+    type: "number" | "text" | "email" | "password" | "file" | "checkbox" | "select";
     placeholder?: string;
     onChangeFn?: ChangeEventHandler<HTMLInputElement>;
     autocomplete?: boolean;
     classes? : string;
     msg?: string;
+    options?: string[];
 }
 
 
@@ -28,17 +29,32 @@ const Input: React.FC<InputProps> = (props: InputProps) => {
 
 
     return(
-        <div>
-            <input className={props.classes}
-                   type={props.type}
-                   id={props.name}
-                   name={props.name}
-                   placeholder={props.placeholder}
-                   onChange={props.onChangeFn}
-                   autoComplete={autocomplete}
-            />
-            <div id={`input#${props.name}#msgbox`} className={classes}>{props.msg}</div>
-        </div>
+        props.type != "select" ?
+            <div>
+                <input className={props.classes}
+                    type={props.type}
+                    id={props.name}
+                    name={props.name}
+                    placeholder={props.placeholder}
+                    onChange={props.onChangeFn}
+                    autoComplete={autocomplete}
+                />
+                <div id={`input#${props.name}#msgbox`} className={classes}>{props.msg}</div>
+            </div>
+            :
+            <div>
+                <select className={props.classes}
+                    id={props.name}
+                    name={props.name}
+                    autoComplete={autocomplete}>
+                        {props.options!.map((value, key) => {
+                            return(
+                                <option value={value} key={key}>{value}</option>
+                            )
+                        })}
+                </select>
+                <div id={`input#${props.name}#msgbox`} className={classes}>{props.msg}</div>
+            </div>
     )
 }
 

@@ -107,6 +107,11 @@ const RegisterForm: React.FC = (props) => {
         }
     ];
 
+    const linkStyle = {
+        textDecoration: "none",
+        color: '#CBF7ED'
+    };
+
     return(
         <div className="registerForm">
             <form onSubmit={handleSubmit}>
@@ -118,7 +123,7 @@ const RegisterForm: React.FC = (props) => {
                 <Button name="registerButton" title="Regisztráció" type="submit"/>
             </form>
             <div>
-                <Link to="/login">
+                <Link to="/login" style={linkStyle}>
                     Bejelentkezés
                 </Link>
             </div>

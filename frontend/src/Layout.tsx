@@ -45,45 +45,49 @@ const Layout = () => {
         
     }
     
+    const linkStyle = {
+        textDecoration: "none",
+        color: '#CBF7ED'
+    };
 
     return (
         <div>
             <header>Káoszkvíz</header>
             <nav>
-                <ul className="">
+                <ul className="menu">
                     <li className="">
-                        <Link className="" to="/" style={{ textDecoration: 'none' }}>Játék</Link>
+                        <Link className="" to="/" style={linkStyle}>Játék</Link>
                     </li>
+                    {
+                        auth?.isAuthenticated ?
+                        <li className="">
+                                <Link className="" to="/users" style={linkStyle}>Felhasználók</Link>
+                            </li>
+                        :   ""
+                    }
+                    {
+                        auth?.isAuthenticated ?
+                        <li className="">
+                                <Link className="" to="/myquizes" style={linkStyle}>Kvízeim</Link>
+                            </li>
+                        :   ""
+                    }
+                    {
+                        auth?.isAuthenticated ?
+                            <li className="">
+                                <Link className="" to="/profile" style={linkStyle}>Profilom</Link>
+                            </li>
+                        :   ""
+                    }
                     {
                         !auth?.isAuthenticated && !auth?.user ?
                             <li className="">
-                                <Link className="" to="/login" style={{ textDecoration: 'none' }}>Belépés</Link>
+                                <Link className="" to="/login" style={linkStyle}>Belépés</Link>
                             </li>
                         :
                             <form onSubmit={logoutFn}>
                                 <Button name="logout" title="Kijelentkezés" type="submit" />
                             </form>
-                    }
-                    {
-                        auth?.isAuthenticated ?
-                            <li className="">
-                                <Link className="" to="/users" style={{ textDecoration: 'none' }}>Felhasználók</Link>
-                            </li>
-                        :   ""
-                    }
-                    {
-                        auth?.isAuthenticated ?
-                            <li className="">
-                                <Link className="" to="/myquizes" style={{ textDecoration: 'none' }}>Kvízeim</Link>
-                            </li>
-                        :   ""
-                    }
-                    {
-                        auth?.isAuthenticated ?
-                            <li className="">
-                                <Link className="" to="/profile" style={{ textDecoration: 'none' }}>Profilom</Link>
-                            </li>
-                        :   ""
                     }
                 </ul>
             </nav>
