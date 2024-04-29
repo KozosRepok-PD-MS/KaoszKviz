@@ -9,14 +9,15 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { API_KEY_STRING, USER_DETAILS_STRING } from "./config/GlobalDatas";
 import { AuthContext } from "./context/AuthContext";
 import { Auth, AuthUser } from "./model/Auth";
+import { FaBars } from "react-icons/fa";
+import "./Layout.css";
 
 
 const Layout = () => {
     const { auth, setAuth } = useContext(AuthContext);
     const navigate: NavigateFunction = useNavigate();
 
-    const logoutFn = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const logoutFn = async () => {
     
         try {
             ApiHandler.executeApiCall(API_CONTROLLER.USER, "logout", logoutResponseFn);
@@ -44,23 +45,41 @@ const Layout = () => {
         //const { setAuth } = useContext(AuthContext);
         
     }
+
+    function handleMenuState() {
+        let menu: HTMLElement | null = document.getElementById("menu");
+
+        if (menu == null) {return;}
+        
+        if (menu.classList.contains("visible")) {
+            menu.classList.remove("visible");
+        } else {
+            menu.classList.add("visible");
+        }
+
+    }
     
     const linkStyle = {
         textDecoration: "none",
         color: '#CBF7ED'
     };
+    
+    document.getElementById("menu")?.classList.remove("visible");
 
     return (
         <div>
             <header>Káoszkvíz</header>
             <nav>
-                <ul className="menu">
+                <div onClick={handleMenuState} className="menuToggle">
+                <FaBars size="30px"/>
+                </div>
+                <ul className="menu" id="menu" >
                     <li className="">
                         <Link className="" to="/" style={linkStyle}>Játék</Link>
                     </li>
                     {
                         auth?.isAuthenticated ?
-                        <li className="">
+                            <li className="">
                                 <Link className="" to="/users" style={linkStyle}>Felhasználók</Link>
                             </li>
                         :   ""
@@ -84,10 +103,10 @@ const Layout = () => {
                             <li className="">
                                 <Link className="" to="/login" style={linkStyle}>Belépés</Link>
                             </li>
-                        :
-                            <form onSubmit={logoutFn}>
-                                <Button name="logout" title="Kijelentkezés" type="submit" />
-                            </form>
+                        :   
+                            <li className="" onClick={logoutFn}>
+                                Kijelentkezés
+                            </li>
                     }
                 </ul>
             </nav>

@@ -83,16 +83,18 @@ Input{
   flex-direction: column;
 }
 
-button, .menu li, .newQuizButton{
+.menu li {
+  list-style-type: none;
+}
+button, .menu li a, .menu li:not(.menu li:has(a)), .newQuizButton{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px;
+  padding: 10px;
   background-color: #161925;
   color: #CBF7ED;
-  min-height: 50px;
-  min-width: 100px;
   border-radius: 30px;
+  cursor: pointer;
 }
 
 button{
@@ -103,4 +105,8 @@ button{
   font-size: 30px;
   margin-bottom: 20px;
   color: #CBF7ED;
+}
+
+input::placeholder {
+  color: #cbf7ed75;
 }
