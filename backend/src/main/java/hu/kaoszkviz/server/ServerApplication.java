@@ -1,6 +1,7 @@
 package hu.kaoszkviz.server;
 
 import hu.kaoszkviz.server.api.tools.CustomModelMapper;
+import hu.kaoszkviz.server.api.tools.Generator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +21,13 @@ public class ServerApplication {
     }
     
     @Bean
-    public JavaMailSender javaMailSender() {
-        return new JavaMailSenderImpl();
+    public Generator generator() {
+        return new Generator();
     }
+    
+//    @Bean
+//    public JavaMailSender javaMailSender() {
+//        return new JavaMailSenderImpl();
+//    }
 
 }
