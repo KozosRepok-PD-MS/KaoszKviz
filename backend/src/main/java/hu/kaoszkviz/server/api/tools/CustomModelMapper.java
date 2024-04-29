@@ -64,6 +64,9 @@ public class CustomModelMapper extends ModelMapper {
     @Autowired
     private QuestionRepository questionRepository;
     
+    @Autowired
+    private Generator generator;
+    
 //    @Autowired
 //    private 
     
@@ -328,7 +331,7 @@ public class CustomModelMapper extends ModelMapper {
             user.setEmail(userDTO.getEmail());
             
             if ((userDTO.getProfilePictureName() == null || userDTO.getProfilePictureName().isBlank()) || userDTO.getProfilePictureOwnerId() == -1) {                
-                user.setProfilePicture(null);
+                user.setProfilePicture(generator.getRandomProfilePicture());
             } else {
                 //ha jók a kép adatai
                 User owner = this.userRepository.findById(userDTO.getProfilePictureOwnerId()).orElseThrow(() -> new NotFoundException(User.class, userDTO.getProfilePictureOwnerId()));

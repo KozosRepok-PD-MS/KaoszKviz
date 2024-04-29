@@ -33,7 +33,7 @@ public class MediaService {
     public ResponseEntity<String> addMedia(MultipartFile file, String fileName) {
         ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         Media media = new Media();
-
+        
         try {
             media.setData(file.getBytes());
         } catch (IOException ex) {
@@ -64,7 +64,11 @@ public class MediaService {
             
             if (mediaOptional.isPresent()) {
                 Media media = mediaOptional.get();
-               return new ResponseEntity<>(media.getData(), HeaderBuilder.build("Content-type", MediaService.getMediaContentType(media)), HttpStatus.OK);
+                String mediaType = MediaService.getMediaContentType(media);
+                if (media.getFileName().contains("svg")) {
+                    mediaType = "image/svg+xml";
+                }
+                return new ResponseEntity<>(media.getData(), HeaderBuilder.build("Content-type", mediaType), HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(new byte[0], HeaderBuilder.build("Content-type", "image"), HttpStatus.NOT_FOUND);
