@@ -1,0 +1,34 @@
+
+
+.menu {
+    display: flex;
+    transition: all 0.5s ease-in-out;
+}
+
+.menuToggle {
+    display: none;
+    cursor: pointer;
+}
+
+
+@media screen and (max-width: 700px) {
+    .menuToggle{
+        display: block;
+    }
+    
+    .menu {
+        display: none;
+    }
+    ul.menu {
+        margin: 0;
+        padding: 0;
+    }
+    .menu li, .menu form {
+        margin: 10px;
+    }
+    .visible {
+        display: block;
+        transition: all 0.5s ease-in-out;
+    }
+}
+

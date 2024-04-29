@@ -1,0 +1,45 @@
+.userCard{
+    border: 5px solid #161925;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 609px;
+}
+
+.userCardNuberOfQuizes{
+    color: #CBF7ED;
+}
+
+.userCardPicture{
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.userCardPicture img{
+    width: 100%;
+    border-radius: 5px;
+    width: 600px !important;
+}
+
+@media screen and (max-width: 700px) {
+    .userCard{
+        width: 409px;
+    }
+    .userCardPicture img{
+        width: 400px !important;
+    }
+}
+@media screen and (max-width: 450px) {
+    .userCard{
+        width: 259px;
+    }
+    .userCardPicture img{
+        width: 250px !important;
+    }
+}
