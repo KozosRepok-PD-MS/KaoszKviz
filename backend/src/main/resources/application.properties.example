@@ -13,5 +13,15 @@ spring.jpa.properties.hibernate.use_sql_comments=true
 
 debug=false
 
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username={email}
+spring.mail.password={password}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
 # Sql scriptek futtatása -> true | false
 application.generate.sqlscript = true
+
+# Kulcs amivel a backend és a server kommunikál
+application.server.secret = kulcs

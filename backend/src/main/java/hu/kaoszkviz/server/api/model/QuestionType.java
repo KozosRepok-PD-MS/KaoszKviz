@@ -1,6 +1,5 @@
 package hu.kaoszkviz.server.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -16,19 +15,17 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = QuestionType.TABLE_NAME)
-public class QuestionType {
+public class QuestionType implements Model {
     @Id
-    @Setter
-    @Getter
     private String type;
     
-    @Getter
-    @Setter
-    @JsonBackReference
+    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "questionType")
     private List<Question> questions = new ArrayList<>();
     

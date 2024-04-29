@@ -69,7 +69,7 @@ public class QuizService {
     }
     
     public ResponseEntity<String> addQuiz(QuizDTO quizDTO) {
-        if (quizDTO.getOwnerId() == -1) { quizDTO.setOwnerId(ApiKeyAuthentication.getAuth().getPrincipal().getId()); }
+        quizDTO.setOwnerId(ApiKeyAuthentication.getAuth().getPrincipal().getId());
         
         Optional<User> user = this.userRepository.findById(quizDTO.getOwnerId());
         if (user.isEmpty()) { return ErrorManager.notFound("user"); }

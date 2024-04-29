@@ -1,6 +1,8 @@
 package hu.kaoszkviz.server.api.controller;
 
 import hu.kaoszkviz.server.api.dto.QuestionDTO;
+import hu.kaoszkviz.server.api.exception.NotFoundException;
+import hu.kaoszkviz.server.api.model.Question;
 import hu.kaoszkviz.server.api.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,13 @@ public class QuestionController {
     private QuestionService questionService;
     
     @GetMapping
-    public ResponseEntity<String> getQuestionsByQuizId(@RequestParam long quizId){
-        return this.questionService.getQuestionsByQuizId(quizId);
+    public ResponseEntity<String> getQuestionsByQuizId(@RequestParam(required = false, defaultValue = "-1") long quizId, @RequestParam(required = false, defaultValue = "-1") long id) {
+        if (quizId != -1) {
+            return this.questionService.getQuestionsByQuizId(quizId);
+        } else if (id != -1) {
+            return this.questionService.getQuestionById(id);
+        }
+        throw new NotFoundException(Question.class, id);
     }
     
     @PostMapping
