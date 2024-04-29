@@ -2,7 +2,6 @@
 package hu.kaoszkviz.server.api.service;
 
 import hu.kaoszkviz.server.api.config.ConfigDatas;
-import hu.kaoszkviz.server.api.exception.NotFoundException;
 import hu.kaoszkviz.server.api.model.APIKey;
 import hu.kaoszkviz.server.api.repository.APIKeyRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
@@ -32,7 +31,11 @@ public class AuthenticationService {
         }
         //User user = userRepository.getUserByAPIKey(providedKey).orElseThrow(() -> new UnauthorizedException());
         
-        APIKey apiKey = this.aPIKeyRepository.findById(UUID.fromString(providedKey)).orElseThrow(() -> new NotFoundException(APIKey.class, ""));
+        Optional<APIKey> optApiKey = this.aPIKeyRepository.findById(UUID.fromString(providedKey));
+        
+        if (optApiKey.isEmpty()) { return Optional.empty(); }
+        
+        APIKey apiKey = optApiKey.get();
         
         if (apiKey.getExpiresAt().isBefore(LocalDateTime.now()));
         

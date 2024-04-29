@@ -7,6 +7,7 @@ import hu.kaoszkviz.server.api.exception.UnauthorizedException;
 import hu.kaoszkviz.server.api.jsonview.JsonViewEnum;
 import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
 import hu.kaoszkviz.server.api.model.APIKey;
+import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.PasswordResetToken;
 import hu.kaoszkviz.server.api.model.PasswordResetTokenId;
 import hu.kaoszkviz.server.api.model.User;
@@ -19,10 +20,12 @@ import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
+import hu.kaoszkviz.server.api.tools.Generator;
 import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,10 +49,13 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     
     @Autowired
-    CustomModelMapper customModelMapper;
+    private CustomModelMapper customModelMapper;
     
     @Autowired
-    EmailSenderService emailSenderService;
+    private EmailSenderService emailSenderService;
+    
+    @Autowired
+    private Generator generator;
     
     public ResponseEntity<String> addUser(UserDTO user) {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
@@ -60,6 +66,7 @@ public class UserService {
         
         userToSave.setAdmin(false);
         userToSave.setStatus(User.Status.ACTIVE);
+        userToSave.setProfilePicture(generator.getRandomProfilePicture());
         userToSave = this.userRepository.save(userToSave);
         
         if (userToSave != null) {
