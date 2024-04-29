@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.service;
 
+import hu.kaoszkviz.server.api.dto.MediaPayload;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.User;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
 import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
+import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.io.IOException;
@@ -45,7 +47,8 @@ public class MediaService {
             media.setFileName(fileName);
 
             if (this.mediaRepository.save(media) != null) {
-                return new ResponseEntity<>("ok", HttpStatus.CREATED);
+                MediaPayload mediaPayload = new MediaPayload(media.getFileName(), null, media.getOwner().getId());
+                return new ResponseEntity<>(Converter.ModelToJsonString(mediaPayload), HttpStatus.CREATED);
             }
 
         }

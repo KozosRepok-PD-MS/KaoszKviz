@@ -4,7 +4,10 @@ package hu.kaoszkviz.server.api.controller;
 import hu.kaoszkviz.server.api.dto.MediaPayload;
 import hu.kaoszkviz.server.api.service.MediaService;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,6 +39,12 @@ public class MediaController {
             @PathVariable(value = "owner") long owner,
             @PathVariable(value = "mediaName") String fileName
     ) {
-        return this.mediaService.getMedia(owner, fileName);
+        try { // tesztelés miatt
+            Thread.sleep(2000);
+            return this.mediaService.getMedia(owner, fileName);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MediaController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>("error".getBytes(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
