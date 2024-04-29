@@ -26,10 +26,14 @@ export interface QuestionCreateFormType {
 	question?: String;
 	questionType?: string;
 	timeToAnswer?: number;
+	mediaContentOwnerId: bigint;
+    mediaContentName: string;
 }
 
 export interface QuestionModifyFormType {
 	id?: String;
 	question?: String;
 	timeToAnswer?: number;
+	mediaContentOwnerId: bigint;
+    mediaContentName: string;
 }

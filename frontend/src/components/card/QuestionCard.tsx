@@ -27,12 +27,12 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
     const [editState, setEditState] = useState(<></>);
 
     function handleEdit(){
+        setIsEditing(!isEditing);
         if (isEditing) {
             setEditState(<QuestionForm questionId={props.question.id!.toString()} quizId={props.question.quizId} isnew={false}/>);
         } else {
             setEditState(<></>);
         }
-        setIsEditing(!isEditing);
     }
 
     function callbackFn(response: AxiosResponse<any, any>) {

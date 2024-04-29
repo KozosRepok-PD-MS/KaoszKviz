@@ -25,6 +25,7 @@ const QuestionList: React.FC = (props: QuestionProps) => {
 
     const [isQuizEditing, setIsQuizEditing] = useState(false);
     const [editQuizState, setEditQuizState] = useState(<></>);
+    const [media, setMedia] = useState<string>(ApiHandler.imageLinkBuild(undefined, undefined));
     
     const[questions, setQustions] = useState<TQuestionList>( {} as TQuestionList );
     const[quiz, setQuiz] = useState<Quiz>({} as Quiz);
@@ -64,7 +65,10 @@ const QuestionList: React.FC = (props: QuestionProps) => {
     }
     
     function quizCallbackFn(response: AxiosResponse<any, any>) {
-        setQuiz(response.data as Quiz);
+        let quiz: Quiz = response.data as Quiz;
+
+        setQuiz(quiz);
+        setMedia(ApiHandler.imageLinkBuild(quiz.mediaContentOwnerId, quiz.mediaContentName))
     }
 
     function handleNewQuestion(){
@@ -97,7 +101,7 @@ const QuestionList: React.FC = (props: QuestionProps) => {
             <div className="questionList">
                 <div className="quizDatas">
                     <div className="quizCardName">{quiz.title}</div>
-                    <div className="quizCardImg"><ImageComp name='quizCardImg' src={ApiHandler.imageLinkBuild(quiz.mediaOwnerId, quiz.mediaFileName)}/></div>
+                    <div className="quizCardImg"><ImageComp name='quizCardImg' src={media}/></div>
                     <div className="quizCardDescription">{quiz.description}</div>
                     {
                         authUserId === quiz.ownerId ? 

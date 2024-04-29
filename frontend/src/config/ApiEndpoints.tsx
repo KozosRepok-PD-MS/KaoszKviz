@@ -98,7 +98,7 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                             }
                         ],
                         [
-                            "profilePictureOwner",
+                            "profilePictureOwnerId",
                             {
                                 type: DEFAULT_TYPES.BIGINT,
                                 required: false,
@@ -383,6 +383,22 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                                 defaultValue: "",
                             }
                         ],
+                        [
+                            "mediaContentOwnerId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: false,
+                                defaultValue: "-1"
+                            }
+                        ],
+                        [
+                            "mediaContentName",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: false,
+                                defaultValue: ""
+                            }
+                        ],
                     ]),
                 }
             ],
@@ -429,6 +445,22 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                                 type: DEFAULT_TYPES.STRING,
                                 required: true,
                                 defaultValue: "",
+                            }
+                        ],
+                        [
+                            "mediaContentOwnerId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: false,
+                                defaultValue: "-1"
+                            }
+                        ],
+                        [
+                            "mediaContentName",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: false,
+                                defaultValue: ""
                             }
                         ],
                     ]),
@@ -523,6 +555,22 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                                 defaultValue: "",
                             }
                         ],
+                        [
+                            "mediaContentOwnerId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: false,
+                                defaultValue: "-1"
+                            }
+                        ],
+                        [
+                            "mediaContentName",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: false,
+                                defaultValue: ""
+                            }
+                        ],
                     ]),
                 }
             ],
@@ -554,6 +602,22 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                                 type: DEFAULT_TYPES.NUMBER,
                                 required: true,
                                 defaultValue: "",
+                            }
+                        ],
+                        [
+                            "mediaContentOwnerId",
+                            {
+                                type: DEFAULT_TYPES.BIGINT,
+                                required: false,
+                                defaultValue: "-1"
+                            }
+                        ],
+                        [
+                            "mediaContentName",
+                            {
+                                type: DEFAULT_TYPES.STRING,
+                                required: false,
+                                defaultValue: ""
                             }
                         ],
                     ]),

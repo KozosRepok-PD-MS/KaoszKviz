@@ -7,11 +7,14 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
 import { QuestionCreateFormType, QuestionModifyFormType } from "../../model/Question";
+import FileUploadForm, { SuccessUploadDatas } from "./FileUploadForm";
 
 type QuestionFormProps = {
     isnew: boolean;
     quizId: String;//!TODO nem string
     questionId: String;
+	mediaContentOwnerId?: bigint;
+	mediaContentName?: string;
 }
 
 const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => {
@@ -20,11 +23,15 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
         question: "",
         questionType: "",
         timeToAnswer: 100,
+        mediaContentOwnerId: ("-1" as unknown) as bigint,
+        mediaContentName: "",
     });
     const[updateQuestionDatas, setUpdateQuestionDatas] = useState<QuestionModifyFormType>( {
         id: props.questionId,
         question: "",
         timeToAnswer: 100,
+        mediaContentOwnerId: ("-1" as unknown) as bigint,
+        mediaContentName: "",
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,6 +66,24 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             
         }
     }
+
+    function fileUploaded(response: SuccessUploadDatas) {
+        
+        if(props.isnew){
+            setNewQuestionDatas({
+                ...newQuestionDatas,
+                mediaContentOwnerId: response.owner,
+                mediaContentName: response.filename,
+              });
+        } else{
+            setUpdateQuestionDatas({
+                ...updateQuestionDatas,
+                mediaContentOwnerId: response.owner,
+                mediaContentName: response.filename,
+              });
+        }
+    }
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -132,6 +157,8 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
 
     return(
         <div className="questionCreateForm">
+            Kép:
+            <FileUploadForm callback={fileUploaded}/>
             <form onSubmit={handleSubmit}>
                 {INPUTS.map((input, index) => {
                     return(

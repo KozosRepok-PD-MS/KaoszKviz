@@ -91,7 +91,7 @@ export default class ApiHandler {
     }
 
     static imageLinkBuild(ownerId?: bigint | string, imageName?: string) {
-        if (ownerId === null || ownerId! === -1n || imageName === null || imageName === "") {
+        if (ownerId === null || ownerId === undefined || ownerId! === -1n || imageName === null || imageName === undefined || imageName === "") {
             return "/logo192.png";
         }
         return `${this.#baseUrl}/media/${ownerId}/${imageName}`;

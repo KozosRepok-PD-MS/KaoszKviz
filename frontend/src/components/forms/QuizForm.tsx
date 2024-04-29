@@ -8,6 +8,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
 import { AuthContext } from "../../context/AuthContext";
 import { QuizCreateFormType, QuizModifyFormType } from "src/model/Quiz";
+import FileUploadForm, { SuccessUploadDatas } from "./FileUploadForm";
 
 type QuizFormProps = {
     isnew: boolean;
@@ -23,14 +24,18 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
         title: "",
         description: "",
         isPublic: true,
-        shortAccessibleNAme: ""
+        shortAccessibleName: "",
+        mediaContentOwnerId: ("-1" as unknown) as bigint,
+        mediaContentName: "",
     });
     const[modifyQuizDatas, setModifyQuizDatas] = useState<QuizModifyFormType>( {
         id: props.quizId,
         title: "",
         description: "",
         isPublic: true,
-        shortAccessibleNAme: ""
+        shortAccessibleName: "",
+        mediaContentOwnerId: ("-1" as unknown) as bigint,
+        mediaContentName: "",
     });
     
 
@@ -81,6 +86,23 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
         } else {
             console.log("nem sikertült módosítani a kvízt");
             
+        }
+    }
+
+    function fileUploaded(response: SuccessUploadDatas) {
+        
+        if(props.isnew){
+            setNewQuizDatas({
+                ...newQuizDatas,
+                mediaContentOwnerId: response.owner,
+                mediaContentName: response.filename,
+              });
+        } else{
+            setModifyQuizDatas({
+                ...modifyQuizDatas,
+                mediaContentOwnerId: response.owner,
+                mediaContentName: response.filename,
+              });
         }
     }
 
@@ -141,12 +163,15 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
 
     return(
         <div className="quizForm">
+            Kép:
+            <FileUploadForm callback={fileUploaded}/>
             <form onSubmit={handleSubmit}>
                 {INPUTS.map((input, index) => {
                     return(
                         <LabeledInput {...input} key={index}/>
                     )
                 })}
+                
                 {props.isnew ? 
                     <Button name="createQuiz" title="Kvíz létrehozása" type="submit"/> 
                     :

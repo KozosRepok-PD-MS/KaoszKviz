@@ -6,8 +6,8 @@ export interface Quiz {
     title?: string;
     description?: string;
     shortAccessibleName?: string;
-    mediaOwnerId?: string;
-    mediaFileName?: string;
+    mediaContentOwnerId?: string;
+    mediaContentName?: string;
 }
 
 export type TQuizList = Quiz[];
@@ -17,7 +17,9 @@ export interface QuizCreateFormType {
     title: string;
     description: string;
     isPublic: boolean;
-    shortAccessibleNAme: string;
+    shortAccessibleName: string;
+    mediaContentOwnerId: bigint;
+    mediaContentName: string;
 }
 
 export interface QuizModifyFormType {
@@ -25,5 +27,7 @@ export interface QuizModifyFormType {
     title: string;
     description: string;
     isPublic: boolean;
-    shortAccessibleNAme: string;
+    shortAccessibleName: string;
+    mediaContentOwnerId: bigint;
+    mediaContentName: string;
 }
