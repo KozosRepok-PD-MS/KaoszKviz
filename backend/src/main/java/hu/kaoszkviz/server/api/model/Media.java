@@ -2,7 +2,6 @@ package hu.kaoszkviz.server.api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,12 +26,12 @@ import lombok.Setter;
 @EqualsAndHashCode
 @IdClass(MediaId.class)
 @Table(name = Media.TABLE_NAME)
-public class Media {
+public class Media implements Model {
     @Id
     @Setter
     @Getter
     @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
     
@@ -72,10 +71,6 @@ public class Media {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mediaContent")
     private List<Question> questions = new ArrayList<>();
     
-    public static Media mediaFromKeys(long id, String name) {
-        return null;
-    }
-
     
     public static final String TABLE_NAME = "media";
     public static final long MAX_FIE_SIZE = 5_000_000;

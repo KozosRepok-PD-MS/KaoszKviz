@@ -42,8 +42,7 @@ public class ErrorManager {
      * @return {@code ResponseEntity}
      */
     public static ResponseEntity<String> notFound(String str) {
-        String msg = "Not found";
-        return new ResponseEntity<>(str.isBlank() ? msg : "%s %s".formatted(str, msg), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(str, HttpStatus.NOT_FOUND);
     }
     
     /**
@@ -100,6 +99,22 @@ public class ErrorManager {
      */
     public static ResponseEntity<String> unauth(String msg) {
         return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
+    }
+    
+    /**
+     * A {@code ResponseEntity} that presents the {@code Internal Server Error} exception.
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> internal() {
+        return ErrorManager.internal("");
+    }
+    
+    /**
+     * A {@code ResponseEntity} that presents the {@code Internal Server Error} exception with the given {@code String}.
+     * @return {@code ResponseEntity}
+     */
+    public static ResponseEntity<String> internal(String msg) {
+        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     
 }

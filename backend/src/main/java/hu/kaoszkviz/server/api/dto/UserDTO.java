@@ -16,17 +16,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class UserDTO {
+public class UserDTO implements DTO {
 
     @JsonView(PublicJsonView.class)
-    private long id;
+    private long id = -1;
     
     @NotEmpty
     @Size(min = 2, message = "user name should have at least 2 characters")
@@ -38,19 +36,19 @@ public class UserDTO {
     @JsonView(PrivateJsonView.class)
     private String email;
     
-    @NotEmpty
-    @Size(min = 8, message = "password should have at least 8 characters")
+    //@NotEmpty
+    //@Size(min = 8, message = "password should have at least 8 characters")
     @JsonView(NoContainJsonView.class)
     private String password;
     
     @JsonView(PrivateJsonView.class)
-    private Boolean admin;
+    private Boolean admin = false;
     
     @JsonView(PublicJsonView.class)
-    private long profilePictureOwner;
+    private long profilePictureOwnerId = -1;
     
     @JsonView(PublicJsonView.class)
-    private String profilePictureName;
+    private String profilePictureName = null;
     
     @JsonView(PublicJsonView.class)
     private LocalDateTime registeredAt;

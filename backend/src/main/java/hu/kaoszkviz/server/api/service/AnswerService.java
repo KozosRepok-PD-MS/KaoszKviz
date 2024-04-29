@@ -1,17 +1,23 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import hu.kaoszkviz.server.api.config.ConfigDatas;
+import hu.kaoszkviz.server.api.dto.AnswerDTO;
+import hu.kaoszkviz.server.api.exception.InternalServerErrorException;
+import hu.kaoszkviz.server.api.exception.NotFoundException;
+import hu.kaoszkviz.server.api.exception.UnauthorizedException;
 import hu.kaoszkviz.server.api.model.Answer;
+import hu.kaoszkviz.server.api.model.AnswerId;
 import hu.kaoszkviz.server.api.model.Question;
+import hu.kaoszkviz.server.api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.AnswerRepository;
 import hu.kaoszkviz.server.api.repository.QuestionRepository;
+import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -24,57 +30,46 @@ public class AnswerService {
     @Autowired
     private QuestionRepository questionRepository;
     
-    public ResponseEntity<String> addAnswer(HashMap<String, String> datas){
-        Optional<Question> question = this.questionRepository.findById(Long.valueOf(datas.get("questionId")));
-        if(!question.isPresent()){
-            return ErrorManager.notFound("question");
-        }
-        try{
-            List<Answer> answers = this.answerRepository.serachByQuestionId(question.get().getId());
-            Answer answer = new Answer();
-            answer.setQuestion(question.get());
-            answer.setAnswer(datas.get("answer"));
-            if(!answers.isEmpty()){
-                answer.setOrdinalNumber((byte) (answers.get(answers.size() - 1).getOrdinalNumber()+1));
-            }
-            answer.setCorrect(Boolean.getBoolean(datas.get("correct")));
-            answer.setCorrectAnswer(datas.get("correctAnswer"));
-            return this.addAnswer(answer);
-            
-        } catch(Exception ex){
-            return new ResponseEntity<>("failed to save", HttpStatus.BAD_REQUEST); //ErrorManager
-        }
-    }
-
-    private ResponseEntity<String> addAnswer(Answer answer) {
-        if(this.answerRepository.save(answer) == null){
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST); //ErrorManager
-        } else{
-            this.answerRepository.save(answer);
-            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
-        }
+    @Autowired
+    private CustomModelMapper customModelMapper;
+    
+    public ResponseEntity<String> addAnswer(AnswerDTO answerDTO) {
+        Answer answer = this.customModelMapper.fromDTO(answerDTO, Answer.class);
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
+        
+        if (authUser.getId() != answer.getQuestion().getQuiz().getOwner().getId()) { throw new UnauthorizedException(); }
+        
+        byte answerCount = this.answerRepository.countAnswersForQuestion(answer.getQuestion().getId());
+        System.out.println(answerCount);
+        if (answerCount >= ConfigDatas.MAX_ANSWER_FOR_QUESTION) { return ErrorManager.conflict("max answer count reached"); }
+        
+        answer.setOrdinalNumber(++answerCount);
+        answer = this.answerRepository.save(answer);
+        
+        if (answer == null) { throw new InternalServerErrorException(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(answer, AnswerDTO.class)), HttpStatus.OK);
     }
     
-    public ResponseEntity<String> deleteByQuestionIdAndOrdinalNumber(Long questionId, byte ordinalNumber){
-        if (this.answerRepository.serachByQuestionIdAndOrdinalNumber(questionId, ordinalNumber) != null) {
-            this.answerRepository.deleteByQuestionIdAndOrdinalNumber(questionId, ordinalNumber);
-            return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
-        } else{
-            return ErrorManager.notFound("question");
-        }
+    public ResponseEntity<String> deleteByQuestionIdAndOrdinalNumber(Long questionId, byte ordinalNumber) {
+        AnswerId answerId = new AnswerId(this.questionRepository.findById(questionId).orElseThrow(() -> new NotFoundException(Question.class, questionId)), ordinalNumber);
+        Answer answer = this.answerRepository.findById(answerId).orElseThrow(() ->new NotFoundException(Answer.class, answerId));
+        
+        this.answerRepository.delete(answer);
+        // TODO benntlévőknek ordinalNumber módosítása
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
     
-    public ResponseEntity<String> updateAnswer(HashMap<String, String> datas){
-        if(this.answerRepository.serachByQuestionIdAndOrdinalNumber(Long.parseLong(datas.get("questionId")), (byte) Integer.parseInt(datas.get("ordinalNumber"))) != null){
-            Answer updatedAnswer = this.answerRepository.serachByQuestionIdAndOrdinalNumber(Long.parseLong(datas.get("questionId")), (byte) Integer.parseInt(datas.get("ordinalNumber")));
-            updatedAnswer.setAnswer(datas.get("answer"));
-            updatedAnswer.setCorrect(Boolean.parseBoolean(datas.get("correct")));
-            updatedAnswer.setCorrectAnswer(datas.get("correctAnswer"));
-            this.answerRepository.save(updatedAnswer);
-            return new ResponseEntity<>("ok", HttpStatus.OK); // ErrorManager
-        } else {
-            return ErrorManager.notFound("question");
-        }
+    public ResponseEntity<String> updateAnswer(AnswerDTO answerDTO) {
+        AnswerId id = new AnswerId(this.questionRepository.findById(answerDTO.getQuestionId()).orElseThrow(() -> new NotFoundException(Question.class, answerDTO.getQuestionId())), answerDTO.getOrdinalNumber());
+        Answer answer = this.answerRepository.findById(id).orElseThrow(() -> new NotFoundException(Answer.class, id));
+        
+        this.customModelMapper.updateFromDTO(answerDTO, answer);
+        answer = this.answerRepository.save(answer);
+        
+        if (answer == null) { return ErrorManager.def(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(answer, AnswerDTO.class)), HttpStatus.OK); // ErrorManager
     }
     
     public ResponseEntity<String> getAnswers(long questionId) {
@@ -82,10 +77,6 @@ public class AnswerService {
         
         if (answers.isEmpty()) {return ErrorManager.notFound();}
         
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(answers), HttpStatus.OK);
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+        return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(answers, AnswerDTO.class)), HttpStatus.OK);
     }
 }

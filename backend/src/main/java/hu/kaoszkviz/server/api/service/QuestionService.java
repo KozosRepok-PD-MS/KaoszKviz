@@ -1,24 +1,22 @@
 package hu.kaoszkviz.server.api.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import hu.kaoszkviz.server.api.dto.QuestionDTO;
+import hu.kaoszkviz.server.api.exception.InternalServerErrorException;
+import hu.kaoszkviz.server.api.exception.NotFoundException;
+import hu.kaoszkviz.server.api.exception.UnauthorizedException;
 import hu.kaoszkviz.server.api.model.Answer;
-import hu.kaoszkviz.server.api.model.Media;
-import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.Question;
 import hu.kaoszkviz.server.api.model.Quiz;
 import hu.kaoszkviz.server.api.model.User;
 import hu.kaoszkviz.server.api.repository.AnswerRepository;
-import hu.kaoszkviz.server.api.repository.MediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.QuestionRepository;
-import hu.kaoszkviz.server.api.repository.QuestionTypeRepository;
 import hu.kaoszkviz.server.api.repository.QuizRepository;
-import hu.kaoszkviz.server.api.repository.UserRepository;
 import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
 import hu.kaoszkviz.server.api.tools.Converter;
+import hu.kaoszkviz.server.api.tools.CustomModelMapper;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -31,29 +29,21 @@ public class QuestionService {
     private QuestionRepository questionRepository;
     
     @Autowired
-    private QuizRepository quizRepository;
-    
-    @Autowired
-    private MediaRepository mediaRepository;
-    
-    @Autowired
-    private QuestionTypeRepository questionTypeRepository;
+    private QuizRepository quizRepository;    
     
     @Autowired
     private AnswerRepository answerRepository;
     
-    @Autowired
-    private UserRepository userRepository;
     
-    public ResponseEntity<String> getQuestionsByQuizId(Long quizId){
+    @Autowired
+    private CustomModelMapper customModelMapper;
+    
+    public ResponseEntity<String> getQuestionsByQuizId(Long quizId) {
         Optional<Quiz> quizOptional = this.quizRepository.findById(quizId);
         if(!quizOptional.isPresent()){
             return ErrorManager.notFound("quiz");
         }
-        Optional<ApiKeyAuthentication> authOptional = ApiKeyAuthentication.getAuth();
-        if (authOptional.isEmpty()) { return ErrorManager.unauth(); }
-        
-        ApiKeyAuthentication auth = authOptional.get();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
         Quiz quiz = quizOptional.get();
         
         if (!auth.getPrincipal().isAdmin() && quiz.getOwner().getId() != auth.getPrincipal().getId()) { return ErrorManager.unauth(); }
@@ -62,93 +52,51 @@ public class QuestionService {
         
         if(questions.isEmpty()) {return ErrorManager.notFound("questions");}
 
-        try {
-            return new ResponseEntity<>(Converter.ModelTableToJsonString(questions), HttpStatus.OK); //ErrorManager
-        } catch (JsonProcessingException ex) {
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+        return new ResponseEntity<>(Converter.ModelListToJsonString(this.customModelMapper.fromModelList(questions, QuestionDTO.class)), HttpStatus.OK); //ErrorManager
     }
     
-    public ResponseEntity<String> addQuestion(HashMap<String, String> datas){
-        Optional<Quiz> quiz = this.quizRepository.findById(Long.valueOf(datas.get("quizId")));
-        if (!quiz.isPresent()) {
-            return ErrorManager.notFound("quiz");
-        }
-        try{
-            Question question = new Question();
-            question.setQuiz(quiz.get());
-            question.setQuestion(datas.get("question"));
-            Optional user = this.userRepository.findById(Long.valueOf(datas.get("mediaContentOwner")));
-            
-            if (user.isPresent()) {
-                MediaId  mediaId = new MediaId((User) user.get(), datas.get("mediaContentName"));
-                Optional<Media> media = this.mediaRepository.findById(mediaId);
-                
-                if (!media.isPresent()) {
-                    return ErrorManager.notFound("media");
-                }
-                question.setMediaContent(media.get());
-                question.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
-                question.setQuestionType(this.questionTypeRepository.findById(datas.get("questionType")).get());
-                return this.addQuestion(question);
-            } else {
-                return ErrorManager.notFound("user");
-            }
-            
-            
-        } catch(Exception ex){
-            return ErrorManager.def(ex.getLocalizedMessage());
-        }
+    public ResponseEntity<String> getQuestionById(Long id) {
+        Question question = this.questionRepository.findById(id).orElseThrow(() -> new NotFoundException(Question.class, id));
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
+        
+        if (authUser.getId() != question.getQuiz().getOwner().getId()) { throw new UnauthorizedException(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.OK);
     }
     
-    private ResponseEntity<String> addQuestion(Question question){
-        if (this.questionRepository.save(question) == null) {
-            return new ResponseEntity<>("failed", HttpStatus.BAD_REQUEST); //ErrorManager
-        } else{
-            this.questionRepository.save(question);
-            return new ResponseEntity<>("ok", HttpStatus.CREATED); //ErrorManager
-        }
+    public ResponseEntity<String> addQuestion(QuestionDTO questionDTO) {
+        Question question = this.customModelMapper.fromDTO(questionDTO, Question.class);
+        User authUser = ApiKeyAuthentication.getAuth().getPrincipal();
+        
+        if (question.getQuiz().getOwner().getId() != authUser.getId()) { throw new UnauthorizedException(); }
+        
+        question = this.questionRepository.save(question);
+        
+        if (question == null) { throw new InternalServerErrorException(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.CREATED);
     }
     
-    public ResponseEntity<String> deleteQuestion(Long id){
-        if (this.questionRepository.findById(id).isPresent()) {
-            if (this.questionRepository.findById(id).get().getAnswers().isEmpty()) {
-                this.questionRepository.deleteById(id);
-                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
-            }else{
-                List<Answer> answers = this.questionRepository.findById(id).get().getAnswers();
-                for (Answer answer : answers) {
-                    this.answerRepository.deleteByQuestionIdAndOrdinalNumber(answer.getQuestion().getId(), answer.getOrdinalNumber());
-                }
-                this.questionRepository.deleteById(id);
-                return new ResponseEntity<>("ok, deleted answers", HttpStatus.OK); //ErrorManager
-            }
-        } else {
-            return ErrorManager.notFound("question");
+    public ResponseEntity<String> deleteQuestion(Long id) {
+        Question question = this.questionRepository.findById(id).orElseThrow(() -> new NotFoundException(Question.class, id));
+        
+        for (Answer answer : question.getAnswers()) {
+            this.answerRepository.delete(answer);
         }
+
+        this.questionRepository.delete(question);
+        
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
     
-    public ResponseEntity<String> updateQuestion(HashMap<String, String> datas){
-        if (this.questionRepository.findById(Long.valueOf(datas.get("id"))).isPresent()) {
-            Question updatedQuestion = this.questionRepository.findById(Long.valueOf(datas.get("id"))).get();
-            updatedQuestion.setQuestion(datas.get("question"));
-            Optional user = this.userRepository.findById(Long.valueOf(datas.get("mediaContentOwner")));
-            
-            if (user.isPresent()) {
-                MediaId  mediaId = new MediaId((User) user.get(), datas.get("mediaContentName"));
-                Optional<Media> media = this.mediaRepository.findById(mediaId);
-                if (!media.isPresent()) {
-                    return ErrorManager.notFound("media");
-                }
-                updatedQuestion.setMediaContent(media.get());
-                updatedQuestion.setTimeToAnswer((byte) Integer.parseInt(datas.get("timeToAnswer")));
-                this.questionRepository.save(updatedQuestion);
-                return new ResponseEntity<>("ok", HttpStatus.OK); //ErrorManager
-            } else {
-                return ErrorManager.notFound("user");
-            }
-        } else{
-            return ErrorManager.notFound("question");
-        }
+    public ResponseEntity<String> updateQuestion(QuestionDTO questionDTO) {
+        Question question = this.questionRepository.findById(questionDTO.getId()).orElseThrow(() -> new NotFoundException(Question.class, questionDTO.getId()));
+        
+        this.customModelMapper.updateFromDTO(questionDTO, question);
+        question = this.questionRepository.save(question);
+        
+        if (question == null) { return ErrorManager.def(); }
+        
+        return new ResponseEntity<>(Converter.ModelToJsonString(this.customModelMapper.fromModel(question, QuestionDTO.class)), HttpStatus.OK);
     }
 }

@@ -13,11 +13,13 @@ public class ConfigDatas {
         put(HttpMethod.GET, new String[] {
             "/",
             "/media/**",
+            "/media/*/*",
         });
         put(HttpMethod.POST, new String[] {
             "/user",
             "/user/login",
-            "/user/resetpassword"
+            "/user/resetpassword",
+            "/user/changepassword",
         });
     }};
     
@@ -35,5 +37,11 @@ public class ConfigDatas {
     
     public static final String API_KEY_HEADER = "API-KEY";
     
+    public static final String PAIRING_QUESTION_TYPE = "pairing";
+    
+    public static final int MAX_ANSWER_FOR_QUESTION = 6;
+    
+    public static final byte MAX_TIME_TO_ANSWER_IN_QUESTION = 90;
+    public static final byte DEFAULT_TIME_TO_ANSWER_IN_QUESTION = 10;
     
 }

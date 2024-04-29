@@ -1,13 +1,10 @@
 
 package hu.kaoszkviz.server.api.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import hu.kaoszkviz.server.api.jsonview.PrivateJsonView;
-import hu.kaoszkviz.server.api.jsonview.PublicJsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,80 +25,52 @@ import lombok.Setter;
 
 
 @Entity
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = Quiz.TABLE_NAME)
-public class Quiz {
+public class Quiz implements Model {
+    public static enum Status {ACTIVE, DELETED};
+    
     @Id
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
-    @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
     @Column(columnDefinition = "nvarchar(30)", length = 30, nullable = false)
     private String title;
     
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
     @Column(columnDefinition = "nvarchar(500)", length = 500)
     private String description;
     
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
-    @JsonManagedReference
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name="media_file_name"),
         @JoinColumn(name="media_owner_id")
     })
     private Media mediaContent;
     
-    @Getter
-    @Setter
-    @JsonView(PrivateJsonView.class)
     @Column(name = "is_public", columnDefinition = "bit default 0")
     private boolean isPublic;
     
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
     @Column(name = "short_accessible_name", unique = true)
     private String shortAccessibleName;
     
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
     
-    @Getter
-    @Setter
-    @JsonView(PrivateJsonView.class)
-    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizHistory> quizs = new ArrayList<>();
     
-    @Getter
-    @Setter
-    @JsonView(PublicJsonView.class)
-    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<QuizTopic> topics = new ArrayList<>();
     
-    @Getter
-    @Setter
-    @JsonView(PrivateJsonView.class)
-    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
     private List<Question> questions = new ArrayList<>();
     

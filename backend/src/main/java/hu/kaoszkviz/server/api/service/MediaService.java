@@ -1,5 +1,6 @@
 package hu.kaoszkviz.server.api.service;
 
+import hu.kaoszkviz.server.api.dto.MediaPayload;
 import hu.kaoszkviz.server.api.model.Media;
 import hu.kaoszkviz.server.api.model.MediaId;
 import hu.kaoszkviz.server.api.model.User;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import hu.kaoszkviz.server.api.repository.MediaRepository;
 import hu.kaoszkviz.server.api.repository.UserRepository;
 import hu.kaoszkviz.server.api.security.ApiKeyAuthentication;
+import hu.kaoszkviz.server.api.tools.Converter;
 import hu.kaoszkviz.server.api.tools.ErrorManager;
 import hu.kaoszkviz.server.api.tools.HeaderBuilder;
 import java.io.IOException;
@@ -29,28 +31,26 @@ public class MediaService {
     private UserRepository userRepository;
     
     public ResponseEntity<String> addMedia(MultipartFile file, String fileName) {
-        Optional<ApiKeyAuthentication> auth = ApiKeyAuthentication.getAuth();
-        
-        if (auth.isPresent()) {
-            Media media = new Media();
+        ApiKeyAuthentication auth = ApiKeyAuthentication.getAuth();
+        Media media = new Media();
 
-            try {
-                media.setData(file.getBytes());
-            } catch (IOException ex) {
-                return ErrorManager.def("failed to get file details");
-            }
-            User owner = auth.get().getPrincipal();
-            
-            Optional<User> optUser = this.userRepository.findById(owner.getId());
-            if (optUser.isPresent()) {
-                media.setOwner(optUser.get());
-                media.setFileName(fileName);
+        try {
+            media.setData(file.getBytes());
+        } catch (IOException ex) {
+            return ErrorManager.def("failed to get file details");
+        }
+        User owner = auth.getPrincipal();
 
-                if (this.mediaRepository.save(media) != null) {
-                    return new ResponseEntity<>("ok", HttpStatus.CREATED);
-                }
-                
+        Optional<User> optUser = this.userRepository.findById(owner.getId());
+        if (optUser.isPresent()) {
+            media.setOwner(optUser.get());
+            media.setFileName(fileName);
+
+            if (this.mediaRepository.save(media) != null) {
+                MediaPayload mediaPayload = new MediaPayload(media.getFileName(), null, media.getOwner().getId());
+                return new ResponseEntity<>(Converter.ModelToJsonString(mediaPayload), HttpStatus.CREATED);
             }
+
         }
         
         return ErrorManager.def("failed to save image");

@@ -17,8 +17,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseScriptInitializer {
-    @Value("${application.generate.sqlscript}")
+    @Value("${application.generate.sqlscript:false}")
     private boolean generateScript;
+    
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String hibernateStatus;
     
     private final String SPLIT_TEXT = "GO";
     
@@ -40,6 +43,8 @@ public class DatabaseScriptInitializer {
         Resource[] resources = resolver.getResources("classpath:databaseScripts/*");
         
         for (Resource resource : resources) {
+            if (resource.getFilename().equals("initialDatas.sql") && this.skipInitialDatas()) { continue; }
+            
             int count = 0;
             int totalCount = 0;
             
@@ -66,6 +71,9 @@ public class DatabaseScriptInitializer {
         
         this.logger.info("SQL scriptek betöltése vége.");
     }
-
+    
+    private boolean skipInitialDatas() {
+        return !this.hibernateStatus.equals("create") && !this.hibernateStatus.equals("create-drop");
+    }
     
 }
