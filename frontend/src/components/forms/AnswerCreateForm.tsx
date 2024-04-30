@@ -112,7 +112,7 @@ const AnswerForm: React.FC<AnswerFormProps> = (props: AnswerFormProps) => {
             }
         },
         {
-            label: "Kérdés párja(ha van):",
+            label: "Kérdés párja (ha van):",
             inputProps: {
                 name: "correctAnswer",
                 placeholder: "",
@@ -130,7 +130,10 @@ const AnswerForm: React.FC<AnswerFormProps> = (props: AnswerFormProps) => {
                         <LabeledInput {...input} key={index}/>
                     )
                 })}
-                <Button name="createAnswer" title="Válasz létrehozása" type="submit"/> 
+                {props.isnew ? 
+                    <Button name="createAnswer" title="Válasz létrehozása" type="submit"/> 
+                    :
+                    <Button name="createAnswer" title="Válasz módosítása" type="submit"/>}
             </form>
         </div>
     )

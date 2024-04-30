@@ -53,6 +53,30 @@ input{
   padding-right: 20px;
 }
 
+.quizForm, .questionCreateForm, .AnswerCreateForm{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.fileUploadForm input[type='file']{
+  width: 80%;
+  padding: 5px;
+}
+.fileUploadForm input[type='file']::file-selector-button{
+  display: block;
+  background-color: #161925;
+  color: #CBF7ED;
+  border-radius: 30px;
+}
+
+.fileUploadForm form div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .quizForm .button, .AnswerCreateForm .button, .questionCreateForm .button, .newSomething .button{
   display: flex;
   justify-content: center;
@@ -99,14 +123,27 @@ button, .menu li a, .menu li:not(.menu li:has(a)), .newQuizButton{
 
 button{
   margin: 5px;
+  border: none;
 }
 
 .greetings{
   font-size: 30px;
   margin-bottom: 20px;
   color: #CBF7ED;
+  text-shadow: -1px -1px 0 #161925, 1px -1px 0 #161925, -1px 1px 0 #161925, 1px 1px 0 #161925;
+  
 }
 
 input::placeholder {
   color: #cbf7ed75;
+}
+
+@media screen and (max-width: 400px) {
+  
+  .fileUploadForm input[type='file']{
+    width: 70%;
+  }
+  .fileUploadForm input[type='file']::file-selector-button{
+    display: block;
+  }
 }

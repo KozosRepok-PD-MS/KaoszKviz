@@ -151,7 +151,7 @@ const QuizForm: React.FC<QuizFormProps> = (props: QuizFormProps) => {
             }
         },
         {
-            label: "Rövid név (max 3 betű)",
+            label: "Rövid név",
             inputProps: {
                 name: "shortAccessibleName",
                 placeholder: "",

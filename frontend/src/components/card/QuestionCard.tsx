@@ -11,6 +11,8 @@ import ApiHandler, { ApiError } from "src/helper/ApiHandler";
 import Button from "../buttons/Button";
 import AnswerForm from "../forms/AnswerCreateForm";
 import QuestionForm from "../forms/QuestionCreateForm";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { FaPencilAlt } from "react-icons/fa";
 
 export type QuestionCardProps = {
     question: Question
@@ -28,7 +30,7 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
 
     function handleEdit(){
         setIsEditing(!isEditing);
-        if (isEditing) {
+        if (!isEditing) {
             setEditState(<QuestionForm questionId={props.question.id!.toString()} quizId={props.question.quizId} isnew={false}/>);
         } else {
             setEditState(<></>);
@@ -93,9 +95,9 @@ const QuestionCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => 
                                 {isEditing ? 
                                     <Button name="editButton" title="BECSUK" type="button" onClickFn={handleEdit}/>
                                     :
-                                    <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleEdit}/>}
+                                    <Button name="editButton" title={<FaPencilAlt size="20px" />} type="button" onClickFn={handleEdit}/>}
                                 <div className="questionCardDelete">
-                                    <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
+                                    <Button name="deleteButton" title={<MdOutlineDeleteForever size="20px" />} type="button" onClickFn={handleDelete}/>
                                 </div>
                             </div>
                             <div className="questionCardEdit">{editState}</div>

@@ -3,6 +3,7 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    border-bottom: 1px solid #161925;
 }
 
 .answerCardItem{

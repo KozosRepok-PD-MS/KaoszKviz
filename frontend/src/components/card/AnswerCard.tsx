@@ -6,6 +6,8 @@ import AnswerForm from "../forms/AnswerCreateForm";
 import Button from "../buttons/Button";
 import ApiHandler, { ApiError } from "src/helper/ApiHandler";
 import { API_CONTROLLER } from "src/config/ApiEndpoints";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { FaPencilAlt } from "react-icons/fa";
 
 export type QuestionCardProps = {
     answer: Answer;
@@ -21,12 +23,12 @@ const AnswerCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => {
     const [editAnswerState, setEditAnswerState] = useState(<></>);
 
     function handleQuestionEdit(){
-        if (isAnswerEditing) {
+        setIsAnswerEditing(!isAnswerEditing);
+        if (!isAnswerEditing) {
             setEditAnswerState(<AnswerForm ordinalNumber={props.answer.ordinalNumber!.toString()} questionId={props.questionId!} isnew={false}/>);
         } else {
             setEditAnswerState(<></>);
         }
-        setIsAnswerEditing(!isAnswerEditing);
     }
     
     function deleteCallbackFn() {
@@ -62,9 +64,9 @@ const AnswerCard: React.FC<QuestionCardProps> = (props: QuestionCardProps) => {
                         {isAnswerEditing ? 
                             <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuestionEdit}/>
                             :
-                            <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuestionEdit}/>}
+                            <Button name="editButton" title={<FaPencilAlt size="20px" />} type="button" onClickFn={handleQuestionEdit}/>}
                         <div className="answerCardDelete">
-                            <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
+                            <Button name="deleteButton" title={<MdOutlineDeleteForever size="20px" />} type="button" onClickFn={handleDelete}/>
                         </div>
                     </div>
                     <div>{editAnswerState}</div>

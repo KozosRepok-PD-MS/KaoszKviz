@@ -6,10 +6,14 @@
 }
 
 .quizDatas{
+    height: fit-content;
     flex: 1 0 calc(30% - 20px); /* 20px margó mindkét oldalon */
     justify-content: flex-start;
     align-items: flex-start;
     margin: 10px;
+    background-color: #406E8E;
+    padding: 10px;
+    border-radius: 20px;
 }
 
 .questions{

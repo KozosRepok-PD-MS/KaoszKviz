@@ -13,6 +13,8 @@ import Button from "src/components/buttons/Button";
 import { Quiz } from "src/model/Quiz";
 import "./QuestionList.css";
 import ImageComp from "src/components/images/ImageComp";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { FaPencilAlt } from "react-icons/fa";
 
 type QuestionProps = {}
 
@@ -32,12 +34,12 @@ const QuestionList: React.FC = (props: QuestionProps) => {
     const [newQuestionState, setNewQuestionState] = useState(<></>);
 
     function handleQuizEdit(){
-        if (isQuizEditing) {
+        setIsQuizEditing(!isQuizEditing);
+        if (!isQuizEditing) {
             setEditQuizState(<CreateQuiz quizId={quizId!} isnew={false}/>);
         } else {
             setEditQuizState(<></>);
         }
-        setIsQuizEditing(!isQuizEditing);
     }
     
     function deleteCallbackFn() {
@@ -111,10 +113,10 @@ const QuestionList: React.FC = (props: QuestionProps) => {
                                         {isQuizEditing ? 
                                             <Button name="editButton" title="BECSUK" type="button" onClickFn={handleQuizEdit}/>
                                             :
-                                            <Button name="editButton" title="MÓDOSÍTÁS" type="button" onClickFn={handleQuizEdit}/>}
+                                            <Button name="editButton" title={<FaPencilAlt size="20px" />} type="button" onClickFn={handleQuizEdit}/>}
                                     </div>
                                     <div className="quizCardDelete">
-                                        <Button name="deleteButton" title="TÖRLÉS" type="button" onClickFn={handleDelete}/>
+                                        <Button name="deleteButton" title={<MdOutlineDeleteForever size="20px" />} type="button" onClickFn={handleDelete}/>
                                     </div>
                                 </div> 
                                 <div className="editForm">{editQuizState}</div>

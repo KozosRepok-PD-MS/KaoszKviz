@@ -6,7 +6,7 @@ export type InputProps = {
     name: string;
     type: "number" | "text" | "email" | "password" | "file" | "checkbox" | "select";
     placeholder?: string;
-    onChangeFn?: ChangeEventHandler<HTMLInputElement>;
+    onChangeFn?: ChangeEventHandler<HTMLInputElement | HTMLSelectElement>;
     autocomplete?: boolean;
     classes? : string;
     msg?: string;
@@ -27,7 +27,6 @@ const Input: React.FC<InputProps> = (props: InputProps) => {
         classes += " inputMsgBoxShow";
     }
 
-
     return(
         props.type != "select" ?
             <div>
@@ -46,6 +45,7 @@ const Input: React.FC<InputProps> = (props: InputProps) => {
                 <select className={props.classes}
                     id={props.name}
                     name={props.name}
+                    onChange={props.onChangeFn}
                     autoComplete={autocomplete}>
                         {props.options!.map((value, key) => {
                             return(

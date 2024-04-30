@@ -15,6 +15,7 @@ export enum API_CONTROLLER {
     QUIZ = "quiz",
     QUESTION = "question",
     ANSWER = "answer",
+    QUESTIONTYPE = "questiontype", 
 }
 
 export const DEFAULT_REQUIRED_HTTP_CODE: number = HttpStatusCode.Ok;
@@ -638,6 +639,17 @@ export const apiEndpoints: Map<API_CONTROLLER, Map<string, ApiEndpoint>> = new M
                         ],
                     ]),
                     headers: new Map(),
+                }
+            ],
+        ])
+    ],
+    [
+        API_CONTROLLER.QUESTIONTYPE,
+        new Map<string, ApiEndpoint>([
+            [
+                "getAll",
+                {
+                    method: HTTP_METOD.GET,
                 }
             ],
         ])

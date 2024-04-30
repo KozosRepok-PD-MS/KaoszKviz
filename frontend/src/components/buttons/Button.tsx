@@ -1,8 +1,8 @@
-import React, { MouseEventHandler } from "react"
+import React, { MouseEventHandler, ReactNode } from "react"
 
 export type ButtonProps = {
     name: string;
-    title: string;
+    title: string | ReactNode;
     type: "button" | "submit" | "reset";
     onClickFn?: MouseEventHandler<HTMLButtonElement>;
 }

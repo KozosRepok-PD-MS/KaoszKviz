@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useState } from "react";
 import ApiHandler, { ApiError } from "../../helper/ApiHandler";
 import { API_CONTROLLER } from "../../config/ApiEndpoints";
@@ -7,6 +7,7 @@ import { AxiosResponse, HttpStatusCode } from "axios";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import Button from "../buttons/Button";
 import { QuestionCreateFormType, QuestionModifyFormType } from "../../model/Question";
+import { TQuestionTypeList } from "../../model/QuestionType";
 import FileUploadForm, { SuccessUploadDatas } from "./FileUploadForm";
 
 type QuestionFormProps = {
@@ -21,18 +22,20 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     const[newQuestionDatas, setNewQuestionDatas] = useState<QuestionCreateFormType>( {
         quizId: props.quizId,
         question: "",
-        questionType: "",
-        timeToAnswer: 100,
+        questionType: "multiple correct answer",
+        timeToAnswer: 90,
         mediaContentOwnerId: ("-1" as unknown) as bigint,
         mediaContentName: "",
     });
     const[updateQuestionDatas, setUpdateQuestionDatas] = useState<QuestionModifyFormType>( {
         id: props.questionId,
         question: "",
-        timeToAnswer: 100,
+        timeToAnswer: 90,
         mediaContentOwnerId: ("-1" as unknown) as bigint,
         mediaContentName: "",
     });
+    const[questionTypes, setQuestionTypes] = useState<TQuestionTypeList>({} as TQuestionTypeList);
+    const[questionTypesString, setQuestionTypesString] = useState<string[]>([] as string[]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (props.isnew) {
@@ -49,7 +52,7 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
     }
      
     function newCallbackFn(response: AxiosResponse<any, any>) {
-        if (response.status === HttpStatusCode.Ok) {
+        if (response.status === HttpStatusCode.Created) {
             console.log("kérdés létrehozva");
             window.location.reload();
         } else {
@@ -100,6 +103,26 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
             console.log(ERR.getMessage)
         }
     };
+
+    function questionTypeCallbackFn(response: AxiosResponse<any, any>) {
+        setQuestionTypes(response.data as TQuestionTypeList);
+        let responsData = response.data as TQuestionTypeList;
+        let stringList: string[] = [];
+        for (let i = 0; i < responsData.length; i++) {
+            stringList.push(responsData[i].type!);
+        }
+        setQuestionTypesString(stringList);
+    }
+
+    useEffect(() => {
+        try {
+            ApiHandler.executeApiCall(API_CONTROLLER.QUESTIONTYPE, "getAll", questionTypeCallbackFn);
+        } catch (error) {
+            const ERR: ApiError = error as ApiError;            
+            console.log(ERR.getMessage)
+        }
+    }, []);
+
     let INPUTS: LabeledInputProps[] =[]
     if (props.isnew) {
         INPUTS = [
@@ -117,8 +140,9 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                 inputProps: {
                     name: "questionType",
                     placeholder: "",
-                    type: "text",
-                    onChangeFn: handleChange
+                    type: "select",
+                    onChangeFn: handleChange,
+                    options: questionTypesString,
                 }
             },
             {
@@ -165,7 +189,10 @@ const QuestionForm: React.FC<QuestionFormProps> = (props: QuestionFormProps) => 
                         <LabeledInput {...input} key={index}/>
                     )
                 })}
-                <Button name="createQuestion" title="Kérdés létrehozása" type="submit"/> 
+                {props.isnew ? 
+                    <Button name="createQuestion" title="Kérdés létrehozása" type="submit"/> 
+                    :
+                    <Button name="createQuestion" title="Kérdés módosítása" type="submit"/>}
             </form>
         </div>
     )
