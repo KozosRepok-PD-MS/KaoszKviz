@@ -1,0 +1,626 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "kaoszkviz",
+    "collectionId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+    "dateExported": "2024-04-26T07:03:17.836Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "user",
+            "containerId": "",
+            "created": "2024-04-19T06:38:32.840Z",
+            "sortNum": 2500
+        },
+        {
+            "_id": "aa91bb1d-ab93-44d6-af05-683abf44f863",
+            "name": "topic",
+            "containerId": "",
+            "created": "2024-04-19T06:38:32.841Z",
+            "sortNum": 3125
+        },
+        {
+            "_id": "d2cf68e8-49de-44ff-ad6a-e7795b6d557f",
+            "name": "quiz",
+            "containerId": "",
+            "created": "2024-04-19T06:38:32.843Z",
+            "sortNum": 3750
+        },
+        {
+            "_id": "6186048a-17e0-4e24-8eb4-57db84451717",
+            "name": "quizTopic",
+            "containerId": "",
+            "created": "2024-04-24T09:23:07.673Z",
+            "sortNum": 4062.5
+        },
+        {
+            "_id": "09c7600b-7929-4109-8bfe-1236fc065e3e",
+            "name": "question",
+            "containerId": "",
+            "created": "2024-04-23T16:23:35.704Z",
+            "sortNum": 4375
+        },
+        {
+            "_id": "dafdb405-be0c-4efe-9ab6-32b2f90aab67",
+            "name": "answer",
+            "containerId": "",
+            "created": "2024-04-19T06:38:32.842Z",
+            "sortNum": 5000
+        },
+        {
+            "_id": "d97d67a1-f027-4f67-91a2-b76fff051be2",
+            "name": "quizPlayer",
+            "containerId": "",
+            "created": "2024-04-24T09:22:43.273Z",
+            "sortNum": 9375
+        },
+        {
+            "_id": "40a7e3b9-51ae-437a-9909-7f740fcd1e25",
+            "name": "media",
+            "containerId": "",
+            "created": "2024-04-21T18:32:11.451Z",
+            "sortNum": 70000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "3fa8d47f-a923-476e-87d8-9c5cf76db3e7",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "createUser",
+            "url": "/user",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-04-19T06:38:32.843Z",
+            "modified": "2024-04-24T09:24:32.749Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n\t\"username\" : \"Dominik111110010\",\n\t\"email\" : \"petidomi05111110010@gmail.com\",\n\t\"password\" : \"TitkosJelszo123\",\n\t\"profilePictureOwnerId\" : -1,\n\t\"profilePictureName\" : \"\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "5865481b-141f-4cd7-a7bc-c1f48268bbd1",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "loginUser",
+            "url": "/user/login",
+            "method": "POST",
+            "sortNum": 15000,
+            "created": "2024-04-19T06:38:32.842Z",
+            "modified": "2024-04-24T09:25:29.926Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n\t\"loginBase\" : \"Dominik\",\n\t\"loginBase21\" : \"petidomi05@gmail.com\",\n\t\"password\" : \"TitkosJelszo123\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "4fc81dd4-0d1f-4888-8f23-c806d48276de",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "updateUser",
+            "url": "/user",
+            "method": "PUT",
+            "sortNum": 17500,
+            "created": "2024-04-19T06:38:32.850Z",
+            "modified": "2024-04-24T09:26:28.889Z",
+            "headers": [
+                {
+                    "name": "API-KEY",
+                    "value": "52CCF50C-FE64-4CDA-AF8F-B8EF60006B01",
+                    "isDisabled": true
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n\t\"id\" : 36,\n\t\"username\" : \"Dominik-1\",\n\t\"email\" : \"petidomi05@gmail.com\",\n\t\"profilePictureOwnerId\" : -1,\n\t\"profilePictureName\" : \"geza.png\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "74bfe9c9-1229-4e3c-a5d4-fa45e9398286",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "getUserById",
+            "url": "/user?userId=39",
+            "method": "GET",
+            "sortNum": 18750,
+            "created": "2024-04-19T06:38:32.847Z",
+            "modified": "2024-04-24T09:27:08.075Z",
+            "headers": [
+                {
+                    "name": "API-KEY",
+                    "value": "476C9D2B-44AC-44C2-83C3-2BC2A48ACCE6",
+                    "isDisabled": true
+                }
+            ],
+            "params": [
+                {
+                    "name": "userId",
+                    "value": "39",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "275431d3-54cf-4e34-a05d-9e89f4e8d00b",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "getAllUser",
+            "url": "/user",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-04-19T06:38:32.840Z",
+            "modified": "2024-04-19T06:38:32.840Z",
+            "headers": [
+                {
+                    "name": "API-KEY",
+                    "value": "52ccf50c-fe64-4cda-af8f-b8ef60006b01",
+                    "isDisabled": true
+                }
+            ],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "b9f501d3-2871-4215-b52b-7802b12636b8",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "getUserByString",
+            "url": "/user?searchName=Dominik11111",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2024-04-19T06:38:32.848Z",
+            "modified": "2024-04-24T09:27:30.026Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "searchName",
+                    "value": "Dominik11111",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "d3519bb9-8e19-4027-aba8-52176a7a7531",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "resetPassword",
+            "url": "/user/resetpassword",
+            "method": "POST",
+            "sortNum": 45000,
+            "created": "2024-04-21T19:00:04.511Z",
+            "modified": "2024-04-25T20:08:01.736Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\" : \"petidomi06@gmail.com\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "80cae03f-40e7-4f2b-9b05-8cdcfe9b2ad8",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "aa91bb1d-ab93-44d6-af05-683abf44f863",
+            "name": "getAllTopic",
+            "url": "/topic",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2024-04-19T06:38:32.844Z",
+            "modified": "2024-04-24T09:30:27.249Z",
+            "headers": []
+        },
+        {
+            "_id": "12752b19-5966-4ea3-85b5-6a1498fab224",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "changePassword",
+            "url": "/user/changepassword",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2024-04-19T06:38:32.851Z",
+            "modified": "2024-04-24T09:27:42.518Z",
+            "headers": [
+                {
+                    "name": "RESET-TOKEN",
+                    "value": "2db5d51a-c30f-4fe5-a5e0-4967bef41a96"
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"newPassword\" : \"TitkosJelszo123\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "55f46a98-8864-4c6b-8cb1-ba9d80879819",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "aa91bb1d-ab93-44d6-af05-683abf44f863",
+            "name": "addTopic",
+            "url": "/topic",
+            "method": "POST",
+            "sortNum": 70000,
+            "created": "2024-04-19T06:38:32.846Z",
+            "modified": "2024-04-24T09:30:49.107Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"title\" : \"Teszt topic\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "ef330dab-d24f-4fd1-961d-065a77f37fbb",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "deleteUser",
+            "url": "/user?userId=36",
+            "method": "DELETE",
+            "sortNum": 100000,
+            "created": "2024-04-19T06:38:32.849Z",
+            "modified": "2024-04-24T09:28:20.646Z",
+            "headers": [
+                {
+                    "name": "API-KEY",
+                    "value": "52ccf50c-fe64-4cda-af8f-b8ef60006b01",
+                    "isDisabled": true
+                }
+            ],
+            "params": [
+                {
+                    "name": "userId",
+                    "value": "36",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "52888fdf-595a-4c8e-8f1b-6fffd9517d4b",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "e3a5d0b3-5773-4038-873e-8e5ccd993208",
+            "name": "logoutUser",
+            "url": "/user/logout",
+            "method": "POST",
+            "sortNum": 110000,
+            "created": "2024-04-19T06:38:32.845Z",
+            "modified": "2024-04-24T09:28:55.796Z",
+            "headers": [
+                {
+                    "name": "API-KEY",
+                    "value": "3e2e12ca-c725-42b6-94ba-c937623bd81c",
+                    "isDisabled": true
+                }
+            ]
+        },
+        {
+            "_id": "be75c70c-370d-4886-842f-a296bfbdecf8",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "dafdb405-be0c-4efe-9ab6-32b2f90aab67",
+            "name": "getAnswersForQuestion",
+            "url": "/answer?questionId=8",
+            "method": "GET",
+            "sortNum": 140000,
+            "created": "2024-04-19T06:38:32.852Z",
+            "modified": "2024-04-24T10:34:50.830Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "questionId",
+                    "value": "8",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "3e7d94a0-5fff-437d-b5bd-7b2d14d1d45a",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "d2cf68e8-49de-44ff-ad6a-e7795b6d557f",
+            "name": "createQuiz",
+            "url": "/quiz",
+            "method": "POST",
+            "sortNum": 160000,
+            "created": "2024-04-19T06:38:32.853Z",
+            "modified": "2024-04-24T10:18:12.085Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n\t\"title\" : \"Teszt kvíz sokadik....\",\n\t\"description\" : \"Leírás....\",\n\t\"mediaContentOwnerId\" : 19,\n\t\"mediaContentName\" : \"geza.png\",\n\t\"isPublic\" : true\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "a4b1ff24-fa81-4bbc-a730-e1aebf503f49",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "d2cf68e8-49de-44ff-ad6a-e7795b6d557f",
+            "name": "updateQuiz",
+            "url": "/quiz",
+            "method": "PUT",
+            "sortNum": 170000,
+            "created": "2024-04-19T06:38:32.854Z",
+            "modified": "2024-04-24T10:18:39.829Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n\t\"id\" : 21,\n\t\"title\" : \"Teszt kvíz módosított 2323123\",\n\t\"description\" : \"Leírás 2321123123\",\n\t\"mediaContetntOwnerId\" : \"\",\n\t\"mediaContentName\" : \"\",\n\t\"isPublic\" : true\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "a68850a2-7974-4f91-aaf8-326f7ffe469a",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "40a7e3b9-51ae-437a-9909-7f740fcd1e25",
+            "name": "getMedia",
+            "url": "/0/.png",
+            "method": "GET",
+            "sortNum": 190000,
+            "created": "2024-04-21T18:32:16.223Z",
+            "modified": "2024-04-24T09:23:28.389Z",
+            "headers": []
+        },
+        {
+            "_id": "ebde5ec9-fd55-49eb-9840-0880244387a0",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "d2cf68e8-49de-44ff-ad6a-e7795b6d557f",
+            "name": "getAllQuiz",
+            "url": "/quiz",
+            "method": "GET",
+            "sortNum": 210000,
+            "created": "2024-04-21T20:24:26.555Z",
+            "modified": "2024-04-21T20:24:30.966Z",
+            "headers": []
+        },
+        {
+            "_id": "c1ccc485-e286-4df5-a792-509253d840dd",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "d2cf68e8-49de-44ff-ad6a-e7795b6d557f",
+            "name": "deleteQuiz",
+            "url": "/quiz?id=19",
+            "method": "DELETE",
+            "sortNum": 220000,
+            "created": "2024-04-21T20:32:36.061Z",
+            "modified": "2024-04-24T10:46:55.466Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "id",
+                    "value": "19",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "4dd6cd13-93fa-4cf4-a36e-a48f24e2da17",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "09c7600b-7929-4109-8bfe-1236fc065e3e",
+            "name": "addQuestion",
+            "url": "/question",
+            "method": "POST",
+            "sortNum": 230000,
+            "created": "2024-04-23T16:23:44.033Z",
+            "modified": "2024-04-24T10:32:00.675Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"quizId\" : 21,\n  \"questionType\" : \"one correct answer\",\n  \"question\" : \"Kérdés... 3\",\n  \"timeToAnswer\": 30\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "8b4f1201-5e28-421f-b956-efe90496523e",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "09c7600b-7929-4109-8bfe-1236fc065e3e",
+            "name": "getQuestionsByQuizId",
+            "url": "/question?quizId=21",
+            "method": "GET",
+            "sortNum": 240000,
+            "created": "2024-04-23T16:24:01.544Z",
+            "modified": "2024-04-24T10:30:43.619Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "quizId",
+                    "value": "21",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "e876fb2f-7f35-4891-b7d8-52a5b97798c7",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "09c7600b-7929-4109-8bfe-1236fc065e3e",
+            "name": "editQuestion",
+            "url": "/question",
+            "method": "PUT",
+            "sortNum": 250000,
+            "created": "2024-04-23T16:29:36.328Z",
+            "modified": "2024-04-24T10:32:04.490Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\" : 8,\n  \"question\" : \"Kérdés... 2\",\n  \"timeToAnswer\": 90\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "2ff49931-3fbd-44ca-be90-d1f9b69e9d90",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "dafdb405-be0c-4efe-9ab6-32b2f90aab67",
+            "name": "addAnswer",
+            "url": "/answer",
+            "method": "POST",
+            "sortNum": 270000,
+            "created": "2024-04-23T17:21:31.912Z",
+            "modified": "2024-04-24T10:33:37.807Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"questionId\" : 8,\n    \"ordinalNumber\" : 1, \n    \"answer\" : \"Válasz 4\",\n    \"correct\" : true,\n    \"correctAnswer\" : \"asdasdsda\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "948f388e-6597-42b9-8902-5010dd13d4db",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "dafdb405-be0c-4efe-9ab6-32b2f90aab67",
+            "name": "updateAnswer",
+            "url": "/answer",
+            "method": "PUT",
+            "sortNum": 280000,
+            "created": "2024-04-23T17:47:13.075Z",
+            "modified": "2024-04-24T10:34:11.558Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"questionId\" : 8,\n    \"ordinalNumber\" : 4, \n    \"answer\" : \"Válasz 4\",\n    \"correct\" : true,\n    \"correctAnswer\" : \"asdasdsda\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "7280101c-a894-470d-b76d-c64c419fc19f",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "dafdb405-be0c-4efe-9ab6-32b2f90aab67",
+            "name": "deleteAnswer",
+            "url": "/answer?questionId=8&ordinalNumber=4",
+            "method": "DELETE",
+            "sortNum": 290000,
+            "created": "2024-04-23T17:48:17.485Z",
+            "modified": "2024-04-24T10:34:35.343Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "questionId",
+                    "value": "8",
+                    "isPath": false
+                },
+                {
+                    "name": "ordinalNumber",
+                    "value": "4",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "d224a080-ee01-4759-a1c5-55d36168cb82",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "6186048a-17e0-4e24-8eb4-57db84451717",
+            "name": "addQuizTopic",
+            "url": "/quiztopic",
+            "method": "POST",
+            "sortNum": 310000,
+            "created": "2024-04-24T10:19:20.413Z",
+            "modified": "2024-04-24T10:21:10.103Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"quizId\": 21,\n  \"topicId\": 6\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "535939ce-e8f6-4294-ae27-555bb6d8a08d",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "6186048a-17e0-4e24-8eb4-57db84451717",
+            "name": "getQuizTopics",
+            "url": "/quiztopic?quizId=21",
+            "method": "GET",
+            "sortNum": 320000,
+            "created": "2024-04-24T10:20:38.906Z",
+            "modified": "2024-04-24T10:20:51.364Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "quizId",
+                    "value": "21",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "6dd4811b-bd48-4c07-9e9c-ec4b0b10fff7",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "6186048a-17e0-4e24-8eb4-57db84451717",
+            "name": "deleteQuizTopic",
+            "url": "/quiztopic",
+            "method": "DELETE",
+            "sortNum": 330000,
+            "created": "2024-04-24T10:21:26.069Z",
+            "modified": "2024-04-24T10:22:01.583Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"quizId\": 21,\n  \"topicId\": 6\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "263d848e-44a6-4fcd-bf0c-32e49a16b0de",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "09c7600b-7929-4109-8bfe-1236fc065e3e",
+            "name": "deleteQuestion",
+            "url": "/question?id=8",
+            "method": "DELETE",
+            "sortNum": 340000,
+            "created": "2024-04-24T10:32:24.133Z",
+            "modified": "2024-04-24T10:35:17.872Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "id",
+                    "value": "8",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "4ceb1578-5f36-4244-a741-1dfff8855a24",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "d97d67a1-f027-4f67-91a2-b76fff051be2",
+            "name": "getQuizPlayers",
+            "url": "/quizplayer?quizHistoryId=1",
+            "method": "GET",
+            "sortNum": 350000,
+            "created": "2024-04-24T10:36:07.151Z",
+            "modified": "2024-04-24T10:37:24.122Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "quizHistoryId",
+                    "value": "1",
+                    "isPath": false
+                }
+            ]
+        },
+        {
+            "_id": "b4a9fd65-7677-4a11-925a-8393ce21325b",
+            "colId": "7489ef06-6087-4cf8-a6db-bd097580ac2c",
+            "containerId": "d97d67a1-f027-4f67-91a2-b76fff051be2",
+            "name": "addQuizPlayers",
+            "url": "/quizplayer",
+            "method": "POST",
+            "sortNum": 360000,
+            "created": "2024-04-24T10:38:36.552Z",
+            "modified": "2024-04-24T10:40:05.064Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "[\n  {\n    \"quizHistoryId\": 2,\n    \"playerId\": 19,\n    \"name\": \"Dominik\",\n    \"profilePictureOwnerId\": -1,\n    \"profilePictureName\": null,\n    \"reachedPoint\": 100,\n    \"answerTime\": 10\n  }\n]",
+                "form": []
+            }
+        }
+    ],
+    "settings": {
+        "headers": [
+            {
+                "name": "API-KEY",
+                "value": "09dc44e6-23f3-4928-a8ba-90cff35fd648"
+            }
+        ],
+        "options": {
+            "baseUrl": "http://localhost:8999"
+        }
+    },
+    "ref": "GPwXEI-HFJhhUUjPxIQyppXm2nWydUSPOsH5WTdO3qlq0Yd3gncQsQo55rssZFRML6HEzvOXuF4UgUwnQl1pGw"
+}
